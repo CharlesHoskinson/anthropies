@@ -369,7 +369,7 @@ The Third Circuit met the co-authorship argument directly and refused it: the pl
 
 The player does not own the playthrough. Neither, on this reasoning, does the prompter own the output.
 
-Those decisions allocate rights between the maker and the user of a generative system. They do not make the machine an author. *Thaler* addresses that separate question and leaves the producer-side attribution issue open.
+Those decisions concern video-game makers and players. The argument here applies their reasoning by analogy to a generative system; the cases did not decide rights in AI output. They do not make the machine an author. *Thaler* addresses that separate question and leaves the producer-side attribution issue open.
 
 ## *Thaler* did not close the door you think it closed
 
@@ -403,7 +403,7 @@ Both sentences are about the mark. Neither is about the company.
 
 Anthropic stores output text verbatim. Its Compliance API returns the literal assistant response alongside `user.id` and `user.email_address`, and its own documentation states that nothing in that content is masked. Anthropic holds flagged inputs and outputs for two years, in a window that survives both a training opt-out and a zero-data-retention election. Enterprise session transcripts default to six years. Trust-and-safety classification scores run seven.
 
-The Privacy Policy reserves the bridge. Anthropic disassociates flagged content from the user ID for classifier training, "[h]owever, we may **re-identify** the Inputs or Outputs to enforce our Terms of Service or Usage Policy with the responsible user if necessary."
+The Privacy Policy says Anthropic disassociates flagged content from the user ID for classifier training but may re-identify the relevant Inputs or Outputs when necessary to enforce its Terms of Service or Usage Policy: "[h]owever, we may **re-identify** the Inputs or Outputs to enforce our Terms of Service or Usage Policy with the responsible user if necessary."
 
 Set that beside the assignment clause. Anthropic reserves re-identification for enforcement of the Terms. The assignment makes compliance with those same Terms a condition of the grant. **The same event unlocks both**: the power to learn who produced an Output and the position that the Output was never assigned to them.
 
@@ -419,7 +419,7 @@ Anthropic Ireland, Limited is already the contracting entity for customers in th
 
 ## What follows
 
-Nothing above requires Anthropic to have decided anything. Anthropic drafted the conditional grant and ships the trailer on by default. The mark identifies the corpus. Anthropic retains the records, and the re-identification reservation connects them to accounts. The Irish entity already contracts with a third of the world under a statute that vests authorship in the arrangements-maker.
+Nothing above requires Anthropic to have decided anything. Anthropic drafted the conditional grant and ships Claude Code with the trailer enabled by default. The mark identifies the corpus. Anthropic retains the records, and the re-identification reservation connects them to accounts. The Irish entity already contracts with a third of the world under a statute that vests authorship in the arrangements-maker.
 
 The pieces do not need to be assembled today to be worth removing today. **Strip the trailer. Break the keyed wording. Keep your own record of what you wrote.** A conditional grant you never breached is a grant that vested, and a credit you never published is a manifestation of intent that no court will find.
 
