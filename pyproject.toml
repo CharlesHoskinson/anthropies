@@ -1,0 +1,18 @@
+[project]
+name = "anthropies"
+version = "0.1.0"
+description = "Restore clean title in Outputs you already own"
+readme = "README.md"
+license = { text = "Apache-2.0" }
+requires-python = ">=3.10"
+authors = [{ name = "Charles Hoskinson" }]
+
+[project.scripts]
+anthropies = "anthropies.cli:main"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]

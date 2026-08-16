@@ -73,12 +73,48 @@ Using Claude to “clean” Claude re-stamps the same family of mark.
 
 ## Status
 
-The manifesto and the poster are in. The CLI, hooks, and cleaners ship next.
+v0.1 ships a humanizer-style skill plus a stdlib CLI.
+
+The Claude text mark is a SynthID-class keyed sampler. **The mark is the wording.** A formatter or Unicode strip does not remove it. A timid synonym pass does not remove it. Asking Claude to "clean" Claude re-stamps it.
+
+### Install
+
+```bash
+git clone https://github.com/CharlesHoskinson/anthropies.git
+cd anthropies
+pip install -e .
+
+# Grok
+mkdir -p ~/.grok/skills
+ln -sfn "$(pwd)/skills/purge-anthropies" ~/.grok/skills/purge-anthropies
+
+# Claude Code plugin (deterministic + print-prompt only — do not rewrite with Claude)
+# claude --plugin-dir "$(pwd)"
+```
+
+### Use
 
 ```
-anthropies inspect|clean [--layer a|code|git|files|b] [path|-]
-anthropies install-hooks [--git] [--claude] [--cursor]
+/purge-anthropies
 ```
+
+or
+
+```bash
+python3 -m anthropies inspect COMMIT_EDITMSG
+python3 -m anthropies clean notes.md --in-place
+# Layer B: print a rewrite prompt for a local unmarked model
+python3 -m anthropies humanize essay.md
+# or, if Ollama is local and unmarked:
+ANTHROPIES_REWRITE_BACKEND=ollama ANTHROPIES_REWRITE_MODEL=llama3.2 \
+  python3 -m anthropies humanize essay.md --in-place
+```
+
+| Path | What it does |
+| --- | --- |
+| `clean` | Strip agent git trailers, Claude banners, invisible Unicode |
+| `humanize` | Break statistical H-grams via a **non-origin** rewrite |
+| Skill | Orchestrates both; refuses to rewrite when the host is Claude/Gemini |
 
 ## License
 

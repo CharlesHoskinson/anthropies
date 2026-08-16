@@ -1,0 +1,13 @@
+{
+  "name": "anthropies",
+  "version": "0.1.0",
+  "description": "Restore clean title in Outputs you own. Strip Claude watermarks, git trailers, and C2PA.",
+  "author": {
+    "name": "Charles Hoskinson",
+    "url": "https://github.com/CharlesHoskinson/anthropies"
+  },
+  "homepage": "https://github.com/CharlesHoskinson/anthropies",
+  "repository": "https://github.com/CharlesHoskinson/anthropies",
+  "license": "Apache-2.0",
+  "keywords": ["watermark", "claude", "synthid", "provenance", "humanize"]
+}
