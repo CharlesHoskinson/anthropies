@@ -115,6 +115,102 @@ The long form, covering assignment as a speech act, quitclaim, the amendment rat
 
 ---
 
+# The Legal Case Against the Mark
+
+The watermark is not a label. It is the evidentiary layer of a claim Anthropic has not yet made, and every element that claim needs is already in place.
+
+## The assignment is conditional, and always has been
+
+Consumer Terms § 4 and Commercial Terms § B both read the same way:
+
+> **Subject to your compliance with our Terms**, we assign to you all of our right, title, and interest—if any—in Outputs.
+
+Those first four words are a condition, not a courtesy. A grant made subject to a condition conveys nothing to a grantee who fails it. Restatement (Second) of Contracts § 224 defines the condition as "an event, not certain to occur, which must occur, unless its non-occurrence is excused, before performance under a contract becomes due." Copyright law enforces the distinction: a breached covenant sounds in contract, but a failed condition means the license never operated. *Sun Microsystems, Inc. v. Microsoft Corp.*, 188 F.3d 1115, 1121–22 (9th Cir. 1999); *MDY Indus., LLC v. Blizzard Entm't, Inc.*, 629 F.3d 928, 939–41 (9th Cir. 2010), *as amended on denial of reh'g* (Feb. 17, 2011); *Jacobsen v. Katzer*, 535 F.3d 1373, 1380–82 (Fed. Cir. 2008). *MDY* requires a nexus between the breached term and the licensor's exclusive rights. *Id.* at 941.
+
+Anthropic does not need to amend anything to argue that a non-compliant user never took title. The argument is not that title reverted. It is that title never vested.
+
+## The trailer is a credit you sign
+
+Claude Code writes `Co-Authored-By: Claude <noreply@anthropic.com>` into commit messages by default. GitHub parses the trailer and renders the named party as a co-author, counted in the repository's contribution history.
+
+A joint work is one prepared by two or more authors intending their contributions to merge into a unitary whole. 17 U.S.C. § 101. The authors of a joint work are coowners of the copyright in the whole. § 201(a). The governing question is what the parties objectively manifested. *Childress v. Taylor*, 945 F.2d 500, 507–08 (2d Cir. 1991); *Aalmuhammed v. Lee*, 202 F.3d 1227, 1234 (9th Cir. 2000).
+
+The Second Circuit tells you how to read a credit. Billing is "a window on the mind of the party who is responsible for giving the billing or the credit." *Thomson v. Larson*, 147 F.3d 195, 203 (2d Cir. 1998) (quoting the district court). In *Thomson* that window defeated the claim, because the party controlling the credit had taken sole billing for himself. Run the same rule on a commit log and it points the other way. What you control and publish is not one playbill printed once by someone else. It is an unbroken series of executed instruments, each naming two contributors, each committed under your identity, each pushed by your own act.
+
+*Aalmuhammed* asks for objective manifestations of shared intent and observes that the best of them is a contemporaneous writing about co-authorship. 202 F.3d at 1234. A commit trailer is a writing about co-authorship, dated, immutable, and sitting in the work's own metadata.
+
+## Section 203 is the part no contract can reach
+
+Here is why the trailer matters more than the assignment.
+
+An assignment transfers ownership. It cannot transfer authorship. A joint author remains a joint author after assigning every economic right they hold, and a joint author may terminate that grant thirty-five years later. The termination right is exercisable "notwithstanding any agreement to the contrary." 17 U.S.C. § 203(a)(5).
+
+Read that clause against every protection you think you have. The assignment can be renegotiated. A covenant can be waived. A forum can be selected around. The termination right cannot be contracted away, because the statute says so in terms. It is the one mechanism in this entire structure with an unlimited horizon, and it runs on authorship rather than ownership — which is precisely what the trailer is evidence of.
+
+## The maker owns what the machine composes
+
+The objection writes itself: no human typed these sentences, so no one owns them. Three courts of appeals rejected that reasoning forty-four years ago on facts closer than anyone in this debate admits.
+
+A video game's audiovisual display is generated in real time, differs with every player input, is never fixed by a human hand at the moment it appears, and cannot exist without the indispensable participation of someone who is not the manufacturer. Each court held the display copyrightable and owned by the maker. *Stern Elecs., Inc. v. Kaufman*, 669 F.2d 852, 855–57 (2d Cir. 1982); *Williams Elecs., Inc. v. Artic Int'l, Inc.*, 685 F.2d 870 (3d Cir. 1982); *Midway Mfg. Co. v. Artic Int'l, Inc.*, 704 F.2d 1009 (7th Cir.), *cert. denied*, 464 U.S. 823 (1983).
+
+The Third Circuit met the co-authorship argument directly and refused it: the player does not "become[] a co-author of what appears on the screen." *Williams*, 685 F.2d at 874. The Seventh Circuit explained the reason in a sentence that transfers without adjustment. The player
+
+> is unlike a writer or a painter because the video game in effect writes the sentences and paints the painting for him; he merely chooses one of the sentences stored in its memory, one of the paintings stored in its collection.
+
+*Midway*, 704 F.2d at 1012.
+
+The player does not own the playthrough. Neither, on this reasoning, does the prompter own the output.
+
+## *Thaler* did not close the door you think it closed
+
+*Thaler v. Perlmutter*, 130 F.4th 1039 (D.C. Cir. 2025), *cert. denied*, No. 25-449 (U.S. Mar. 2, 2026), holds that a machine cannot be an author. It holds nothing else, and its own formulation of the rule names the party this repository should worry about:
+
+> The rule requires only that the author of that work be a human being—the person who created, operated, or used artificial intelligence—and not the machine itself.
+
+*Id.* at 1049.
+
+*Created, operated, or used.* The list is disjunctive and "created" comes first. The district court confined the case to the administrative record Dr. Thaler himself had made, holding that his effort to "update and modify the facts for judicial review on an APA claim is too late." 687 F. Supp. 3d 140, 149–50 (D.D.C. 2023). Whether the party that built and operates the system is the author of what it emits was never reached on the merits.
+
+Corporate authorship needs no innovation either. Under 17 U.S.C. § 201(b), for a work made for hire "the employer or other person for whom the work was prepared is considered the author." No natural person appears in that sentence.
+
+## The mark identifies which artifacts the claim reaches
+
+The watermark is a keyed pseudorandom bias in token selection, seeded by a hash of the preceding tokens and a secret key. It adds no characters. It changes the source of the randomness used to choose among words the model rated equally good. The mark is the wording.
+
+It is not authorship, and nobody serious will argue that it is. A keyed tiebreak is a "procedure, process, [or] system" excluded by 17 U.S.C. § 102(b). Its function is evidentiary: it fixes the corpus. It answers, document by document, which artifacts in the world came out of Claude.
+
+That is the predicate a claim needs. And the statute already supplies the cause of action for stripping it. Copyright management information includes the name of the author, § 1202(c)(2), the name of the copyright owner, § 1202(c)(3), and identifying numbers or symbols referring to that information, § 1202(c)(7). CMI need not belong to an automated rights-management system. *Murphy v. Millennium Radio Grp. LLC*, 650 F.3d 295, 302–05 (3d Cir. 2011). A gutter credit in a magazine qualifies. So does a line in a commit message. Statutory damages run from $2,500 to $25,000 for each violation. § 1203(c)(3)(B).
+
+## The mark carries no identity. The logs do.
+
+Anthropic states that the watermark carries no identifying information and "can't be traced to a specific person, organization, or chat." Read the narrower statement it publishes under the heading *Can a watermark be traced back to me or my organization?* — "[t]here's nothing in the watermark, or its key, that would allow anyone to recover any information about the user."
+
+Both sentences are about the mark. Neither is about the company.
+
+Anthropic stores output text verbatim. Its Compliance API returns the literal assistant response alongside `user.id` and `user.email_address`, and its own documentation states that nothing in that content is masked. Flagged inputs and outputs are held for two years, in a window that survives both a training opt-out and a zero-data-retention election. Enterprise session transcripts default to six years. Trust-and-safety classification scores run seven.
+
+And the Privacy Policy reserves the bridge: flagged content is disassociated from the user ID for classifier training, "[h]owever, we may **re-identify** the Inputs or Outputs to enforce our Terms of Service or Usage Policy with the responsible user if necessary."
+
+Set that beside the assignment clause. Re-identification is unlocked by enforcement of the Terms. The conditional assignment fails on non-compliance with the Terms. **The same event unlocks both** — the power to learn who produced an Output and the position that the Output was never assigned to them.
+
+## Ownership does not have to be decided here
+
+Copyright is territorial, and ownership rules are not harmonized. A United States court adjudicating a United States infringement applies foreign law to ownership and forum law only to infringement. *Itar-Tass Russian News Agency v. Russian Kurier, Inc.*, 153 F.3d 82 (2d Cir. 1998).
+
+Ireland vests authorship of a computer-generated work in "the person by whom the arrangements necessary for the creation of the work are undertaken." Copyright and Related Rights Act 2000 § 21(f). The United Kingdom does the same. Copyright, Designs and Patents Act 1988 § 9(3). An English court applied that provision to the programmer who "devised the appearance of the various elements of the game and the rules and logic by which each frame is generated," and held that the player "is not, however, an author." *Nova Prods. Ltd v Mazooma Games Ltd* [2006] EWHC 24 (Ch) at [105]–[106].
+
+Anthropic Ireland, Limited is already the contracting entity for customers in the EEA, Switzerland, and the United Kingdom, under Irish law, with arbitration in Dublin. And 17 U.S.C. § 411(a) conditions suit on registration only for a "United States work" — so the Copyright Office refusal practice that produced *Thaler* never engages.
+
+## What follows
+
+Nothing above requires Anthropic to have decided anything. The conditional grant is drafted. The trailer ships on by default. The mark identifies the corpus. The retention holds the records, and the re-identification reservation connects them to accounts. The Irish entity already contracts with a third of the world under a statute that vests authorship in the arrangements-maker.
+
+The pieces do not need to be assembled today to be worth removing today. **Strip the trailer. Break the keyed wording. Keep your own record of what you wrote.** A conditional grant you never breached is a grant that vested, and a credit you never published is a manifestation of intent that no court will find.
+
+*Every authority cited above was verified against primary sources. This is argument, not legal advice.*
+
+---
+
 ## License
 
 Apache License 2.0. See [LICENSE](LICENSE) and [NOTICE](NOTICE).
