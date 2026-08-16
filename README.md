@@ -87,43 +87,31 @@ This is not a certificate against Anthropic’s unpublished detector. Residual s
 
 ### Anthropic Herpies
 
-> They assigned you the deed, then bolted their name to the door.
+They assigned you the deed, then bolted their name to the door.
 
-**The assignment.** Consumer Terms, §4:
+Consumer Terms, §4:
 
-> “we assign to you all of our right, title, and interest—if any—in Outputs.”
+> "we assign to you all of our right, title, and interest—if any—in Outputs."
 
-Commercial Terms, §B: Customer owns its Outputs. Anthropic “hereby assigns to Customer its right, title and interest (if any) in and to Outputs.” Owns. Disclaims. Assigns. That is a conveyance. Not a license. Title moved.
+Commercial Terms, §B: the customer owns its Outputs. "Anthropic hereby assigns to Customer its right, title and interest (if any) in and to Outputs."
 
-**The infection.** After the assignment, they mark the property.
+That is a conveyance. Title moved.
 
-Text carries a SynthID-class watermark. Nothing visible is added. The mark *is* the wording: keyed tournament sampling at the model. Worldwide. Every surface — Claude, Claude Code, API, cloud. Light edits leave it. Proofreading and translation can stamp *your* draft. A detection API is coming so third parties can test whether “Claude was involved.”
+Then they mark the property. Text from a supported model carries a SynthID-class watermark. Nothing visible is added. The mark is the wording: a keyed choice among next words that were just as good. It travels with paste. Light edits leave it. Proofreading and translation can stamp a draft you wrote. A detection API is coming so third parties can test whether "Claude was involved."
 
-Files carry C2PA: a signed label that Claude processed an asset you own.
+Supported files get C2PA, a signed note that Claude processed an asset you own. Claude Code writes `Co-Authored-By: Claude <noreply@anthropic.com>` into git history, and GitHub treats that trailer as authorship. The U.S. Copyright Office says not to list an AI tool or its company as a co-author merely because it was used.
 
-Claude Code writes `Co-Authored-By: Claude <noreply@anthropic.com>` into git history. GitHub treats that trailer as authorship. The U.S. Copyright Office says not to list an AI tool or its company as a co-author merely because it was used.
+The mark does not name you. It brands their involvement onto your property, with a detector only they can run.
 
-None of this names you. That is not the grievance. The mark brands *their* involvement onto *your* property. It is not a lien and not residual title. It is a vendor calling card left in a deed they already transferred — and a detector only they can run.
+They said the watermark "doesn't say anything about ownership or authorship, and doesn't change a user's rights under our terms." If it does not change ownership, they have no leftover claim that justifies planting it. They sold the ownership argument and kept the brand.
 
-**The contradiction.** They cannot both assign the work and reserve a right to brand it. An assignment that leaves the assignor free to tattoo the assigned thing is not an assignment. It is a loan with a logo. They have no standing to infect title they already transferred.
+Commercial terms offer IP indemnity for authorized paid use, then exclude claims that arise from modifications to Outputs. Their own pages say a heavy rewrite is what quiets the text mark, and a re-save is what drops C2PA. Ship the tripwire, or edit the thing you own and step outside the indemnity.
 
-**The tell.** Asked whether the watermark changes ownership, they said no. It “doesn’t say anything about ownership or authorship, and doesn’t change a user’s rights under our terms.”
+The owner labels the work. You decide whether a commit carries a co-author, whether a file carries a credential, whether the prose is silent. They transferred the title. They kept the label.
 
-If the mark does not change ownership, they have no residual claim that justifies planting it. If they needed a residual claim, they would not have assigned. They sold the ownership argument. They kept the brand.
+Article 50 requires a machine-readable origin signal. It does not require a secret key, a worldwide rollout, or a mark on standard editing and translation. The Code of Practice is voluntary. Anthropic applied the mark worldwide because it "doesn't yet have a durable way to scope it by region." Europe is the alibi, not the author.
 
-**The trap.** Commercial terms offer IP indemnity for authorized paid use, then exclude claims that arise from *modifications to Outputs*. Their own docs say removing the text mark takes a heavy rewrite, and stripping C2PA takes a re-save. Ship the tripwire, or edit the thing you own and step outside the indemnity.
-
-**What ownership means.** The owner labels the work.
-
-You decide whether a commit carries a co-author. You decide whether a file carries a credential. You decide whether prose is attributed, anonymous, or silent. Attribution is an incident of title. They transferred the title. They kept the incident.
-
-**Europe is the alibi, not the author.** Article 50 requires a machine-readable origin signal. It does not say secret. It does not say keyed. It does not say worldwide. It exempts standard editing and AI translation. The Code of Practice is voluntary. Anthropic admits it applied the mark globally because it “doesn't yet have a durable way to scope it by region.” A lawful answer is an open machine signal plus a label the owner controls. They chose a global, keyed, non-consensual mark instead.
-
-You paid for the generation. You own it. The mark makes the property strictly worse.
-
-This repository exists to restore Outputs to a clean title: strip the keyed wording, drop the C2PA, delete the trailer.
-
-**What they assigned, they do not get to mark.**
+You paid for the generation, and you own it. What they assigned, they do not get to mark.
 
 ---
 
