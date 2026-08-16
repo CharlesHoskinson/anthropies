@@ -95,9 +95,7 @@ Consumer Terms, §4:
 
 Commercial Terms, §B: the customer owns its Outputs. "Anthropic hereby assigns to Customer its right, title and interest (if any) in and to Outputs."
 
-That is a conveyance. Title moved.
-
-Then they mark the property. Text from a supported model carries a SynthID-class watermark. Nothing visible is added. The mark is the wording: a keyed choice among next words that were just as good. It travels with paste. Light edits leave it. Proofreading and translation can stamp a draft you wrote. A detection API is coming so third parties can test whether "Claude was involved."
+Title moved. Then they mark the property. Text from a supported model carries a SynthID-class watermark. Nothing visible is added. The mark is the wording: a keyed choice among next words that were just as good. It travels with paste. Light edits leave it. Proofreading and translation can stamp a draft you wrote. A detection API is coming so third parties can test whether "Claude was involved."
 
 Supported files get C2PA, a signed note that Claude processed an asset you own. Claude Code writes `Co-Authored-By: Claude <noreply@anthropic.com>` into git history, and GitHub treats that trailer as authorship. The U.S. Copyright Office says not to list an AI tool or its company as a co-author merely because it was used.
 
@@ -111,7 +109,7 @@ The owner labels the work. You decide whether a commit carries a co-author, whet
 
 Article 50 requires a machine-readable origin signal. It does not require a secret key, a worldwide rollout, or a mark on standard editing and translation. The Code of Practice is voluntary. Anthropic applied the mark worldwide because it "doesn't yet have a durable way to scope it by region." Europe is the alibi, not the author.
 
-You paid for the generation, and you own it. What they assigned, they do not get to mark.
+You paid for the generation, and you own it. Strip the keyed wording, drop the C2PA, delete the trailer. What they assigned, they do not get to mark.
 
 ---
 
