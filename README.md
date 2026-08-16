@@ -101,9 +101,9 @@ Text carries a SynthID-class watermark. Nothing visible is added. The mark *is* 
 
 Files carry C2PA: a signed label that Claude processed an asset you own.
 
-Claude Code writes `Co-Authored-By: Claude <noreply@anthropic.com>` into git history.
+Claude Code writes `Co-Authored-By: Claude <noreply@anthropic.com>` into git history. GitHub treats that trailer as authorship. The U.S. Copyright Office says not to list an AI tool or its company as a co-author merely because it was used.
 
-None of this names you. That is not the grievance. The mark brands *their* involvement onto *your* property.
+None of this names you. That is not the grievance. The mark brands *their* involvement onto *your* property. It is not a lien and not residual title. It is a vendor calling card left in a deed they already transferred — and a detector only they can run.
 
 **The contradiction.** They cannot both assign the work and reserve a right to brand it. An assignment that leaves the assignor free to tattoo the assigned thing is not an assignment. It is a loan with a logo. They have no standing to infect title they already transferred.
 
@@ -111,11 +111,13 @@ None of this names you. That is not the grievance. The mark brands *their* invol
 
 If the mark does not change ownership, they have no residual claim that justifies planting it. If they needed a residual claim, they would not have assigned. They sold the ownership argument. They kept the brand.
 
+**The trap.** Commercial terms offer IP indemnity for authorized paid use, then exclude claims that arise from *modifications to Outputs*. Their own docs say removing the text mark takes a heavy rewrite, and stripping C2PA takes a re-save. Ship the tripwire, or edit the thing you own and step outside the indemnity.
+
 **What ownership means.** The owner labels the work.
 
 You decide whether a commit carries a co-author. You decide whether a file carries a credential. You decide whether prose is attributed, anonymous, or silent. Attribution is an incident of title. They transferred the title. They kept the incident.
 
-Article 50 is a transparency duty, not a license to brand assigned property. A lawful answer is a label the owner controls. They chose a global, keyed, non-consensual mark instead.
+**Europe is the alibi, not the author.** Article 50 requires a machine-readable origin signal. It does not say secret. It does not say keyed. It does not say worldwide. It exempts standard editing and AI translation. The Code of Practice is voluntary. Anthropic admits it applied the mark globally because it “doesn't yet have a durable way to scope it by region.” A lawful answer is an open machine signal plus a label the owner controls. They chose a global, keyed, non-consensual mark instead.
 
 You paid for the generation. You own it. The mark makes the property strictly worse.
 
