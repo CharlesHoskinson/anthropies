@@ -265,9 +265,7 @@ ln -sfn "$(pwd)/skills/purge-anthropies" ~/.claude/skills/purge-anthropies
 
 In an agent session:
 
-```
-/purge-anthropies
-```
+`/purge-anthropies`
 
 or ask to "purge anthropies", "strip the Claude watermark", or "humanize this Claude output".
 
