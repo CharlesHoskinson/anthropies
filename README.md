@@ -99,17 +99,19 @@ Title moved. Then they mark the property. Text from a supported model carries a 
 
 Supported files get C2PA, a signed note that Claude processed an asset you own. Claude Code writes `Co-Authored-By: Claude <noreply@anthropic.com>` into git history, and GitHub treats that trailer as authorship. The U.S. Copyright Office says not to list an AI tool or its company as a co-author merely because it was used.
 
-The mark does not name you. It brands their involvement onto your property, with a detector only they can run.
-
 They said the watermark "doesn't say anything about ownership or authorship, and doesn't change a user's rights under our terms." If it does not change ownership, they have no leftover claim that justifies planting it. They sold the ownership argument and kept the brand.
+
+The hook is already in the contract. Both assignments are "subject to your compliance with our Terms." The consumer instrument lets them revise those Terms at their discretion, with continued use as assent, and no clause saying changes will not apply retroactively. The commercial instrument has that clause, and they know how to write it. The watermark supplies the assay: on any later day, they can say this artifact is an Output, and no one else can authoritatively say it is not.
 
 Commercial terms offer IP indemnity for authorized paid use, then exclude claims that arise from modifications to Outputs. Their own pages say a heavy rewrite is what quiets the text mark, and a re-save is what drops C2PA. Ship the tripwire, or edit the thing you own and step outside the indemnity.
 
-The owner labels the work. You decide whether a commit carries a co-author, whether a file carries a credential, whether the prose is silent. They transferred the title. They kept the label.
+The owner labels the work, and you decide whether a commit carries a co-author, whether a file carries a credential, whether the prose is silent.
 
 Article 50 requires a machine-readable origin signal. It does not require a secret key, a worldwide rollout, or a mark on standard editing and translation. The Code of Practice is voluntary. Anthropic applied the mark worldwide because it "doesn't yet have a durable way to scope it by region." Europe is the alibi, not the author.
 
-You paid for the generation, and you own it. Strip the keyed wording, drop the C2PA, delete the trailer. What they assigned, they do not get to mark.
+You paid for the generation, and you own it. What they assigned, they do not get to mark.
+
+The long form, covering assignment as a speech act, quitclaim, the amendment ratchet, and exclusive provenance, is in [`docs/MANIFESTO.md`](docs/MANIFESTO.md).
 
 ---
 
