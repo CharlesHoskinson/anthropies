@@ -11,9 +11,75 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0"></a>
+  <a href="skills/purge-anthropies/SKILL.md"><img src="https://img.shields.io/badge/skill-purge--anthropies-d97757.svg" alt="purge-anthropies"></a>
 </p>
 
 Apache-2.0. Usable from any LLM coding agent. Not affiliated with Anthropic PBC.
+
+---
+
+## The skill: `/purge-anthropies`
+
+A humanizer-style agent skill plus a stdlib CLI. The Claude text mark is a SynthID-class keyed sampler — **the mark is the wording**. Unicode strip and prettier do not remove it. Asking Claude to clean Claude re-stamps it.
+
+The skill lives at [`skills/purge-anthropies/SKILL.md`](skills/purge-anthropies/SKILL.md). Slash command: [`commands/purge-anthropies.md`](commands/purge-anthropies.md). Claude Code plugin: [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
+
+### What it does
+
+| Path | What it does |
+| --- | --- |
+| `anthropies clean` | Strip `Co-Authored-By: Claude`, Generated-with banners, invisible Unicode |
+| `anthropies humanize` | Break statistical *H*-grams via a **non-origin** rewrite |
+| `/purge-anthropies` | Orchestrates both; **refuses** to rewrite when the host is Claude or Gemini |
+
+| Channel | Removal |
+| --- | --- |
+| Git / PR trailers | Deterministic strip |
+| Attribution banners | Deterministic strip |
+| Invisible Unicode | Deterministic hygiene |
+| Prose | Structure-changing rewrite on an unmarked model |
+| Code comments / free strings | Same, without touching public APIs or lockfiles |
+
+### Install
+
+```bash
+git clone https://github.com/CharlesHoskinson/anthropies.git
+cd anthropies
+pip install -e .
+
+# Grok
+mkdir -p ~/.grok/skills
+ln -sfn "$(pwd)/skills/purge-anthropies" ~/.grok/skills/purge-anthropies
+
+# Claude Code — clean + print-prompt only. Do not rewrite with Claude.
+mkdir -p ~/.claude/skills
+ln -sfn "$(pwd)/skills/purge-anthropies" ~/.claude/skills/purge-anthropies
+# or: claude --plugin-dir "$(pwd)"
+```
+
+### Use
+
+In an agent session:
+
+```
+/purge-anthropies
+```
+
+or ask to “purge anthropies”, “strip the Claude watermark”, or “humanize this Claude output”.
+
+From a shell:
+
+```bash
+python3 -m anthropies inspect COMMIT_EDITMSG
+python3 -m anthropies clean notes.md --in-place
+python3 -m anthropies humanize essay.md
+ANTHROPIES_REWRITE_BACKEND=ollama ANTHROPIES_REWRITE_MODEL=llama3.2 \
+  python3 -m anthropies humanize essay.md --in-place
+```
+
+Default `humanize` prints a rewrite prompt. Run that prompt on a **local unmarked** model (Llama, Qwen, Mistral, DeepSeek with watermarking off). Never Claude. Never Gemini.
+
+This is not a certificate against Anthropic’s unpublished detector. Residual statistical signal can remain.
 
 ---
 
@@ -58,63 +124,6 @@ This repository exists to restore Outputs to a clean title: strip the keyed word
 **What they assigned, they do not get to mark.**
 
 ---
-
-## What this tool attacks
-
-| Channel | What it is | Removal |
-| --- | --- | --- |
-| Git / PR | `Co-Authored-By: Claude` and cousin trailers | Deterministic strip + hooks |
-| Files | C2PA / EXIF / XMP on PNG, JPEG, WebP, SVG | Deterministic strip |
-| Unicode | Invisible carriers from other vendors | Deterministic hygiene |
-| Code | SynthID-class signal in comments, local names, free strings | Scope-aware rename + comment rewrite |
-| Prose | SynthID-class keyed token choices | Non-origin rewrite (never Claude) |
-
-Using Claude to “clean” Claude re-stamps the same family of mark.
-
-## Status
-
-v0.1 ships a humanizer-style skill plus a stdlib CLI.
-
-The Claude text mark is a SynthID-class keyed sampler. **The mark is the wording.** A formatter or Unicode strip does not remove it. A timid synonym pass does not remove it. Asking Claude to "clean" Claude re-stamps it.
-
-### Install
-
-```bash
-git clone https://github.com/CharlesHoskinson/anthropies.git
-cd anthropies
-pip install -e .
-
-# Grok
-mkdir -p ~/.grok/skills
-ln -sfn "$(pwd)/skills/purge-anthropies" ~/.grok/skills/purge-anthropies
-
-# Claude Code plugin (deterministic + print-prompt only — do not rewrite with Claude)
-# claude --plugin-dir "$(pwd)"
-```
-
-### Use
-
-```
-/purge-anthropies
-```
-
-or
-
-```bash
-python3 -m anthropies inspect COMMIT_EDITMSG
-python3 -m anthropies clean notes.md --in-place
-# Layer B: print a rewrite prompt for a local unmarked model
-python3 -m anthropies humanize essay.md
-# or, if Ollama is local and unmarked:
-ANTHROPIES_REWRITE_BACKEND=ollama ANTHROPIES_REWRITE_MODEL=llama3.2 \
-  python3 -m anthropies humanize essay.md --in-place
-```
-
-| Path | What it does |
-| --- | --- |
-| `clean` | Strip agent git trailers, Claude banners, invisible Unicode |
-| `humanize` | Break statistical H-grams via a **non-origin** rewrite |
-| Skill | Orchestrates both; refuses to rewrite when the host is Claude/Gemini |
 
 ## License
 
