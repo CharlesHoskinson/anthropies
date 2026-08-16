@@ -299,17 +299,17 @@ Consumer Terms, §4:
 
 Commercial Terms, §B: the customer owns its Outputs. "Anthropic hereby assigns to Customer its right, title and interest (if any) in and to Outputs."
 
-Title moved. Then they mark the property. Text from a supported model carries a SynthID-class watermark. Nothing visible is added. The mark is the wording: a keyed choice among next words that were just as good. It travels with paste. Light edits leave it. Proofreading and translation can stamp a draft you wrote. A detection API is coming so third parties can test whether "Claude was involved."
+Title moved. Then three different mechanisms mark the property. Text from a supported model carries a SynthID-class watermark, but nothing visible is added. The mark is the wording itself: a keyed choice among next words that were just as good. It travels with pasted text, survives light edits, and can appear when proofreading or translation passes through a draft you wrote. A detection API is coming so third parties can test whether "Claude was involved."
 
-Supported files get C2PA, a signed note that Claude processed an asset you own. Claude Code writes `Co-Authored-By: Claude <noreply@anthropic.com>` into git history, and GitHub treats that trailer as authorship. The U.S. Copyright Office says not to list an AI tool or its company as a co-author merely because it was used.
+Supported files get C2PA, a signed note that Claude processed an asset you own. Claude Code uses the third mechanism: it writes `Co-Authored-By: Claude <noreply@anthropic.com>` into git history, and GitHub treats that trailer as authorship. The U.S. Copyright Office says not to list an AI tool or its company as a co-author merely because it was used.
 
-They said the watermark "doesn't say anything about ownership or authorship, and doesn't change a user's rights under our terms." If it does not change ownership, they have no leftover claim that justifies planting it. They sold the ownership argument and kept the brand.
+These mechanisms do not all say the same thing. C2PA records contact with the system, the text watermark supplies evidence of that contact without a visible label, and the commit trailer presents Claude as a co-author. None is necessary to show who owns the work under the assignment. Anthropic said the watermark "doesn't say anything about ownership or authorship, and doesn't change a user's rights under our terms." If it does not change ownership, they have no leftover claim that justifies planting it. They sold the ownership argument and kept the brand.
 
-The hook is already in the contract. Both assignments are "subject to your compliance with our Terms." The consumer instrument lets them revise those Terms at their discretion, with continued use as assent, and no clause saying changes will not apply retroactively. The commercial instrument has that clause, and they know how to write it. The watermark supplies the assay: on any later day, they can say this artifact is an Output, and no one else can authoritatively say it is not.
+The hook is already in the contract. Both assignments are "subject to your compliance with our Terms." The consumer instrument lets them revise those Terms at their discretion, with continued use as assent, and no clause saying changes will not apply retroactively. The commercial instrument has that clause, and they know how to write it. The watermark supplies the evidence needed to identify an artifact as an Output: on any later day, they can say it came from Claude, and no one else can authoritatively say it did not.
 
-Commercial terms offer IP indemnity for authorized paid use, then exclude claims that arise from modifications to Outputs. Their own pages say a heavy rewrite is what quiets the text mark, and a re-save is what drops C2PA. Ship the tripwire, or edit the thing you own and step outside the indemnity.
+Commercial terms offer IP indemnity for authorized paid use, then exclude claims that arise from modifications to Outputs. Their own pages say a heavy rewrite is what quiets the text mark, while re-saving a file is what drops C2PA. Leave either artifact alone and the mark remains. Modify the text or file enough to remove its mark, and the modification can supply the stated basis for exclusion if a claim arises from it. You must choose between shipping Anthropic's evidence and editing the thing you own at the risk of stepping outside the indemnity.
 
-The owner labels the work, and you decide whether a commit carries a co-author, whether a file carries a credential, whether the prose is silent.
+Ownership, vendor branding, and evidence of system contact are different things. The owner labels the work. You decide whether a commit carries a co-author, whether a file carries a credential, and whether the prose is silent.
 
 Article 50 requires a machine-readable origin signal. It does not require a secret key, a worldwide rollout, or a mark on standard editing and translation. The Code of Practice is voluntary. Anthropic applied the mark worldwide because it "doesn't yet have a durable way to scope it by region." Europe is the alibi, not the author.
 
@@ -329,9 +329,11 @@ Consumer Terms § 4 and Commercial Terms § B both read the same way:
 
 > **Subject to your compliance with our Terms**, we assign to you all of our right, title, and interest—if any—in Outputs.
 
-Those first four words are a condition, not a courtesy. A grant made subject to a condition conveys nothing to a grantee who fails it. Restatement (Second) of Contracts § 224 defines the condition as "an event, not certain to occur, which must occur, unless its non-occurrence is excused, before performance under a contract becomes due." Copyright law enforces the distinction: a breached covenant sounds in contract, but a failed condition means the license never operated. *Sun Microsystems, Inc. v. Microsoft Corp.*, 188 F.3d 1115, 1121–22 (9th Cir. 1999); *MDY Indus., LLC v. Blizzard Entm't, Inc.*, 629 F.3d 928, 939–41 (9th Cir. 2010), *as amended on denial of reh'g* (Feb. 17, 2011); *Jacobsen v. Katzer*, 535 F.3d 1373, 1380–82 (Fed. Cir. 2008). *MDY* requires a nexus between the breached term and the licensor's exclusive rights. *Id.* at 941.
+Those first four words are a condition, not a courtesy. A grant made subject to a condition conveys nothing to a grantee who fails it. Restatement (Second) of Contracts § 224 defines the condition as "an event, not certain to occur, which must occur, unless its non-occurrence is excused, before performance under a contract becomes due." Copyright law enforces the distinction. A breached covenant sounds in contract, but a failed condition means the license never operated. *Sun Microsystems, Inc. v. Microsoft Corp.*, 188 F.3d 1115, 1121–22 (9th Cir. 1999); *MDY Indus., LLC v. Blizzard Entm't, Inc.*, 629 F.3d 928, 939–41 (9th Cir. 2010), *as amended on denial of reh'g* (Feb. 17, 2011); *Jacobsen v. Katzer*, 535 F.3d 1373, 1380–82 (Fed. Cir. 2008). *MDY* requires a nexus between the breached term and the licensor's exclusive rights. *Id.* at 941.
 
 Anthropic does not need to amend anything to argue that a non-compliant user never took title. The argument is not that title reverted. It is that title never vested.
+
+That conditional-grant argument concerns ownership. The commit trailer raises a different question by supplying a credit that a claimant could offer as evidence of authorship.
 
 ## The trailer is a credit you sign
 
@@ -341,19 +343,21 @@ A joint work is one prepared by two or more authors intending their contribution
 
 The Second Circuit tells you how to read a credit. Billing is "a window on the mind of the party who is responsible for giving the billing or the credit." *Thomson v. Larson*, 147 F.3d 195, 203 (2d Cir. 1998) (quoting the district court). In *Thomson* that window defeated the claim, because the party controlling the credit had taken sole billing for himself. Run the same rule on a commit log and it points the other way. What you control and publish is not one playbill printed once by someone else. It is an unbroken series of executed instruments, each naming two contributors, each committed under your identity, each pushed by your own act.
 
-*Aalmuhammed* asks for objective manifestations of shared intent and observes that the best of them is a contemporaneous writing about co-authorship. 202 F.3d at 1234. A commit trailer is a writing about co-authorship, dated, immutable, and sitting in the work's own metadata.
+*Aalmuhammed* asks for objective manifestations of shared intent and observes that the best of them is a contemporaneous writing about co-authorship. 202 F.3d at 1234. A commit trailer is a writing about co-authorship, dated, immutable, and sitting in the work's own metadata. If a court accepts the trailer as a manifestation of that intent, the assignment may settle present ownership while leaving authorship intact.
 
 ## Section 203 is the part no contract can reach
 
-Here is why the trailer matters more than the assignment.
+Section 203 makes that distinction consequential even after an assignment.
 
 An assignment transfers ownership. It cannot transfer authorship. A joint author remains a joint author after assigning every economic right they hold, and a joint author may terminate that grant thirty-five years later. The termination right is exercisable "notwithstanding any agreement to the contrary." 17 U.S.C. § 203(a)(5).
 
-Read that clause against every protection you think you have. The assignment can be renegotiated. A covenant can be waived. A forum can be selected around. The termination right cannot be contracted away, because the statute says so in terms. It is the one mechanism in this entire structure with an unlimited horizon, and it runs on authorship rather than ownership — which is precisely what the trailer is evidence of.
+Read that clause against every protection you think you have. The parties can renegotiate an assignment, waive a covenant, or select a forum. They cannot contract away the termination right because the statute says so in terms. It is the one mechanism in this entire structure with an unlimited horizon. It runs on authorship rather than ownership, which is precisely what the trailer is evidence of.
+
+The termination theory still depends on authorship, not mere machine output. The generated-display cases supply the ownership analogy for work composed through a machine.
 
 ## The maker owns what the machine composes
 
-The objection writes itself: no human typed these sentences, so no one owns them. Three courts of appeals rejected that reasoning forty-four years ago on facts closer than anyone in this debate admits.
+The immediate ownership objection is that no human typed these sentences, so no one owns them. Three courts of appeals rejected that reasoning forty-four years ago on facts closer than anyone in this debate admits.
 
 A video game's audiovisual display is generated in real time, differs with every player input, is never fixed by a human hand at the moment it appears, and cannot exist without the indispensable participation of someone who is not the manufacturer. Each court held the display copyrightable and owned by the maker. *Stern Elecs., Inc. v. Kaufman*, 669 F.2d 852, 855–57 (2d Cir. 1982); *Williams Elecs., Inc. v. Artic Int'l, Inc.*, 685 F.2d 870 (3d Cir. 1982); *Midway Mfg. Co. v. Artic Int'l, Inc.*, 704 F.2d 1009 (7th Cir.), *cert. denied*, 464 U.S. 823 (1983).
 
@@ -364,6 +368,8 @@ The Third Circuit met the co-authorship argument directly and refused it: the pl
 *Midway*, 704 F.2d at 1012.
 
 The player does not own the playthrough. Neither, on this reasoning, does the prompter own the output.
+
+Those decisions allocate rights between the maker and the user of a generative system. They do not make the machine an author. *Thaler* addresses that separate question and leaves the producer-side attribution issue open.
 
 ## *Thaler* did not close the door you think it closed
 
@@ -377,25 +383,31 @@ The player does not own the playthrough. Neither, on this reasoning, does the pr
 
 Corporate authorship needs no innovation either. Under 17 U.S.C. § 201(b), for a work made for hire "the employer or other person for whom the work was prepared is considered the author." No natural person appears in that sentence.
 
+That does not establish who authored any particular Claude output. It leaves room for an attribution argument directed at a human or corporate actor, and such an argument would need evidence identifying the outputs it reaches. That is the mark's role in the case made here.
+
 ## The mark identifies which artifacts the claim reaches
 
 The watermark is a keyed pseudorandom bias in token selection, seeded by a hash of the preceding tokens and a secret key. It adds no characters. It changes the source of the randomness used to choose among words the model rated equally good. The mark is the wording.
 
-It is not authorship, and nobody serious will argue that it is. A keyed tiebreak is a "procedure, process, [or] system" excluded by 17 U.S.C. § 102(b). Its function is evidentiary: it fixes the corpus. It answers, document by document, which artifacts in the world came out of Claude.
+It is not authorship, and nobody serious will argue that it is. A keyed tiebreak is a "procedure, process, [or] system" excluded by 17 U.S.C. § 102(b). Its function in this argument is evidentiary: it fixes the corpus. It answers, document by document, which artifacts in the world came out of Claude.
 
-That is the predicate a claim needs. And the statute already supplies the cause of action for stripping it. Copyright management information includes the name of the author, § 1202(c)(2), the name of the copyright owner, § 1202(c)(3), and identifying numbers or symbols referring to that information, § 1202(c)(7). CMI need not belong to an automated rights-management system. *Murphy v. Millennium Radio Grp. LLC*, 650 F.3d 295, 302–05 (3d Cir. 2011). A gutter credit in a magazine qualifies. So does a line in a commit message. Statutory damages run from $2,500 to $25,000 for each violation. § 1203(c)(3)(B).
+That evidentiary predicate is what a claim would need. On this argument, § 1202 supplies the consequence for stripping it. Copyright management information includes the name of the author, § 1202(c)(2), the name of the copyright owner, § 1202(c)(3), and identifying numbers or symbols referring to that information, § 1202(c)(7). CMI need not belong to an automated rights-management system. *Murphy v. Millennium Radio Grp. LLC*, 650 F.3d 295, 302–05 (3d Cir. 2011). A gutter credit in a magazine qualifies. So does a line in a commit message. Statutory damages run from $2,500 to $25,000 for each violation. § 1203(c)(3)(B).
+
+The mark may identify the corpus, but it cannot identify the user by itself. Connecting an artifact to a person requires Anthropic's records.
 
 ## The mark carries no identity. The logs do.
 
-Anthropic states that the watermark carries no identifying information and "can't be traced to a specific person, organization, or chat." Read the narrower statement it publishes under the heading *Can a watermark be traced back to me or my organization?* — "[t]here's nothing in the watermark, or its key, that would allow anyone to recover any information about the user."
+Anthropic states that the watermark carries no identifying information and "can't be traced to a specific person, organization, or chat." Read the narrower statement it publishes under the heading *Can a watermark be traced back to me or my organization?*: "[t]here's nothing in the watermark, or its key, that would allow anyone to recover any information about the user."
 
 Both sentences are about the mark. Neither is about the company.
 
-Anthropic stores output text verbatim. Its Compliance API returns the literal assistant response alongside `user.id` and `user.email_address`, and its own documentation states that nothing in that content is masked. Flagged inputs and outputs are held for two years, in a window that survives both a training opt-out and a zero-data-retention election. Enterprise session transcripts default to six years. Trust-and-safety classification scores run seven.
+Anthropic stores output text verbatim. Its Compliance API returns the literal assistant response alongside `user.id` and `user.email_address`, and its own documentation states that nothing in that content is masked. Anthropic holds flagged inputs and outputs for two years, in a window that survives both a training opt-out and a zero-data-retention election. Enterprise session transcripts default to six years. Trust-and-safety classification scores run seven.
 
-And the Privacy Policy reserves the bridge: flagged content is disassociated from the user ID for classifier training, "[h]owever, we may **re-identify** the Inputs or Outputs to enforce our Terms of Service or Usage Policy with the responsible user if necessary."
+The Privacy Policy reserves the bridge. Anthropic disassociates flagged content from the user ID for classifier training, "[h]owever, we may **re-identify** the Inputs or Outputs to enforce our Terms of Service or Usage Policy with the responsible user if necessary."
 
-Set that beside the assignment clause. Re-identification is unlocked by enforcement of the Terms. The conditional assignment fails on non-compliance with the Terms. **The same event unlocks both** — the power to learn who produced an Output and the position that the Output was never assigned to them.
+Set that beside the assignment clause. Anthropic reserves re-identification for enforcement of the Terms. The assignment makes compliance with those same Terms a condition of the grant. **The same event unlocks both**: the power to learn who produced an Output and the position that the Output was never assigned to them.
+
+Identification connects the marked artifact to an account. It does not decide ownership, which depends on the law governing that question in the relevant territory.
 
 ## Ownership does not have to be decided here
 
@@ -403,11 +415,11 @@ Copyright is territorial, and ownership rules are not harmonized. A United State
 
 Ireland vests authorship of a computer-generated work in "the person by whom the arrangements necessary for the creation of the work are undertaken." Copyright and Related Rights Act 2000 § 21(f). The United Kingdom does the same. Copyright, Designs and Patents Act 1988 § 9(3). An English court applied that provision to the programmer who "devised the appearance of the various elements of the game and the rules and logic by which each frame is generated," and held that the player "is not, however, an author." *Nova Prods. Ltd v Mazooma Games Ltd* [2006] EWHC 24 (Ch) at [105]–[106].
 
-Anthropic Ireland, Limited is already the contracting entity for customers in the EEA, Switzerland, and the United Kingdom, under Irish law, with arbitration in Dublin. And 17 U.S.C. § 411(a) conditions suit on registration only for a "United States work" — so the Copyright Office refusal practice that produced *Thaler* never engages.
+Anthropic Ireland, Limited is already the contracting entity for customers in the EEA, Switzerland, and the United Kingdom, under Irish law, with arbitration in Dublin. 17 U.S.C. § 411(a) conditions suit on registration only when the work is a "United States work"; the Copyright Office refusal practice that produced *Thaler* therefore never engages. The unresolved United States authorship question does not have to control an ownership dispute everywhere the mark travels.
 
 ## What follows
 
-Nothing above requires Anthropic to have decided anything. The conditional grant is drafted. The trailer ships on by default. The mark identifies the corpus. The retention holds the records, and the re-identification reservation connects them to accounts. The Irish entity already contracts with a third of the world under a statute that vests authorship in the arrangements-maker.
+Nothing above requires Anthropic to have decided anything. Anthropic drafted the conditional grant and ships the trailer on by default. The mark identifies the corpus. Anthropic retains the records, and the re-identification reservation connects them to accounts. The Irish entity already contracts with a third of the world under a statute that vests authorship in the arrangements-maker.
 
 The pieces do not need to be assembled today to be worth removing today. **Strip the trailer. Break the keyed wording. Keep your own record of what you wrote.** A conditional grant you never breached is a grant that vested, and a credit you never published is a manifestation of intent that no court will find.
 
