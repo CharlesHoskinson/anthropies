@@ -58,7 +58,7 @@ Claude output can carry marks at three different layers: generated wording, file
 
 Anthropic's own analogy is the clearest one available. Imagine a board game where each turn you roll a die. Now replace the die with *the digits of π*, starting from some agreed position. The moves are still random as far as any player can tell. But someone who knows you used π and knows where you started can look at the finished game and work out that the rolls were not dice.
 
-The watermark does that to word choice. It does not add characters. It does not change meaning. **It changes the source of the randomness the model uses to pick among words that were equally good.**
+The watermark changes word choice without adding characters or altering meaning. **It changes the source of the randomness the model uses to pick among words that were equally good.**
 
 ### The seed
 
@@ -214,7 +214,7 @@ The matrix compares ordinary operations and the result each has for the three ch
 
 Anthropic says that when Claude proofreads your writing, "nearly all the words are the person's, there's very little (if anything) for the watermark to attach to."
 
-The published measurement is less reassuring. In a study of human-written essays, **4% fell below the p < 0.05 detection threshold untouched, against 25.5% of the same essays after grammar-and-spelling-only AI editing.** A six-fold increase in flag rate from a spell-check pass.
+The published measurement is less reassuring. In a study of human-written essays, **4% fell below the p < 0.05 detection threshold untouched, against 25.5% of the same essays after grammar-and-spelling-only AI editing.** That is a six-fold increase in flag rate from a spell-check pass.
 
 Both statements can be true. The mark attaches to few words, and few words can still be enough. A detection hit on your own writing is not evidence that you did not write it, and that is why this tool exists for prose you authored yourself.
 
@@ -222,7 +222,7 @@ Both statements can be true. The mark attaches to few words, and few words can s
 
 ## The skill: `/purge-anthropies`
 
-A humanizer-style agent skill plus a stdlib CLI. The Claude text mark is a SynthID-class keyed sampler: **the mark is the wording**. Deterministic cleaning removes known trailers, banners, and invisible Unicode. A non-origin rewrite changes the generated wording. Unicode strip and prettier do not remove the wording mark. Asking Claude to clean Claude re-stamps it.
+It is a humanizer-style agent skill plus a stdlib CLI. The Claude text mark is a SynthID-class keyed sampler: **the mark is the wording**. Deterministic cleaning removes known trailers, banners, and invisible Unicode. A non-origin rewrite changes the generated wording. Unicode strip and prettier do not remove the wording mark. Asking Claude to clean Claude re-stamps it.
 
 The skill lives at [`skills/purge-anthropies/SKILL.md`](skills/purge-anthropies/SKILL.md). Slash command: [`commands/purge-anthropies.md`](commands/purge-anthropies.md). Claude Code plugin: [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
 
@@ -281,7 +281,7 @@ ANTHROPIES_REWRITE_BACKEND=ollama ANTHROPIES_REWRITE_MODEL=llama3.2 \
   python3 -m anthropies humanize essay.md --in-place
 ```
 
-Claude Code is limited to cleaning and prompt printing because it cannot perform a non-origin rewrite. Default `humanize` prints a rewrite prompt. Run that prompt on a **local unmarked** model, such as Llama, Qwen, Mistral, or DeepSeek with watermarking off. Never Claude. Never Gemini.
+Claude Code is limited to cleaning and prompt printing because it cannot perform a non-origin rewrite. Default `humanize` prints a rewrite prompt. Run that prompt on a **local unmarked** model, such as Llama, Qwen, Mistral, or DeepSeek with watermarking off. Do not run it with Claude or Gemini.
 
 This is not a certificate against Anthropic's unpublished detector. Residual statistical signal can remain.
 
