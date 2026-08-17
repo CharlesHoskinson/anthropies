@@ -119,3 +119,12 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 
 ## [2026-08-17] ingest | Wave 2 Task 5 QA auditor
 - QA APPROVE (0 blockers). ci.yml push/PR main; ubuntu+windows; Node 22; frozen-lockfile test+build; no live-key; no /humanize.
+
+## [2026-08-17] ingest | Wave 2 full-branch docs auditor
+- DOCS APPROVE (0 blockers). README serve loopback 127.0.0.1:8765; no /humanize; Docker loopback, no qpdf/exiftool/c2patool; CI pnpm test + pnpm build on Ubuntu and Windows; skill ANTHROPIES_SERVICE_URL health first; CLAIMS serve row; 0.3.0; honesty/manifesto/legal stay; no destamp/official-kill.
+
+## [2026-08-17] ingest | Wave 2 full-branch STYLE auditor
+- STYLE APPROVE (0 blockers). Effect 3; platform HttpServer; createServer is NodeHttpServer factory only; loopback 127.0.0.1:8765; no /humanize; one slim image; compose loopback; CI ubuntu+windows test+build; no forbidden src imports; Fail≠Finding; skill health first.
+
+## [2026-08-17] ingest | Wave 2 full-branch QA
+- QA APPROVE (0 blockers). Routes health/capabilities/openapi/inspect/clean; no /humanize; loopback 127.0.0.1:8765; bearer iff key; OpenAPI matches; Docker compose loopback; CI ubuntu+windows; 89cef71 raster not-applicable; official unavailable; 51 tests.

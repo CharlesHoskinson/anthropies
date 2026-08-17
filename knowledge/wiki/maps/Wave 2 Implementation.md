@@ -23,6 +23,9 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 2 Full Diff QA Auditor]] — QA APPROVE; routes/payloads/loopback/bearer/OpenAPI/Docker/CI; 89cef71 raster honesty; 51 tests
+- [[Wave 2 Full Diff Style Auditor]] — STYLE APPROVE; Effect 3; platform HttpServer; loopback serve; no /humanize; no forbidden src imports
+- [[Wave 2 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch serve/loopback/Docker/CI; 0.3.0; no destamp/official-kill
 - [[Wave 2 Task 5 QA Auditor]] — QA APPROVE; ci.yml push/PR main; ubuntu+windows; Node 22; frozen-lockfile test+build
 - [[Wave 2 Task 5 Docs Auditor]] — DOCS APPROVE; GitHub Actions ci.yml; no destamp/official-kill; no `/humanize`
 - [[Wave 2 Task 5 Style Auditor]] — STYLE APPROVE; Node 22; ubuntu+windows; frozen-lockfile test then build; no heavy backends
@@ -76,3 +79,11 @@ Node 22 image runs `node dist/cli.js serve --host 0.0.0.0 --port 8765`. `compose
 - [[Wave 2 Task 5 Style Auditor]] — STYLE APPROVE; 0 blockers; 2 nits (floating action tags, no permissions/timeout)
 - [[Wave 2 Task 5 QA Auditor]] — QA APPROVE; 0 blockers; 3 nits (unpinned SHAs, no workflow_dispatch, Windows unproven)
 - [[Wave 2 Task 5 Docs Auditor]] — DOCS APPROVE; honesty pass; no official-kill
+
+## Full-diff trio
+
+`origin/main...HEAD` merge-gate STYLE + QA + docs. Effect 3 HttpServer, loopback serve, one slim image, CI on ubuntu+windows. README / CLAIMS / skill / CLI / Docker / CI copy stay honest. Version `0.3.0`. No destamp / official-kill / undetectable as a capability.
+
+- [[Wave 2 Full Diff QA Auditor]] — QA APPROVE; routes + payloads + loopback + Docker + CI; `89cef71` raster honesty; 51 tests
+- [[Wave 2 Full Diff Style Auditor]] — STYLE APPROVE; Effect 3; platform HttpServer; no `/humanize`; no forbidden `src/` imports
+- [[Wave 2 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch honesty; serve loopback; no `/humanize`

@@ -3,6 +3,9 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Wave 2 Full Diff QA Auditor]] — QA APPROVE; routes/payloads/loopback/bearer/OpenAPI/Docker/CI; 89cef71 raster honesty; 51 tests
+- [[Wave 2 Full Diff Style Auditor]] — STYLE APPROVE; Effect 3; platform HttpServer; loopback serve; no /humanize; no forbidden src imports
+- [[Wave 2 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch serve/loopback/Docker/CI; 0.3.0; no destamp/official-kill
 - [[Wave 2 Task 5 QA Auditor]] — QA APPROVE; ci.yml push/PR main; ubuntu+windows; Node 22; frozen-lockfile test+build
 - [[Wave 2 Task 5 Style Auditor]] — STYLE APPROVE; Node 22; ubuntu+windows; frozen-lockfile test then build; no heavy backends
 - [[Wave 2 Task 5 Docs Auditor]] — DOCS APPROVE; GitHub Actions ci.yml; no destamp/official-kill; no /humanize
@@ -71,6 +74,8 @@ Each entry: `[[Page]] — one-line summary`.
 - [[Wave 1 Full Style Audit]] — full-branch STYLE
 - [[Wave 1 Full QA Audit]] — full-branch QA
 - [[Wave 1 Full Docs Audit]] — full-branch DOCS
+- [[Wave 2 Full Diff QA Auditor]] — full-branch Wave 2 QA
+- [[Wave 2 Full Diff Docs Auditor]] — full-branch Wave 2 DOCS
 - [[Wave 2 Task 1 Implementer Note]] — HTTP service implementer
 - [[Wave 2 Task 2 Implementer Note]] — OpenAPI + serve implementer
 - [[Wave 2 Task 2 QA Auditor]] — OpenAPI + serve QA
