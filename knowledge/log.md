@@ -16,3 +16,11 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - STYLE, QA, DOCS all APPROVE.
 
 ## [2026-08-17] ingest | Task 3 implementer note
+
+## [2026-08-17] ingest | Task 3 docs auditor
+- DOCS APPROVE (0 blockers). Honesty stanza required; no watermark-removed verdict.
+
+## [2026-08-17] ingest | Task 3 QA auditor
+- QA APPROVE (0 blockers). Named tests, trailer exit 1, PNG BinaryInput no-write, --json parseable.
+## [2026-08-17] ingest | Task 3 auditor trio
+- STYLE, QA, DOCS all APPROVE.

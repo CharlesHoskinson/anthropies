@@ -47,3 +47,7 @@ Effect 3 + Node 22 ESM CLI at `0.2.0`. Named test `official_claim_forbidden`.
 
 Classify + Layer A + text inspect/clean. Named tests `cert_layer_a_roundtrip`, `binary_guard_docx_png_stdin`, `json_stdout_purity`, `write_guard`.
 - [[Task 3 Implementer Note]] — classify / Layer A / text inspect/clean implementer thoughts
+- [[Task 3 QA Auditor]] — QA verdict on Task 3
+- [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
+- [[Task 3 Implementer Note]] — Layer A and text CLI implementer
+- [[Task 3 Style Auditor]] — STYLE verdict on Task 3

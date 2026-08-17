@@ -22,6 +22,8 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Task 3 QA Auditor]] — QA APPROVE; Layer A cert, trailer exit 1, PNG BinaryInput no-write, --json parseable
+- [[Task 3 Docs Auditor]] — DOCS APPROVE; honesty stanza required; no watermark-removed verdict
 - [[Task 3 Implementer Note]] — classify + Layer A + text inspect/clean; FileSystem-only Inspector/Cleaner; BinaryInput fail-closed
 - [[Task 2 Implementer Note]] — Effect 3 ESM CLI scaffold at 0.2.0; Report has no suspicious; honesty stanza locked
 - [[Task 1 Implementer Note]] — Family 0 honesty patch landed; no official-kill or C2PA-from-Claude claims in skill/plugin/slash
@@ -33,3 +35,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Task 2 Style Auditor]] — STYLE verdict on Task 2
 - [[Task 2 QA Auditor]] — QA verdict on Task 2
 - [[Task 2 Docs Auditor]] — DOCS verdict on Task 2
+- [[Task 3 Implementer Note]] — Layer A and text CLI implementer
+- [[Task 3 Style Auditor]] — STYLE verdict on Task 3
+- [[Task 3 QA Auditor]] — QA verdict on Task 3
+- [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
