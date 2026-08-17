@@ -67,3 +67,6 @@ Origin blocklist + print-prompt Humanizer. Named tests `origin_blocklist`, `huma
 - [[Task 4 Style Auditor]] — STYLE verdict on Task 4
 - [[Task 4 Docs Auditor]] — DOCS verdict on Task 4
 - [[Task 4 Implementer Note]] — humanize implementer
+- [[Task 5 Style Auditor]] — STYLE verdict on Task 5
+- [[Task 5 QA Auditor]] — QA verdict on Task 5
+- [[Task 5 Docs Auditor]] — DOCS verdict on Task 5
