@@ -37,3 +37,7 @@ Honesty patch. Markdown only. Grep over `skills` `commands` `.claude-plugin` is 
 
 Effect 3 + Node 22 ESM CLI at `0.2.0`. Named test `official_claim_forbidden`.
 - [[Task 2 Implementer Note]] — scaffold implementer thoughts
+- [[Task 2 Implementer Note]] — Effect 3 scaffold implementer
+- [[Task 2 Style Auditor]] — STYLE verdict on Task 2
+- [[Task 2 QA Auditor]] — QA verdict on Task 2
+- [[Task 2 Docs Auditor]] — DOCS verdict on Task 2

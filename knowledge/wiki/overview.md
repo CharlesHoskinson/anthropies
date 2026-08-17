@@ -28,3 +28,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Task 1 Style Auditor]] — STYLE verdict on Task 1
 - [[Task 1 QA Auditor]] — QA verdict on Task 1
 - [[Task 1 Docs Auditor]] — DOCS verdict on Task 1
+- [[Task 2 Implementer Note]] — Effect 3 scaffold implementer
+- [[Task 2 Style Auditor]] — STYLE verdict on Task 2
+- [[Task 2 QA Auditor]] — QA verdict on Task 2
+- [[Task 2 Docs Auditor]] — DOCS verdict on Task 2
