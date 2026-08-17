@@ -3,6 +3,7 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Task 4 Implementer Note]] — print-prompt humanize + origin blocklist; OriginBlocked exit 2; no HttpClient
 - [[Task 3 QA Auditor]] — QA APPROVE; cert_layer_a, BinaryInput no-write, --json parseable, inspect exit 1
 - [[Task 3 Docs Auditor]] — DOCS APPROVE; honesty stanza required; no watermark-removed / removesWatermark / sample_watermarked
 - [[Task 3 Implementer Note]] — classify + Layer A + text inspect/clean; BinaryInput fail-closed; --json stdout purity
@@ -20,3 +21,4 @@ Each entry: `[[Page]] — one-line summary`.
 - [[Task 3 Style Auditor]] — STYLE verdict on Task 3
 - [[Task 3 QA Auditor]] — QA verdict on Task 3
 - [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
+- [[Task 4 Implementer Note]] — print-prompt humanize implementer

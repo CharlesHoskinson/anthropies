@@ -22,6 +22,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Task 4 Implementer Note]] — print-prompt humanize + origin blocklist; FileSystem-only; rewrite_metric not-run
 - [[Task 3 QA Auditor]] — QA APPROVE; Layer A cert, trailer exit 1, PNG BinaryInput no-write, --json parseable
 - [[Task 3 Docs Auditor]] — DOCS APPROVE; honesty stanza required; no watermark-removed verdict
 - [[Task 3 Implementer Note]] — classify + Layer A + text inspect/clean; FileSystem-only Inspector/Cleaner; BinaryInput fail-closed
@@ -39,3 +40,4 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Task 3 Style Auditor]] — STYLE verdict on Task 3
 - [[Task 3 QA Auditor]] — QA verdict on Task 3
 - [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
+- [[Task 4 Implementer Note]] — print-prompt humanize implementer
