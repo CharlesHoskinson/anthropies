@@ -1,6 +1,6 @@
 ---
 name: purge-anthropies
-description: Strip Claude/vendor marks from owned files, then humanize with a non-origin model
+description: Run purge-anthropies on the named path. Deterministic clean first. Do not rewrite with Claude. Do not claim official-detector failure.
 ---
 
-Run the purge-anthropies skill on the path or selection the user named. Follow `skills/purge-anthropies/SKILL.md`. Do not rewrite with Claude.
+Run purge-anthropies on the named path. Deterministic clean first. Do not rewrite with Claude. Do not claim official-detector failure.
