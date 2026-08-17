@@ -23,6 +23,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 2 Task 5 Implementer Note]] — GitHub Actions CI; Node 22; ubuntu+windows; frozen-lockfile test+build
 - [[Wave 2 Task 4 Implementer Note]] — Node 22 image; compose `127.0.0.1:8765:8765`; no heavy backends
 - [[Wave 2 Task 3 Implementer Note]] — skill HTTP path; `ANTHROPIES_SERVICE_URL`; health first; npx fallback
 - [[Wave 2 Task 1 Style Auditor]] — STYLE APPROVE; platform HttpServer; FileSystem temps; Fail≠Finding; no node:fs
@@ -66,4 +67,6 @@ Node 22 image runs `node dist/cli.js serve --host 0.0.0.0 --port 8765`. `compose
 
 ## Task 5 (GitHub CI)
 
-Not started.
+`.github/workflows/ci.yml` runs `pnpm install --frozen-lockfile`, `pnpm test`, and `pnpm build` on `ubuntu-latest` and `windows-latest`. Node 22. Push/PR to `main`.
+
+- [[Wave 2 Task 5 Implementer Note]] — GitHub Actions CI implementer thoughts
