@@ -1,18 +1,89 @@
 import * as Args from "@effect/cli/Args"
 import * as CliCommand from "@effect/cli/Command"
+import * as Options from "@effect/cli/Options"
 import { NodeContext, NodeRuntime } from "@effect/platform-node"
-import { Console, Effect } from "effect"
+import { Cause, Console, Effect, Exit, Layer, Option, Schema } from "effect"
+import { Cleaner } from "./services/cleaner.js"
+import { Inspector } from "./services/inspector.js"
+import { Reporter } from "./services/reporter.js"
 
 const pathArg = Args.file({ name: "path" }).pipe(Args.withDescription("Path to an owned file"))
 
-const stub = (name: string): Effect.Effect<void> =>
-  Console.error(`${name} is not implemented`)
-
-const inspect = CliCommand.make("inspect", { path: pathArg }, () => stub("inspect")).pipe(
-  CliCommand.withDescription("Report marks by channel. Never a single watermark score.")
+const jsonOpt = Options.boolean("json").pipe(
+  Options.withDescription("Write Schema.encode JSON to stdout only")
 )
 
-const clean = CliCommand.make("clean", { path: pathArg }, () => stub("clean")).pipe(
+const forceTextOpt = Options.boolean("force-text").pipe(
+  Options.withDescription("Treat bytes as text after classify")
+)
+
+const inPlaceOpt = Options.boolean("in-place").pipe(
+  Options.withDescription("Overwrite the input path")
+)
+
+const outputOpt = Options.file("output", { exists: "either" }).pipe(
+  Options.withAlias("o"),
+  Options.optional,
+  Options.withDescription("Destination path")
+)
+
+class ResidualHits extends Schema.TaggedError<ResidualHits>()("ResidualHits", {
+  path: Schema.String
+}) {}
+
+const failTags = new Set([
+  "BinaryInput",
+  "OriginBlocked",
+  "MissingApiKey",
+  "PreMarkModel",
+  "DecodeError",
+  "WriteGuard",
+  "InputTooLarge"
+])
+
+const presentOnCertificate = (report: { readonly findings: ReadonlyArray<{ readonly channel: string; readonly status: string }> }): boolean =>
+  report.findings.some(
+    (f) => (f.channel === "deterministic" || f.channel === "c2pa") && f.status === "present"
+  )
+
+const stub = (name: string): Effect.Effect<void> => Console.error(`${name} is not implemented`)
+
+const inspect = CliCommand.make(
+  "inspect",
+  { path: pathArg, json: jsonOpt, forceText: forceTextOpt },
+  ({ path, json, forceText }) =>
+    Effect.gen(function* () {
+      const report = yield* Inspector.inspect(path, { forceText, json })
+      yield* Reporter.print(report, json)
+      if (presentOnCertificate(report)) {
+        return yield* new ResidualHits({ path })
+      }
+    })
+).pipe(CliCommand.withDescription("Report marks by channel. Never a single watermark score."))
+
+const clean = CliCommand.make(
+  "clean",
+  {
+    path: pathArg,
+    json: jsonOpt,
+    forceText: forceTextOpt,
+    inPlace: inPlaceOpt,
+    output: outputOpt
+  },
+  ({ path, json, forceText, inPlace, output }) =>
+    Effect.gen(function* () {
+      const { report } = yield* Cleaner.clean(path, {
+        forceText,
+        json,
+        inPlace,
+        ...(Option.isSome(output) ? { output: output.value } : {})
+      })
+      yield* Reporter.print(report, json)
+      if (presentOnCertificate(report)) {
+        return yield* new ResidualHits({ path })
+      }
+    })
+).pipe(
   CliCommand.withDescription(
     "Strip deterministic Layer A and hard-bound C2PA/metadata. Does not remove the keyed text mark."
   )
@@ -41,4 +112,56 @@ export const cli = CliCommand.make("anthropies").pipe(
 
 const run = CliCommand.run(cli, { name: "anthropies", version: "0.2.0" })
 
-NodeRuntime.runMain(run(process.argv).pipe(Effect.provide(NodeContext.layer)))
+const services = Layer.mergeAll(Inspector.Default, Cleaner.Default, Reporter.Default)
+
+const tagOf = (u: unknown): string | undefined => {
+  if (typeof u === "object" && u !== null && "_tag" in u) {
+    return String(u._tag)
+  }
+  return undefined
+}
+
+const reasonOf = (u: unknown): string => {
+  if (typeof u === "object" && u !== null && "reason" in u) {
+    return String(u.reason)
+  }
+  return ""
+}
+
+const teardown = (exit: Exit.Exit<unknown, unknown>, onExit: (code: number) => void): void => {
+  if (Exit.isSuccess(exit)) {
+    onExit(0)
+    return
+  }
+  const fail = Cause.failureOption(exit.cause)
+  if (Option.isSome(fail)) {
+    const tag = tagOf(fail.value)
+    if (tag === "ResidualHits") {
+      onExit(1)
+      return
+    }
+    if (tag !== undefined && failTags.has(tag)) {
+      onExit(2)
+      return
+    }
+  }
+  onExit(1)
+}
+
+NodeRuntime.runMain(
+  run(process.argv).pipe(
+    Effect.provide(services),
+    Effect.provide(NodeContext.layer),
+    Effect.tapError((e) => {
+      if (tagOf(e) === "ResidualHits") {
+        return Effect.void
+      }
+      const tag = tagOf(e)
+      if (tag === undefined) {
+        return Effect.void
+      }
+      return Console.error(`${tag}: ${reasonOf(e)}`)
+    })
+  ),
+  { disableErrorReporting: true, teardown }
+)

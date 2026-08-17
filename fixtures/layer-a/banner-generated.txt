@@ -1,0 +1,3 @@
+# helper
+# Generated with Claude Code
+print(1)
