@@ -3,6 +3,7 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Wave 2 Task 4 Implementer Note]] — Node 22 image; compose 127.0.0.1:8765:8765; no heavy backends; 0.3.0
 - [[Wave 2 Task 3 Implementer Note]] — skill HTTP path; ANTHROPIES_SERVICE_URL default 127.0.0.1:8765; health first; npx fallback; no official-kill
 - [[Wave 2 Task 2 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; serve --help loopback; no official-kill
 - [[Wave 2 Task 2 QA Auditor]] — QA APPROVE; OpenAPI 3.0.3 paths; serve loopback 127.0.0.1:8765; no /humanize

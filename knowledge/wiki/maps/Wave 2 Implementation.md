@@ -23,6 +23,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 2 Task 4 Implementer Note]] — Node 22 image; compose `127.0.0.1:8765:8765`; no heavy backends
 - [[Wave 2 Task 3 Implementer Note]] — skill HTTP path; `ANTHROPIES_SERVICE_URL`; health first; npx fallback
 - [[Wave 2 Task 1 Style Auditor]] — STYLE APPROVE; platform HttpServer; FileSystem temps; Fail≠Finding; no node:fs
 - [[Wave 2 Task 1 Implementer Note]] — `HttpApp` Layer; inspect/clean; bearer iff key; 256 MiB cap; official unavailable; no `/humanize`
@@ -59,7 +60,9 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Task 4 (Docker + compose)
 
-Not started.
+Node 22 image runs `node dist/cli.js serve --host 0.0.0.0 --port 8765`. `compose.yaml` maps `127.0.0.1:8765:8765`. No qpdf/exiftool/c2patool. Version `0.3.0`.
+
+- [[Wave 2 Task 4 Implementer Note]] — Docker + compose implementer thoughts
 
 ## Task 5 (GitHub CI)
 

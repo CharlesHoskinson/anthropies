@@ -104,3 +104,6 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - STYLE, QA, DOCS all APPROVE.
 ## [2026-08-17] ingest | Wave 2 Task 3 implementer note
 - Skill HTTP path; ANTHROPIES_SERVICE_URL default http://127.0.0.1:8765; health first; npx fallback; README 0.3.0 serve.
+
+## [2026-08-17] ingest | Wave 2 Task 4 implementer note
+- Dockerfile + compose.yaml; Node 22; serve --host 0.0.0.0 --port 8765; 127.0.0.1:8765:8765; no heavy backends.
