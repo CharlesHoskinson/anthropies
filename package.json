@@ -1,0 +1,36 @@
+{
+  "name": "anthropies",
+  "version": "0.2.0",
+  "description": "Restore clean title in Outputs the user already owns",
+  "type": "module",
+  "bin": {
+    "anthropies": "./dist/cli.js"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "test": "vitest run",
+    "test:live": "LIVE=1 vitest run tests/live-capture.test.ts",
+    "demo": "node dist/cli.js demo"
+  },
+  "dependencies": {
+    "@effect/cli": "^0.77.0",
+    "@effect/platform": "^0.97.1",
+    "@effect/platform-node": "^0.108.1",
+    "@effect/printer": "^0.51.0",
+    "@effect/printer-ansi": "^0.51.0",
+    "@effect/typeclass": "^0.41.0",
+    "effect": "^3.22.1"
+  },
+  "devDependencies": {
+    "@effect/vitest": "^0.30.0",
+    "@types/node": "^22.18.0",
+    "eslint": "^9.39.5",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^3.2.7"
+  }
+}
