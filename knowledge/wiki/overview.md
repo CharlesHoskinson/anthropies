@@ -22,6 +22,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Task 7 Implementer Note]] — Family 6: capture / demo; empty allowlist; npx retarget; Python deleted; official stays unavailable
 - [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; no official-detect lie
 - [[Task 6 Style Auditor]] — STYLE APPROVE; fflate CD cap; ProcCommand.make only; missing tools degrade
 - [[Task 6 Docs Auditor]] — DOCS APPROVE-WITH-CHANGES; PDF honesty must not say c2pa: degraded

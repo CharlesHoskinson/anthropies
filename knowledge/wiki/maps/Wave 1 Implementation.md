@@ -22,6 +22,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Task 7 Implementer Note]] — Family 6: `capture` / `demo`, empty allowlist → `PreMarkModel`, README honesty-first, `npx anthropies`, Python deleted.
 - [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; --json still Schema-only; no official-detect lie
 - [[Task 6 Style Auditor]] — STYLE APPROVE; fflate in-memory; ProcCommand.make only; missing tools are Findings
 - [[Task 6 Docs Auditor]] — DOCS APPROVE-WITH-CHANGES; PDF honesty must not say c2pa: degraded
@@ -57,6 +58,11 @@ Classify + Layer A + text inspect/clean. Named tests `cert_layer_a_roundtrip`, `
 - [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
 - [[Task 3 Implementer Note]] — Layer A and text CLI implementer
 - [[Task 3 Style Auditor]] — STYLE verdict on Task 3
+
+## Task 7 (Family 6 capture / demo / delete Python)
+
+`capture` + `demo`, empty `allowlist.json`, `npx` retarget, delete `src/anthropies`. Named tests `premark_unknown_model`, `official_unavailable_default`, `live_capture_smoke`.
+- [[Task 7 Implementer Note]] — capture / demo / Python-delete implementer thoughts
 
 ## Task 6 (Families 3–5 markup, office, PDF)
 

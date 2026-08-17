@@ -3,6 +3,7 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Task 7 Implementer Note]] — capture / demo / empty allowlist; npx retarget; Python deleted
 - [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; no official-detect lie
 - [[Task 6 Style Auditor]] — STYLE APPROVE; fflate CD cap before inflate; ProcCommand.make only; missing tools are Findings
 - [[Task 6 Docs Auditor]] — DOCS APPROVE-WITH-CHANGES; no official-kill; fixture-c2pa-present.svg; PDF honesty must not say c2pa: degraded
