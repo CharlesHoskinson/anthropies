@@ -2,6 +2,9 @@
 
 Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 
+## [2026-08-17] ingest | Wave 3 Task 1 implementer note
+- Family 1: real ollama / openai-compatible rewrite; rewrite_metric computed at n>=200; print-prompt not-run; 0.4.0.
+
 ## [2026-08-17] init | Anthropies Wave 1 Wiki
 - Created wiki skeleton.
 - Domain: Wave 1 implementation notes and auditor thoughts.

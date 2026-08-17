@@ -14,6 +14,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Sources
 
+- [[Wave 3 Design]]
 - [[Wave 1 Design]]
 
 ## Concepts
@@ -22,6 +23,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 3 Task 1 Implementer Note]] — Family 1: real rewrite backends + computed rewrite_metric at 0.4.0
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on full branch; Effect 3; Fail≠Finding; per-command R; `@effect/cli`; no HTTP service
 - [[Wave 1 Full Docs Audit]] — DOCS APPROVE; full-branch honesty box; capture not sample; npx; 0.2.0
 - [[Task 7 Style Auditor]] — STYLE APPROVE; Capturer Effect.Service; HttpClient only on capture/demo Live
