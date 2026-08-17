@@ -4,6 +4,7 @@ import * as Options from "@effect/cli/Options"
 import { NodeContext, NodeRuntime } from "@effect/platform-node"
 import { Cause, Console, Effect, Exit, Layer, Option, Schema } from "effect"
 import { Cleaner } from "./services/cleaner.js"
+import { Humanizer } from "./services/humanizer.js"
 import { Inspector } from "./services/inspector.js"
 import { Reporter } from "./services/reporter.js"
 
@@ -25,6 +26,11 @@ const outputOpt = Options.file("output", { exists: "either" }).pipe(
   Options.withAlias("o"),
   Options.optional,
   Options.withDescription("Destination path")
+)
+
+const kindOpt = Options.choice("kind", ["prose", "code"] as const).pipe(
+  Options.optional,
+  Options.withDescription("Rewrite domain: prose or code")
 )
 
 class ResidualHits extends Schema.TaggedError<ResidualHits>()("ResidualHits", {
@@ -89,7 +95,32 @@ const clean = CliCommand.make(
   )
 )
 
-const humanize = CliCommand.make("humanize", { path: pathArg }, () => stub("humanize")).pipe(
+const humanize = CliCommand.make(
+  "humanize",
+  {
+    path: pathArg,
+    json: jsonOpt,
+    forceText: forceTextOpt,
+    inPlace: inPlaceOpt,
+    output: outputOpt,
+    kind: kindOpt
+  },
+  ({ path, json, forceText, inPlace, output, kind }) =>
+    Effect.gen(function* () {
+      const { report, note } = yield* Humanizer.humanizeFile(path, {
+        forceText,
+        json,
+        inPlace,
+        ...(Option.isSome(output) ? { output: output.value } : {}),
+        ...(Option.isSome(kind) ? { kind: kind.value } : {})
+      })
+      yield* Console.error(note)
+      yield* Reporter.print(report, json)
+      if (presentOnCertificate(report)) {
+        return yield* new ResidualHits({ path })
+      }
+    })
+).pipe(
   CliCommand.withDescription(
     "Rewrite wording on a non-origin model (best-effort). Refuses Claude and Gemini."
   )
@@ -112,7 +143,12 @@ export const cli = CliCommand.make("anthropies").pipe(
 
 const run = CliCommand.run(cli, { name: "anthropies", version: "0.2.0" })
 
-const services = Layer.mergeAll(Inspector.Default, Cleaner.Default, Reporter.Default)
+const services = Layer.mergeAll(
+  Inspector.Default,
+  Cleaner.Default,
+  Humanizer.Default,
+  Reporter.Default
+)
 
 const tagOf = (u: unknown): string | undefined => {
   if (typeof u === "object" && u !== null && "_tag" in u) {
