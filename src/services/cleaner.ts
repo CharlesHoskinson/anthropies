@@ -47,7 +47,8 @@ export class Cleaner extends Effect.Service<Cleaner>()("Cleaner", {
             const report = makeRasterReport({
               present: after.present,
               removed: stripped.removed,
-              labels: stripped.labels
+              labels: stripped.labels,
+              applicable: stripped.applicable
             })
             yield* reporter.writeAtomic(dest, stripped.bytes)
             return { report, bytes: stripped.bytes }

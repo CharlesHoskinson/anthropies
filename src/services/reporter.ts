@@ -141,8 +141,16 @@ export const makeRasterReport = (input: {
   readonly present: boolean
   readonly removed: boolean
   readonly labels: ReadonlyArray<string>
+  readonly applicable: boolean
 }): Report => {
-  const c2paHonesty = input.removed ? "removed" : input.present ? "present" : "absent"
+  const c2paHonesty = !input.applicable
+    ? "not-applicable"
+    : input.removed
+      ? "removed"
+      : input.present
+        ? "present"
+        : "absent"
+  const c2paStatus = !input.applicable ? "degraded" : input.present ? "present" : "absent"
   const residual = input.removed
     ? `hard-bound C2PA/metadata removed; ${softBindingSentence}`
     : softBindingSentence
@@ -152,7 +160,7 @@ export const makeRasterReport = (input: {
       new Finding({ channel: "deterministic", status: "absent" }),
       new Finding({
         channel: "c2pa",
-        status: input.present ? "present" : "absent"
+        status: c2paStatus
       }),
       new Finding({ channel: "official", status: "unavailable" }),
       new Finding({ channel: "statistical", status: "unavailable" })
@@ -160,7 +168,7 @@ export const makeRasterReport = (input: {
     removed: new Removed(
       input.removed && input.labels.length > 0 ? { c2pa: [...input.labels] } : {}
     ),
-    degraded: false,
+    degraded: !input.applicable,
     honesty: honestyStanza({
       official: "unavailable (ANTHROPIC_DETECT_URL unset)",
       c2pa: c2paHonesty,

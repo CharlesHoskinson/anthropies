@@ -4,6 +4,7 @@ export interface RasterInspectOk {
   readonly ok: true
   readonly present: boolean
   readonly labels: ReadonlyArray<string>
+  readonly applicable: boolean
 }
 
 export interface RasterStripOk {
@@ -11,6 +12,7 @@ export interface RasterStripOk {
   readonly bytes: Uint8Array
   readonly removed: boolean
   readonly labels: ReadonlyArray<string>
+  readonly applicable: boolean
 }
 
 export interface RasterFail {
@@ -136,7 +138,7 @@ const inspectPng = (bytes: Uint8Array): RasterInspectOk | RasterFail => {
       labels.push(hit)
     }
   }
-  return { ok: true, present: labels.length > 0, labels }
+  return { ok: true, present: labels.length > 0, labels, applicable: true }
 }
 
 const stripPng = (bytes: Uint8Array): RasterStripOk | RasterFail => {
@@ -155,7 +157,7 @@ const stripPng = (bytes: Uint8Array): RasterStripOk | RasterFail => {
     kept.push(chunk.raw)
   }
   if (labels.length === 0) {
-    return { ok: true, bytes, removed: false, labels }
+    return { ok: true, bytes, removed: false, labels, applicable: true }
   }
   let size = 8
   for (const raw of kept) {
@@ -168,7 +170,7 @@ const stripPng = (bytes: Uint8Array): RasterStripOk | RasterFail => {
     out.set(raw, off)
     off += raw.length
   }
-  return { ok: true, bytes: out, removed: true, labels }
+  return { ok: true, bytes: out, removed: true, labels, applicable: true }
 }
 
 const isXmpApp1 = (data: Uint8Array): boolean =>
@@ -285,7 +287,7 @@ const inspectJpeg = (bytes: Uint8Array): RasterInspectOk | RasterFail => {
       labels.push(hit)
     }
   }
-  return { ok: true, present: labels.length > 0, labels }
+  return { ok: true, present: labels.length > 0, labels, applicable: true }
 }
 
 const stripJpeg = (bytes: Uint8Array): RasterStripOk | RasterFail => {
@@ -304,7 +306,7 @@ const stripJpeg = (bytes: Uint8Array): RasterStripOk | RasterFail => {
     kept.push(seg.raw)
   }
   if (labels.length === 0) {
-    return { ok: true, bytes, removed: false, labels }
+    return { ok: true, bytes, removed: false, labels, applicable: true }
   }
   let size = 0
   for (const raw of kept) {
@@ -316,10 +318,10 @@ const stripJpeg = (bytes: Uint8Array): RasterStripOk | RasterFail => {
     out.set(raw, off)
     off += raw.length
   }
-  return { ok: true, bytes: out, removed: true, labels }
+  return { ok: true, bytes: out, removed: true, labels, applicable: true }
 }
 
-/** Inspect hard-bound C2PA/XMP markers on a raster buffer. */
+/** Inspect hard-bound C2PA/XMP on parsed PNG/JPEG; other rasters are not-applicable. */
 export const inspectRasterBytes = (bytes: Uint8Array): RasterInspectOk | RasterFail => {
   const codec = rasterCodec(bytes)
   if (codec === "png") {
@@ -331,10 +333,10 @@ export const inspectRasterBytes = (bytes: Uint8Array): RasterInspectOk | RasterF
   if (codec === undefined) {
     return { ok: false, reason: "not a raster image" }
   }
-  return { ok: true, present: false, labels: [] }
+  return { ok: true, present: false, labels: [], applicable: false }
 }
 
-/** Drop hard-bound C2PA/XMP markers. PNG keeps IHDR/IDAT/IEND. */
+/** Drop hard-bound C2PA/XMP on PNG/JPEG. Unparsed rasters stay not-applicable. */
 export const stripRasterBytes = (bytes: Uint8Array): RasterStripOk | RasterFail => {
   const codec = rasterCodec(bytes)
   if (codec === "png") {
@@ -346,5 +348,5 @@ export const stripRasterBytes = (bytes: Uint8Array): RasterStripOk | RasterFail 
   if (codec === undefined) {
     return { ok: false, reason: "not a raster image" }
   }
-  return { ok: true, bytes, removed: false, labels: [] }
+  return { ok: true, bytes, removed: false, labels: [], applicable: false }
 }
