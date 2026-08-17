@@ -63,6 +63,24 @@ describe("http_inspect_clean", () => {
     }).pipe(Effect.provide(TestLive))
   )
 
+  it.scoped("GET /openapi.json is OpenAPI 3.0.3 with inspect and clean paths", () =>
+    Effect.gen(function* () {
+      const res = yield* HttpClient.get("/openapi.json")
+      expect(res.status).toBe(200)
+      const body = yield* res.json
+      const doc = body as {
+        openapi: string
+        paths: Record<string, unknown>
+      }
+      expect(doc.openapi).toBe("3.0.3")
+      expect(doc.paths).toHaveProperty("/health")
+      expect(doc.paths).toHaveProperty("/capabilities")
+      expect(doc.paths).toHaveProperty("/inspect")
+      expect(doc.paths).toHaveProperty("/clean")
+      expect(doc.paths).not.toHaveProperty("/humanize")
+    }).pipe(Effect.provide(TestLive))
+  )
+
   it.scoped("GET /capabilities lists tools and officialDetect", () =>
     Effect.gen(function* () {
       const res = yield* HttpClient.get("/capabilities")

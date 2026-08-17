@@ -12,6 +12,7 @@ import { DecodeError } from "../fail.js"
 import { Report } from "../report.js"
 import { Cleaner } from "../services/cleaner.js"
 import { Inspector } from "../services/inspector.js"
+import { openApiDocument } from "./openapi.js"
 import {
   CapabilitiesResponse,
   CleanResponse,
@@ -115,6 +116,8 @@ const ownedFromRequest = Effect.gen(function* () {
 
 const health = HttpServerResponse.unsafeJson({ ok: true, version: serviceVersion })
 
+const openapi = HttpServerResponse.unsafeJson(openApiDocument)
+
 const capabilities = Effect.gen(function* () {
   const qpdf = yield* toolPresent("qpdf", "--version")
   const exiftool = yield* toolPresent("exiftool", "-ver")
@@ -172,6 +175,7 @@ const onError = (): HttpServerResponse.HttpServerResponse => json400("bad_reques
 export const router = HttpRouter.empty.pipe(
   HttpRouter.get("/health", health),
   HttpRouter.get("/capabilities", capabilities),
+  HttpRouter.get("/openapi.json", openapi),
   HttpRouter.post("/inspect", inspect),
   HttpRouter.post("/clean", clean),
   HttpRouter.use(authorize),
