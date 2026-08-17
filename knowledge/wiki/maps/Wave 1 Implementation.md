@@ -23,6 +23,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 3 Task 3 Docs Auditor]] — DOCS APPROVE; Family 3 title-restoration copy; CLAIMS humanize row; no official-kill
 - [[Wave 3 Task 3 Implementer Note]] — Family 3: README/skill title-restoration copy; CLAIMS humanize row; print-prompt does not destamp
 - [[Wave 3 Task 1 Implementer Note]] — Family 1: real rewrite backends + computed rewrite_metric at 0.4.0
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on full branch; Effect 3; Fail≠Finding; per-command R; `@effect/cli`; no HTTP service

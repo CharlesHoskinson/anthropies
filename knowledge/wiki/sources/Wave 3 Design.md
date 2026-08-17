@@ -17,4 +17,4 @@ Family 2: stronger Layer B prompts require clause-order / sentence-boundary / di
 
 Family 3: README/skill `humanize` section names title restoration + residual risk. print-prompt does not destamp. CLAIMS.md forbids official-kill; humanize row states the allowed claim.
 
-See [[Wave 3 Task 1 Implementer Note]], [[Wave 3 Task 2 Implementer Note]], and [[Wave 3 Task 3 Implementer Note]]. Related: [[Wave 1 Design]].
+See [[Wave 3 Task 1 Implementer Note]], [[Wave 3 Task 2 Implementer Note]], [[Wave 3 Task 3 Implementer Note]], and [[Wave 3 Task 3 Docs Auditor]]. Related: [[Wave 1 Design]].
