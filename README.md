@@ -46,7 +46,7 @@ pnpm build
 pnpm install -g .
 ```
 
-Or one-shot: `npx anthropies --help`. From this repo after `pnpm build`: `node dist/cli.js --help`. Version is `0.2.0`.
+Or one-shot: `npx anthropies --help`. From this repo after `pnpm build`: `node dist/cli.js --help`. Version is `0.4.0`.
 
 ```bash
 npx anthropies inspect COMMIT_EDITMSG

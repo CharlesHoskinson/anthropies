@@ -2,6 +2,15 @@
 
 Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 
+## [2026-08-17] ingest | Wave 3 Full Diff QA auditor
+- QA APPROVE (0 blockers). Real rewrite; fake HTTP; computed metric not a pass bar; structure-rule tests; origin blocklist; print-prompt not-run; no src/http/; no official-kill. `pnpm test`/`pnpm build` not executed here (no shell).
+
+## [2026-08-17] ingest | Wave 3 Full Diff docs auditor
+- DOCS APPROVE (0 blockers). Title restoration + residual risk; CLAIMS humanize row; destamp denial; origin blocklist documented; 0.4.0; no official-kill.
+
+## [2026-08-17] ingest | Wave 3 full-diff STYLE auditor
+- STYLE APPROVE (0 blockers). Effect 3 ESM Node 22; no /humanize; origin blocklist; print-prompt default does not destamp; rewrite_metric not a CI bar; 0.4.0; real loopback rewrite; structure-changing prompts.
+
 ## [2026-08-17] ingest | Wave 3 Task 3 docs auditor
 - DOCS APPROVE (0 blockers). README/skill title restoration + residual risk; CLAIMS humanize row; no official-kill.
 

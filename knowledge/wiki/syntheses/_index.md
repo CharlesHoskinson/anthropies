@@ -3,6 +3,9 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Wave 3 Full Diff QA Auditor]] — QA APPROVE; real rewrite; fake HTTP; computed metric not a pass bar; origin blocklist; no /humanize; no official-kill
+- [[Wave 3 Full Diff Style Auditor]] — STYLE APPROVE on origin/main...HEAD; Effect 3; no /humanize; print-prompt default; rewrite_metric not a CI bar; 0.4.0
+- [[Wave 3 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch title restoration + residual risk; CLAIMS humanize row; destamp denial; origin blocklist; 0.4.0; no official-kill
 - [[Wave 3 Task 3 Docs Auditor]] — DOCS APPROVE; README/skill title restoration + residual risk; CLAIMS humanize row; no official-kill
 - [[Wave 3 Task 3 QA Auditor]] — QA APPROVE; title restoration + residual risk; print-prompt does not destamp; no official-kill
 - [[Wave 3 Task 3 Implementer Note]] — title-restoration copy; residual risk; print-prompt does not destamp; no official-kill
