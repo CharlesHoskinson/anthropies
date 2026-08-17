@@ -1,0 +1,9 @@
+# Obsidian transient files
+.obsidian/workspace*.json
+.obsidian/cache
+.trash/
+
+# Python
+__pycache__/
+*.pyc
+.venv/

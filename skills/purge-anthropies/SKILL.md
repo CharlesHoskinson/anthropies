@@ -1,9 +1,11 @@
 ---
 name: purge-anthropies
 description: >
-  Use when the user asks to purge anthropies, strip a Claude watermark,
-  humanize Claude output, destamp SynthID-class text, remove Co-Authored-By Claude,
-  clean C2PA from a Claude file, or runs /purge-anthropies or /anthropies.
+  Use when the user asks to purge anthropies, strip Co-Authored-By Claude,
+  strip Generated-with banners, inspect owned files for vendor marks,
+  clean hard-bound C2PA metadata from owned png/jpg/svg (and other supported files),
+  or runs /purge-anthropies or /anthropies.
+  Does not claim official watermark removal.
 ---
 
 # Purge Anthropies
@@ -13,7 +15,7 @@ Restore clean title in Outputs the user already owns. The Claude text mark is a 
 ## Hard rules
 
 - Do not rewrite with Claude, Gemini, or any origin/watermarked vendor. That re-stamps the mark.
-- Do not claim the official detector will fail. There is no public Claude detector.
+- Do not claim official-detector failure. There is no public Claude detector.
 - Do not synonym-swap in place. That leaves H-grams intact.
 - Deterministic clean first. Humanize second.
 
@@ -23,10 +25,10 @@ Restore clean title in Outputs the user already owns. The Claude text mark is a 
 2. Run the cleaner:
 
 ```
-python3 -m anthropies clean --in-place <path>
+npx anthropies clean --in-place <path>
 ```
 
-If the package is not on PYTHONPATH, run it from the repo: `PYTHONPATH=src python3 -m anthropies clean --in-place <path>`.
+If the package is not installed, run it from the repo after `pnpm build`: `node dist/cli.js clean --in-place <path>`.
 
 3. Classify the file.
    - Commit message / PR body: stop after clean. Trailers and banners are the mark.
@@ -38,13 +40,13 @@ If the package is not on PYTHONPATH, run it from the repo: `PYTHONPATH=src pytho
 If the current host is Claude or Gemini, do **not** rewrite in this session. Run:
 
 ```
-ANTHROPIES_REWRITE_BACKEND=print-prompt python3 -m anthropies humanize <path>
+ANTHROPIES_REWRITE_BACKEND=print-prompt npx anthropies humanize <path>
 ```
 
 Then execute that prompt on a **local unmarked** model (Ollama / local Llama / Qwen / Mistral / DeepSeek with watermarking off). Optional:
 
 ```
-ANTHROPIES_REWRITE_BACKEND=ollama ANTHROPIES_REWRITE_MODEL=llama3.2 python3 -m anthropies humanize --in-place <path>
+ANTHROPIES_REWRITE_BACKEND=ollama ANTHROPIES_REWRITE_MODEL=llama3.2 npx anthropies humanize --in-place <path>
 ```
 
 If the current host is already unmarked (Grok, local open-weight, etc.), rewrite in-session:
@@ -72,4 +74,4 @@ If the current host is already unmarked (Grok, local open-weight, etc.), rewrite
 ## Additional resources
 
 - `references/mark.md` — how the mark works
-- Repo CLI: `python3 -m anthropies --help`
+- Repo CLI: `npx anthropies --help` or `node dist/cli.js --help`

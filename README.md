@@ -5,8 +5,7 @@
 <h1 align="center">anthropies</h1>
 
 <p align="center">
-  Restore clean title in work you already own.<br>
-  Strip vendor marks from Outputs that Anthropic assigned to you.
+  Restore clean title in Outputs the user already owns.
 </p>
 
 <p align="center">
@@ -15,6 +14,80 @@
 </p>
 
 Apache-2.0. Usable from any LLM coding agent. Not affiliated with Anthropic PBC.
+
+---
+
+## Honesty
+
+This tool certifies Layer A (Unicode, trailers, banners) and hard-bound C2PA/metadata on files you own. It does not remove Anthropic's keyed text mark.
+
+- This run does not prove the official Claude text detector will fail.
+- This run does not prove the text is human-written.
+- Absence of a mark does not prove Claude was uninvolved.
+
+| Channel | What you get |
+|---|---|
+| official | `unavailable` unless `ANTHROPIC_DETECT_URL` is set. No default URL. No score. |
+| c2pa | `present` / `absent` / `removed` / `not-applicable`. Soft-binding and pixel marks are out of scope. |
+| deterministic | Per-kind counts only. Certificate for the bytes we strip. |
+| statistical | Best-effort 5-gram overlap. Not an official-detector certificate. |
+
+`clean` does not remove the keyed text mark. `humanize` is best-effort. `capture` fetches a Claude Output you own; it does not watermark. `demo` prints four channels and never claims official text-kill.
+
+---
+
+## How to run
+
+```bash
+git clone https://github.com/CharlesHoskinson/anthropies.git
+cd anthropies
+pnpm install
+pnpm build
+pnpm install -g .
+```
+
+Or one-shot: `npx anthropies --help`. From this repo after `pnpm build`: `node dist/cli.js --help`. Version is `0.2.0`.
+
+```bash
+npx anthropies inspect COMMIT_EDITMSG
+npx anthropies clean notes.md --in-place
+npx anthropies humanize essay.md
+npx anthropies capture --model <allowlisted-id> --prompt "..."
+npx anthropies demo
+```
+
+Default `humanize` is print-prompt: it prints a rewrite prompt. Run that prompt on a **local unmarked** model (Llama, Qwen, Mistral, DeepSeek with watermarking off). Do not run it with Claude or Gemini.
+
+```bash
+# Grok
+mkdir -p ~/.grok/skills
+ln -sfn "$(pwd)/skills/purge-anthropies" ~/.grok/skills/purge-anthropies
+
+# Claude Code: clean + print-prompt only. Do not rewrite with Claude.
+mkdir -p ~/.claude/skills
+ln -sfn "$(pwd)/skills/purge-anthropies" ~/.claude/skills/purge-anthropies
+# or: claude --plugin-dir "$(pwd)"
+```
+
+In an agent session: `/purge-anthropies`. Skill: [`skills/purge-anthropies/SKILL.md`](skills/purge-anthropies/SKILL.md). Slash: [`commands/purge-anthropies.md`](commands/purge-anthropies.md). Plugin: [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
+
+`capture` and `demo` need `ANTHROPIC_API_KEY` only when the committed allowlist has a model ID. An empty allowlist is valid; then those commands skip live fetch. Live captures land in `fixtures/live/` and are gitignored. They are pipeline smoke, not a “this is watermarked” proof.
+
+---
+
+## Command × channel
+
+| Command | deterministic | c2pa | official | statistical |
+|---|---|---|---|---|
+| `inspect` | report present/absent | report present/absent | unavailable unless URL set | unavailable / not-run |
+| `clean` | strip Layer A | strip hard-bound metadata | unavailable unless URL set | not-run |
+| `humanize` | Layer A first | n/a on text | unavailable unless URL set | best-effort `rewrite_metric` |
+| `capture` | does not detect | n/a | does not detect | n/a |
+| `demo` | run inspect/clean | skipped or certified | unavailable unless URL set | skipped if print-prompt |
+
+`inspect` exit 1 is driven only by deterministic or c2pa **present**. Official and statistical never flip inspect to 1 by themselves.
+
+---
 
 ---
 
@@ -147,7 +220,7 @@ Detection needs the key, not the model. The mean detector reports a raw score, t
                                           default 0.5; must be trained per key
 ```
 
-The reported operating point is a **true-positive rate of about 70% at 200 tokens** against a 1% false-positive rate, rising to roughly 87% at 400 tokens. Short passages are close to undetectable: maximum true-positive rate around 0.3 at 50 tokens.
+The reported operating point is a **true-positive rate of about 70% at 200 tokens** against a 1% false-positive rate, rising to roughly 87% at 400 tokens. Short passages sit near the detector's floor: maximum true-positive rate around 0.3 at 50 tokens.
 
 A detection is a statement about **contact with the system**, not about authorship. It cannot distinguish "Claude wrote this" from "Claude edited this."
 
@@ -219,69 +292,6 @@ The published measurement is less reassuring. In a study of human-written essays
 Both statements can be true. The mark attaches to few words, and few words can still be enough. A detection hit on your own writing is not evidence that you did not write it, and that is why this tool exists for prose you authored yourself.
 
 ---
-
-## The skill: `/purge-anthropies`
-
-It is a humanizer-style agent skill plus a stdlib CLI. The Claude text mark is a SynthID-class keyed sampler: **the mark is the wording**. Deterministic cleaning removes known trailers, banners, and invisible Unicode. A non-origin rewrite changes the generated wording. Unicode strip and prettier do not remove the wording mark. Asking Claude to clean Claude re-stamps it.
-
-The skill lives at [`skills/purge-anthropies/SKILL.md`](skills/purge-anthropies/SKILL.md). Slash command: [`commands/purge-anthropies.md`](commands/purge-anthropies.md). Claude Code plugin: [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
-
-### What it does
-
-The first table describes the commands and their behavior. The second maps each output channel to the removal method the commands use.
-
-| Path | What it does |
-| --- | --- |
-| `anthropies clean` | Strip `Co-Authored-By: Claude`, Generated-with banners, invisible Unicode |
-| `anthropies humanize` | Break statistical *H*-grams via a **non-origin** rewrite |
-| `/purge-anthropies` | Orchestrates both; **refuses** to rewrite when the host is Claude or Gemini |
-
-| Channel | Removal |
-| --- | --- |
-| Git / PR trailers | Deterministic strip |
-| Attribution banners | Deterministic strip |
-| Invisible Unicode | Deterministic hygiene |
-| Prose | Structure-changing rewrite on an unmarked model |
-| Code comments / free strings | Same, without touching public APIs or lockfiles |
-
-### Install
-
-```bash
-git clone https://github.com/CharlesHoskinson/anthropies.git
-cd anthropies
-pip install -e .
-
-# Grok
-mkdir -p ~/.grok/skills
-ln -sfn "$(pwd)/skills/purge-anthropies" ~/.grok/skills/purge-anthropies
-
-# Claude Code: clean + print-prompt only. Do not rewrite with Claude.
-mkdir -p ~/.claude/skills
-ln -sfn "$(pwd)/skills/purge-anthropies" ~/.claude/skills/purge-anthropies
-# or: claude --plugin-dir "$(pwd)"
-```
-
-### Use
-
-In an agent session:
-
-`/purge-anthropies`
-
-or ask to "purge anthropies", "strip the Claude watermark", or "humanize this Claude output".
-
-From a shell:
-
-```bash
-python3 -m anthropies inspect COMMIT_EDITMSG
-python3 -m anthropies clean notes.md --in-place
-python3 -m anthropies humanize essay.md
-ANTHROPIES_REWRITE_BACKEND=ollama ANTHROPIES_REWRITE_MODEL=llama3.2 \
-  python3 -m anthropies humanize essay.md --in-place
-```
-
-Claude Code is limited to cleaning and prompt printing because it cannot perform a non-origin rewrite. Default `humanize` prints a rewrite prompt. Run that prompt on a **local unmarked** model, such as Llama, Qwen, Mistral, or DeepSeek with watermarking off. Do not run it with Claude or Gemini.
-
-This is not a certificate against Anthropic's unpublished detector. Residual statistical signal can remain.
 
 ---
 

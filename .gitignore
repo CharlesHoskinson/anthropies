@@ -9,3 +9,6 @@ build/
 
 .worktrees/
 graphify-out/
+node_modules/
+fixtures/live/*
+!fixtures/live/.gitignore
