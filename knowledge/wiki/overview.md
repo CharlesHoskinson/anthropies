@@ -23,6 +23,9 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 2 Task 5 QA Auditor]] — QA APPROVE; ci.yml push/PR main; ubuntu+windows; Node 22; frozen-lockfile test+build
+- [[Wave 2 Task 5 Docs Auditor]] — DOCS APPROVE; GitHub Actions ci.yml; no destamp/official-kill; no /humanize
+- [[Wave 2 Task 5 Style Auditor]] — STYLE APPROVE; Node 22; ubuntu+windows; frozen-lockfile test then build; no heavy backends
 - [[Wave 2 Task 5 Implementer Note]] — GitHub Actions CI; Node 22; ubuntu+windows; frozen-lockfile test+build
 - [[Wave 2 Task 4 Implementer Note]] — Node 22 Docker; compose loopback 127.0.0.1:8765; no heavy backends; 0.3.0
 - [[Wave 2 Task 3 Implementer Note]] — skill HTTP path; ANTHROPIES_SERVICE_URL; health first; npx fallback; 0.3.0 serve

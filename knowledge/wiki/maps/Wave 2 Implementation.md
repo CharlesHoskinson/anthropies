@@ -23,6 +23,9 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 2 Task 5 QA Auditor]] — QA APPROVE; ci.yml push/PR main; ubuntu+windows; Node 22; frozen-lockfile test+build
+- [[Wave 2 Task 5 Docs Auditor]] — DOCS APPROVE; GitHub Actions ci.yml; no destamp/official-kill; no `/humanize`
+- [[Wave 2 Task 5 Style Auditor]] — STYLE APPROVE; Node 22; ubuntu+windows; frozen-lockfile test then build; no heavy backends
 - [[Wave 2 Task 5 Implementer Note]] — GitHub Actions CI; Node 22; ubuntu+windows; frozen-lockfile test+build
 - [[Wave 2 Task 4 Implementer Note]] — Node 22 image; compose `127.0.0.1:8765:8765`; no heavy backends
 - [[Wave 2 Task 3 Implementer Note]] — skill HTTP path; `ANTHROPIES_SERVICE_URL`; health first; npx fallback
@@ -70,3 +73,6 @@ Node 22 image runs `node dist/cli.js serve --host 0.0.0.0 --port 8765`. `compose
 `.github/workflows/ci.yml` runs `pnpm install --frozen-lockfile`, `pnpm test`, and `pnpm build` on `ubuntu-latest` and `windows-latest`. Node 22. Push/PR to `main`.
 
 - [[Wave 2 Task 5 Implementer Note]] — GitHub Actions CI implementer thoughts
+- [[Wave 2 Task 5 Style Auditor]] — STYLE APPROVE; 0 blockers; 2 nits (floating action tags, no permissions/timeout)
+- [[Wave 2 Task 5 QA Auditor]] — QA APPROVE; 0 blockers; 3 nits (unpinned SHAs, no workflow_dispatch, Windows unproven)
+- [[Wave 2 Task 5 Docs Auditor]] — DOCS APPROVE; honesty pass; no official-kill

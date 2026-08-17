@@ -59,7 +59,7 @@ npx anthropies serve
 
 `serve` binds loopback `127.0.0.1:8765` by default (`GET /health`, `POST /inspect`, `POST /clean`). Remote bind requires an explicit `--host`. The skill prefers `ANTHROPIES_SERVICE_URL` (same default) and health-checks first. There is no HTTP `/humanize`. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set.
 
-Docker (`Dockerfile` + `compose.yaml`) is the same service. `docker compose up --build` publishes `127.0.0.1:8765:8765`. The process inside binds `0.0.0.0:8765`; the host mapping stays loopback. The image does not install qpdf, exiftool, or c2patool. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set.
+Docker (`Dockerfile` + `compose.yaml`) is the same service. `docker compose up --build` publishes `127.0.0.1:8765:8765`. The process inside binds `0.0.0.0:8765`; the host mapping stays loopback. The image does not install qpdf, exiftool, or c2patool. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set. GitHub Actions runs `pnpm test` and `pnpm build` on Ubuntu and Windows.
 
 Default `humanize` is print-prompt: it prints a rewrite prompt. Run that prompt on a **local unmarked** model (Llama, Qwen, Mistral, DeepSeek with watermarking off). Do not run it with Claude or Gemini.
 

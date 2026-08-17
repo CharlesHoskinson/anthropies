@@ -110,3 +110,12 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 
 ## [2026-08-17] ingest | Wave 2 Task 5 implementer note
 - GitHub Actions CI; Node 22; ubuntu-latest + windows-latest; frozen-lockfile, test, build.
+
+## [2026-08-17] ingest | Wave 2 Task 5 STYLE auditor
+- STYLE APPROVE (0 blockers). ci.yml; Node 22; ubuntu+windows; frozen-lockfile test then build; pnpm 11.22.0; no heavy backends; no live-capture.
+
+## [2026-08-17] ingest | Wave 2 Task 5 docs auditor
+- DOCS APPROVE (0 blockers). Workflow name `ci`; no destamp/official-kill; no `/humanize`; official unavailable unless `ANTHROPIC_DETECT_URL`.
+
+## [2026-08-17] ingest | Wave 2 Task 5 QA auditor
+- QA APPROVE (0 blockers). ci.yml push/PR main; ubuntu+windows; Node 22; frozen-lockfile test+build; no live-key; no /humanize.
