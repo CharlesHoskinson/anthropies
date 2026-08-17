@@ -22,6 +22,8 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 1 Full Style Audit]] — STYLE APPROVE on full branch; Effect 3; Fail≠Finding; per-command R; `@effect/cli`; no HTTP service
+- [[Wave 1 Full Docs Audit]] — DOCS APPROVE; full-branch honesty box; capture not sample; npx; 0.2.0
 - [[Task 7 Style Auditor]] — STYLE APPROVE; Capturer Effect.Service; HttpClient only on capture/demo Live
 - [[Task 7 Implementer Note]] — Family 6: `capture` / `demo`, empty allowlist → `PreMarkModel`, README honesty-first, `npx anthropies`, Python deleted.
 - [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; --json still Schema-only; no official-detect lie
@@ -94,3 +96,6 @@ Origin blocklist + print-prompt Humanizer. Named tests `origin_blocklist`, `huma
 - [[Task 6 Implementer Note]] — markup/office/PDF implementer
 - [[Task 7 Implementer Note]] — capture/demo implementer
 - [[Task 7 Docs Auditor]] — DOCS verdict on Task 7
+- [[Wave 1 Full Style Audit]] — full-branch STYLE
+- [[Wave 1 Full QA Audit]] — full-branch QA
+- [[Wave 1 Full Docs Audit]] — full-branch DOCS

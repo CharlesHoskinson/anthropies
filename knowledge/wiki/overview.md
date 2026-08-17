@@ -22,6 +22,9 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 1 Full Style Audit]] — STYLE APPROVE on e4a76b6..4419c7a; Effect 3; no forbidden imports; Fail≠Finding; per-command R; no HTTP service
+- [[Wave 1 Full QA Audit]] — QA APPROVE; §16.2 named tests, --json purity, residual exit 1, official unavailable, Python gone
+- [[Wave 1 Full Docs Audit]] — DOCS APPROVE; full-branch honesty box; capture not sample; npx; 0.2.0; no destamp/official-kill
 - [[Task 7 Style Auditor]] — STYLE APPROVE; Capturer Effect.Service; HttpClient only on capture/demo Live; Config not process.env
 - [[Task 7 Docs Auditor]] — DOCS APPROVE; honesty box first; capture not sample; npx; 0.2.0; no destamp/official-kill
 - [[Task 7 Implementer Note]] — Family 6: capture / demo; empty allowlist; npx retarget; Python deleted; official stays unavailable
@@ -68,3 +71,6 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Task 7 Style Auditor]] — STYLE verdict on Task 7
 - [[Task 7 QA Auditor]] — QA verdict on Task 7
 - [[Task 7 Docs Auditor]] — DOCS verdict on Task 7
+- [[Wave 1 Full Style Audit]] — full-branch STYLE
+- [[Wave 1 Full QA Audit]] — full-branch QA
+- [[Wave 1 Full Docs Audit]] — full-branch DOCS

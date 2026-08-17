@@ -63,3 +63,14 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - STYLE APPROVE (0 blockers). Capturer Effect.Service; HttpClient only on capture/demo Live; Config not process.env; Fail PreMarkModel/MissingApiKey.
 ## [2026-08-17] ingest | Task 7 auditor trio
 - STYLE, QA, DOCS all APPROVE.
+
+## [2026-08-17] ingest | Wave 1 full-branch QA
+- QA APPROVE (0 blockers). Named §16.2 tests present; --json Schema-only; residual exit 1 unless degraded; official unavailable; no official-detect lie; Python deleted.
+
+## [2026-08-17] ingest | Wave 1 full-branch STYLE auditor
+- STYLE APPROVE (0 blockers). Effect 3; no forbidden imports; Fail≠Finding; per-command R; `@effect/cli`; no HTTP service.
+
+## [2026-08-17] ingest | Wave 1 full-branch docs auditor
+- DOCS APPROVE (0 blockers). Honesty box first; capture not sample; npx; 0.2.0; no destamp/official-kill.
+## [2026-08-17] ingest | Wave 1 full-diff trio
+- STYLE, QA, DOCS all APPROVE. Wave 1 implementation review complete.
