@@ -15,4 +15,6 @@ Family 1: real ollama / openai-compatible rewrite + `rewrite_metric` computed af
 
 Family 2: stronger Layer B prompts require clause-order / sentence-boundary / discourse-marker change (H-gram break) and keep facts/URLs/fences. Snapshot tests assert print-prompt text contains those structure rules. No official-kill language.
 
-See [[Wave 3 Task 1 Implementer Note]] and [[Wave 3 Task 2 Implementer Note]]. Related: [[Wave 1 Design]].
+Family 3: README/skill `humanize` section names title restoration + residual risk. print-prompt does not destamp. CLAIMS.md forbids official-kill; humanize row states the allowed claim.
+
+See [[Wave 3 Task 1 Implementer Note]], [[Wave 3 Task 2 Implementer Note]], and [[Wave 3 Task 3 Implementer Note]]. Related: [[Wave 1 Design]].
