@@ -22,6 +22,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Task 7 Style Auditor]] — STYLE APPROVE; Capturer Effect.Service; HttpClient only on capture/demo Live
 - [[Task 7 Implementer Note]] — Family 6: `capture` / `demo`, empty allowlist → `PreMarkModel`, README honesty-first, `npx anthropies`, Python deleted.
 - [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; --json still Schema-only; no official-detect lie
 - [[Task 6 Style Auditor]] — STYLE APPROVE; fflate in-memory; ProcCommand.make only; missing tools are Findings
@@ -63,6 +64,8 @@ Classify + Layer A + text inspect/clean. Named tests `cert_layer_a_roundtrip`, `
 
 `capture` + `demo`, empty `allowlist.json`, `npx` retarget, delete `src/anthropies`. Named tests `premark_unknown_model`, `official_unavailable_default`, `live_capture_smoke`.
 - [[Task 7 Implementer Note]] — capture / demo / Python-delete implementer thoughts
+- [[Task 7 QA Auditor]] — QA verdict on Task 7
+- [[Task 7 Style Auditor]] — STYLE verdict on Task 7
 
 ## Task 6 (Families 3–5 markup, office, PDF)
 
@@ -89,3 +92,5 @@ Origin blocklist + print-prompt Humanizer. Named tests `origin_blocklist`, `huma
 - [[Task 5 QA Auditor]] — QA verdict on Task 5
 - [[Task 5 Docs Auditor]] — DOCS verdict on Task 5
 - [[Task 6 Implementer Note]] — markup/office/PDF implementer
+- [[Task 7 Implementer Note]] — capture/demo implementer
+- [[Task 7 Docs Auditor]] — DOCS verdict on Task 7

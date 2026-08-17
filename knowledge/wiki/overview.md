@@ -22,6 +22,8 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Task 7 Style Auditor]] — STYLE APPROVE; Capturer Effect.Service; HttpClient only on capture/demo Live; Config not process.env
+- [[Task 7 Docs Auditor]] — DOCS APPROVE; honesty box first; capture not sample; npx; 0.2.0; no destamp/official-kill
 - [[Task 7 Implementer Note]] — Family 6: capture / demo; empty allowlist; npx retarget; Python deleted; official stays unavailable
 - [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; no official-detect lie
 - [[Task 6 Style Auditor]] — STYLE APPROVE; fflate CD cap; ProcCommand.make only; missing tools degrade
@@ -62,3 +64,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Task 6 Style Auditor]] — STYLE verdict on Task 6
 - [[Task 6 QA Auditor]] — QA verdict on Task 6
 - [[Task 6 Docs Auditor]] — DOCS verdict on Task 6
+- [[Task 7 Implementer Note]] — capture/demo implementer
+- [[Task 7 Style Auditor]] — STYLE verdict on Task 7
+- [[Task 7 QA Auditor]] — QA verdict on Task 7
+- [[Task 7 Docs Auditor]] — DOCS verdict on Task 7

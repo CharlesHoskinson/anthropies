@@ -3,6 +3,9 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Task 7 Style Auditor]] — STYLE APPROVE; Capturer Effect.Service; HttpClient only on capture/demo Live; Config not process.env
+- [[Task 7 QA Auditor]] — QA APPROVE; premark_unknown_model, official_unavailable_default, live skip; empty allowlist; Python deleted
+- [[Task 7 Docs Auditor]] — DOCS APPROVE; honesty box first; capture not sample; npx; 0.2.0
 - [[Task 7 Implementer Note]] — capture / demo / empty allowlist; npx retarget; Python deleted
 - [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; no official-detect lie
 - [[Task 6 Style Auditor]] — STYLE APPROVE; fflate CD cap before inflate; ProcCommand.make only; missing tools are Findings
@@ -44,3 +47,7 @@ Each entry: `[[Page]] — one-line summary`.
 - [[Task 6 QA Auditor]] — QA verdict on Task 6
 - [[Task 6 Style Auditor]] — STYLE verdict on Task 6
 - [[Task 6 Implementer Note]] — markup/office/PDF implementer
+- [[Task 7 Implementer Note]] — capture/demo implementer
+- [[Task 7 Style Auditor]] — STYLE verdict on Task 7
+- [[Task 7 QA Auditor]] — QA verdict on Task 7
+- [[Task 7 Docs Auditor]] — DOCS verdict on Task 7

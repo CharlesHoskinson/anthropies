@@ -52,3 +52,14 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - QA APPROVE (0 blockers). SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0, --json Schema-only, no official-detect lie.
 ## [2026-08-17] ingest | Task 6 auditor trio
 - STYLE APPROVE, QA APPROVE, DOCS APPROVE-WITH-CHANGES then rereview ADDRESSED.
+
+## [2026-08-17] ingest | Task 7 docs auditor
+- DOCS APPROVE (0 blockers). Honesty box first; capture not sample; npx; 0.2.0; no destamp/official-kill.
+
+## [2026-08-17] ingest | Task 7 QA auditor
+- QA APPROVE (0 blockers). premark_unknown_model, official_unavailable_default, live skip; empty allowlist; demo not gold; --json Schema-only; no official-detect lie; Python deleted.
+
+## [2026-08-17] ingest | Task 7 style auditor
+- STYLE APPROVE (0 blockers). Capturer Effect.Service; HttpClient only on capture/demo Live; Config not process.env; Fail PreMarkModel/MissingApiKey.
+## [2026-08-17] ingest | Task 7 auditor trio
+- STYLE, QA, DOCS all APPROVE.
