@@ -22,6 +22,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Task 5 Implementer Note]] — Family 2: PNG/JPEG hard-bound C2PA inspect/strip. Soft-binding residual always on image reports. Skill trigger restored after tests green.
 - [[Task 4 Implementer Note]] — Family 1: print-prompt `humanize` + `originBlocked`. `rewrite_metric.status` is `not-run`. `OriginBlocked` exits 2, bytes unchanged. No `HttpClient`.
 - [[Task 3 Implementer Note]] — Family 1: `classify`, `applyLayerA`, text inspect/clean. Non-text kinds fail closed (`BinaryInput`). `--json` stdout is Schema-only.
 - [[Task 2 Implementer Note]] — Effect 3 scaffold at `0.2.0`. `Report` / Fails / Config / CliCommand exist. Claim-forbidden test is green. Handlers are stubs.
@@ -52,6 +53,11 @@ Classify + Layer A + text inspect/clean. Named tests `cert_layer_a_roundtrip`, `
 - [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
 - [[Task 3 Implementer Note]] — Layer A and text CLI implementer
 - [[Task 3 Style Auditor]] — STYLE verdict on Task 3
+
+## Task 5 (Family 2 raster C2PA)
+
+PNG/JPEG hard-bound C2PA. Named tests `cert_c2pa_png_jpeg_svg` (PNG/JPEG rows), `cert_c2patool_false_positive`, `residual_exit_not_suppressed`.
+- [[Task 5 Implementer Note]] — raster C2PA implementer thoughts
 
 ## Task 4 (humanize print-prompt)
 

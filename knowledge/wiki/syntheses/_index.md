@@ -3,6 +3,7 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Task 5 Implementer Note]] — raster C2PA inspect/strip for PNG/JPEG; soft-binding residual; skill trigger restored
 - [[Task 4 QA Auditor]] — QA APPROVE; origin_blocklist, print-prompt not-run, OriginBlocked exit 2, bytes unchanged
 - [[Task 4 Style Auditor]] — STYLE APPROVE; originBlocked pure; Humanizer Effect.Service; no HttpClient; OriginBlocked TaggedError
 - [[Task 4 Docs Auditor]] — DOCS APPROVE; no official-kill; print-prompt does not say watermark removed; CLI help still honest

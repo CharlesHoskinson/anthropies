@@ -22,6 +22,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Task 5 Implementer Note]] — raster C2PA inspect/strip for PNG/JPEG; soft-binding residual; FileSystem-only; skill trigger restored
 - [[Task 4 QA Auditor]] — QA APPROVE; origin_blocklist, print-prompt not-run, OriginBlocked exit 2, bytes unchanged
 - [[Task 4 Style Auditor]] — STYLE APPROVE; originBlocked pure; Humanizer Effect.Service; FileSystem-only; OriginBlocked TaggedError
 - [[Task 4 Docs Auditor]] — DOCS APPROVE; no official-kill; print-prompt does not say watermark removed; CLI help still honest

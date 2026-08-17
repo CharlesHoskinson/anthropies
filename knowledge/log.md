@@ -37,3 +37,5 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - QA APPROVE (0 blockers). origin_blocklist, print-prompt not-run, OriginBlocked exit 2, bytes unchanged.
 ## [2026-08-17] ingest | Task 4 auditor trio
 - STYLE, QA, DOCS all APPROVE.
+
+## [2026-08-17] ingest | Task 5 implementer note
