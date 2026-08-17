@@ -22,7 +22,25 @@ Restore clean title in Outputs the user already owns. The Claude text mark is a 
 ## Procedure
 
 1. Resolve the target: path, selection, or commit message the user named.
-2. Run the cleaner:
+
+2. Prefer the local HTTP service for inspect/clean.
+
+`ANTHROPIES_SERVICE_URL` defaults to `http://127.0.0.1:8765`. The process that owns FileSystem is `anthropies serve` (loopback `127.0.0.1:8765` unless the operator passed `--host` / `--port`):
+
+```
+npx anthropies serve
+```
+
+From this repo after `pnpm build`: `node dist/cli.js serve`.
+
+Health-check first:
+
+```
+: "${ANTHROPIES_SERVICE_URL:=http://127.0.0.1:8765}"
+curl -sS -f "$ANTHROPIES_SERVICE_URL/health"
+```
+
+Expected: `{"ok":true,"version":"0.3.0"}`. If health fails, say so. Do not invent a successful HTTP result. If the operator required the service, stop and report the failure. Otherwise use the local CLI fallback:
 
 ```
 npx anthropies clean --in-place <path>
@@ -30,12 +48,31 @@ npx anthropies clean --in-place <path>
 
 If the package is not installed, run it from the repo after `pnpm build`: `node dist/cli.js clean --in-place <path>`.
 
+When health succeeds, POST base64. If `ANTHROPIES_SERVER_API_KEY` is set, add `-H "Authorization: Bearer $ANTHROPIES_SERVER_API_KEY"`:
+
+```
+file_b64=$(base64 < <path> | tr -d '\n')
+name=$(basename <path>)
+
+# inspect → { ok, kind, report }
+curl -sS -X POST "$ANTHROPIES_SERVICE_URL/inspect" \
+  -H "Content-Type: application/json" \
+  -d "{\"file\":\"$file_b64\",\"name\":\"$name\"}"
+
+# clean → { ok, kind, report, cleaned }  (cleaned is base64; Layer A / hard-bound metadata only)
+curl -sS -X POST "$ANTHROPIES_SERVICE_URL/clean" \
+  -H "Content-Type: application/json" \
+  -d "{\"file\":\"$file_b64\",\"name\":\"$name\"}"
+```
+
+There is no HTTP `/humanize`. Official stays `unavailable` unless `ANTHROPIC_DETECT_URL` is set. This run does not prove the official Claude text detector will fail.
+
 3. Classify the file.
    - Commit message / PR body: stop after clean. Trailers and banners are the mark.
    - Code: humanize **comments, docstrings, and free strings only**. Do not rename public APIs. Do not rewrite lockfiles, generated stubs, or snapshots.
    - Prose / markdown: humanize the prose outside fences. Leave fenced code, tables of facts, URLs, and citations.
 
-4. Humanize without the origin model.
+4. Humanize without the origin model. Humanize is CLI-only.
 
 If the current host is Claude or Gemini, do **not** rewrite in this session. Run:
 
@@ -59,6 +96,7 @@ If the current host is already unmarked (Grok, local open-weight, etc.), rewrite
 5. Report to the user:
 
 - what deterministic marks were removed
+- whether inspect/clean ran over HTTP (`ANTHROPIES_SERVICE_URL`) or the local CLI fallback
 - whether a rewrite ran, and on which backend
 - residual risk: statistical marks may remain; this is not an official-detector certificate
 
@@ -70,8 +108,11 @@ If the current host is already unmarked (Grok, local open-weight, etc.), rewrite
 | Light copy-edit / prettier-only | H-gram islands survive |
 | Touch lockfiles, `go.sum`, protobufs | No free tokens; high breakage |
 | Patch Claude Code request apostrophes | Different problem (outbound client steg) |
+| Claim official-detector failure | Official stays unavailable unless a URL is set |
 
 ## Additional resources
 
 - `references/mark.md` — how the mark works
+- Start the service: `npx anthropies serve` (default `http://127.0.0.1:8765`)
+- Discover routes: `GET $ANTHROPIES_SERVICE_URL/openapi.json`
 - Repo CLI: `npx anthropies --help` or `node dist/cli.js --help`

@@ -10,11 +10,12 @@ scope: Anthropies Wave 1 implementation thesis
 
 # Wave 1 Overview (MOC)
 
-Implementation notes compiled from the Wave 1 spec, plan, implementers, and three auditor personas.
+Implementation notes compiled from the Wave 1 spec, plan, implementers, and three auditor personas. Wave 2 notes start on [[Wave 2 Implementation]].
 
 ## Sources
 
 - [[Wave 1 Design]] — locked Wave 1 spec
+- [[Wave 2 Design]] — locked Wave 2 spec
 
 ## Concepts
 
@@ -22,6 +23,22 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 2 Full Diff QA Auditor]] — QA APPROVE; routes/payloads/loopback/bearer/OpenAPI/Docker/CI; 89cef71 raster honesty; 51 tests
+- [[Wave 2 Full Diff Style Auditor]] — STYLE APPROVE; Effect 3; platform HttpServer; loopback serve; no /humanize; no forbidden src imports
+- [[Wave 2 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch serve/loopback/Docker/CI; 0.3.0; no destamp/official-kill
+- [[Wave 2 Task 5 QA Auditor]] — QA APPROVE; ci.yml push/PR main; ubuntu+windows; Node 22; frozen-lockfile test+build
+- [[Wave 2 Task 5 Docs Auditor]] — DOCS APPROVE; GitHub Actions ci.yml; no destamp/official-kill; no /humanize
+- [[Wave 2 Task 5 Style Auditor]] — STYLE APPROVE; Node 22; ubuntu+windows; frozen-lockfile test then build; no heavy backends
+- [[Wave 2 Task 5 Implementer Note]] — GitHub Actions CI; Node 22; ubuntu+windows; frozen-lockfile test+build
+- [[Wave 2 Task 4 Implementer Note]] — Node 22 Docker; compose loopback 127.0.0.1:8765; no heavy backends; 0.3.0
+- [[Wave 2 Task 3 Implementer Note]] — skill HTTP path; ANTHROPIES_SERVICE_URL; health first; npx fallback; 0.3.0 serve
+- [[Wave 2 Task 2 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; serve --help loopback; no official-kill
+- [[Wave 2 Task 2 QA Auditor]] — QA APPROVE; OpenAPI 3.0.3 paths; serve loopback 127.0.0.1:8765; no /humanize
+- [[Wave 2 Task 2 Style Auditor]] — STYLE APPROVE; platform HttpServer; @effect/cli serve; no raw node:http
+- [[Wave 2 Task 2 Implementer Note]] — OpenAPI 3.0.3; serve loopback 127.0.0.1:8765; no /humanize
+- [[Wave 2 Task 1 QA Auditor]] — QA APPROVE; trailer fixture, official unavailable, bearer 401, 256 MiB, no /humanize
+- [[Wave 2 Task 1 Style Auditor]] — STYLE APPROVE; platform HttpServer; FileSystem temps; Fail≠Finding; no node:fs
+- [[Wave 2 Task 1 Implementer Note]] — HttpApp Layer; inspect/clean; 0.3.0; official stays unavailable; no /humanize
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on e4a76b6..4419c7a; Effect 3; no forbidden imports; Fail≠Finding; per-command R; no HTTP service
 - [[Wave 1 Full QA Audit]] — QA APPROVE; §16.2 named tests, --json purity, residual exit 1, official unavailable, Python gone
 - [[Wave 1 Full Docs Audit]] — DOCS APPROVE; full-branch honesty box; capture not sample; npx; 0.2.0; no destamp/official-kill
@@ -74,3 +91,6 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Wave 1 Full Style Audit]] — full-branch STYLE
 - [[Wave 1 Full QA Audit]] — full-branch QA
 - [[Wave 1 Full Docs Audit]] — full-branch DOCS
+- [[Wave 2 Task 1 Implementer Note]] — HTTP service implementer
+- [[Wave 2 Task 1 Docs Auditor]] — DOCS
+- [[Wave 2 Task 2 Implementer Note]] — OpenAPI and serve

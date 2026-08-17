@@ -97,7 +97,17 @@ humanize  Rewrite wording on a non-origin model (best-effort).
 capture   Fetch a Claude Output you own, for fixtures. Does not watermark.
 demo      capture → inspect → clean → humanize → inspect.
           Prints four channels. Never claims official text-kill.
+serve     Serve inspect and clean on loopback. Does not humanize.
+          Never claims official text-kill.
 ```
+
+## serve
+
+| Command | Allowed claim |
+|---|---|
+| `serve` | Local HTTP inspect/clean. Loopback by default. No `/humanize`. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set. |
+
+`/humanize` is not a route. Layer B stays CLI-only this wave.
 
 ## Report field meanings
 
