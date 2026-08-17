@@ -371,5 +371,3 @@ Primary pages fetched for this project, 15 August 2026. Re-verify before relying
 - Council Directive 93/13/EEC on unfair terms in consumer contracts
 - Google DeepMind, SynthID-Text, *Nature* (2024)
 - Kirchenbauer et al., "A Watermark for Large Language Models"; later reliability work; ETH SRI probing of SynthID-Text
-
-Three legal expert briefs prepared for this project (15 August 2026) sit in `knowledge/raw/` as `legal-opus1-brief.md`, `legal-opus2-brief.md`, and `legal-opus3-brief.md`. They are the source of the quitclaim, ratchet, and attestor analysis above. They are not legal advice.

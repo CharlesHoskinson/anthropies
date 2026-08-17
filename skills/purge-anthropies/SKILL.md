@@ -1,9 +1,10 @@
 ---
 name: purge-anthropies
 description: >
-  Use when the user asks to purge anthropies, strip a Claude watermark,
-  humanize Claude output, destamp SynthID-class text, remove Co-Authored-By Claude,
-  clean C2PA from a Claude file, or runs /purge-anthropies or /anthropies.
+  Use when the user asks to purge anthropies, strip Co-Authored-By Claude,
+  strip Generated-with banners, inspect owned files for vendor marks,
+  or runs /purge-anthropies or /anthropies.
+  Does not claim official watermark removal.
 ---
 
 # Purge Anthropies
@@ -13,7 +14,7 @@ Restore clean title in Outputs the user already owns. The Claude text mark is a 
 ## Hard rules
 
 - Do not rewrite with Claude, Gemini, or any origin/watermarked vendor. That re-stamps the mark.
-- Do not claim the official detector will fail. There is no public Claude detector.
+- Do not claim official-detector failure. There is no public Claude detector.
 - Do not synonym-swap in place. That leaves H-grams intact.
 - Deterministic clean first. Humanize second.
 

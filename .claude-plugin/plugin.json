@@ -1,7 +1,7 @@
 {
   "name": "anthropies",
   "version": "0.1.0",
-  "description": "Restore clean title in Outputs you own. Strip Claude watermarks, git trailers, and C2PA.",
+  "description": "Restore clean title in Outputs you own. Strip git trailers, banners, and (once implemented) hard-bound C2PA metadata. Does not defeat Anthropic’s unpublished text detector.",
   "author": {
     "name": "Charles Hoskinson",
     "url": "https://github.com/CharlesHoskinson/anthropies"
