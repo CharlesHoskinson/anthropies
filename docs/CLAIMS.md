@@ -80,7 +80,7 @@ description: >
 
 After the C2PA family is tested, add: `clean hard-bound C2PA metadata from owned png/jpg/svg (and other supported files).` Do not restore `strip a Claude watermark` or `destamp SynthID-class text`.
 
-Until Python is deleted, the skill still calls `python3 -m anthropies`.
+The skill and README call `npx anthropies` / `node dist/cli.js`.
 
 ## Locked plugin description
 

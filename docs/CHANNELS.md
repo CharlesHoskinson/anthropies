@@ -25,7 +25,7 @@ Layer A: invisible Unicode, agent git trailers, Generated-with banners. This is 
 
 Hard-bound C2PA / EXIF / XMP / container metadata on supported files. Certificate for what we strip, once implemented and tested.
 
-Until that family lands, public skill/slash copy does not claim C2PA removal. Plugin copy may say “(once implemented) hard-bound C2PA metadata.”
+Hard-bound C2PA/metadata strip is implemented for supported kinds. Plugin copy may still say “(once implemented)” from the locked Wave-1 description.
 
 C2PA track on `demo` is `skipped` or `certified` (never implied from text).
 

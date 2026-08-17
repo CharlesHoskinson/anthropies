@@ -1,9 +1,10 @@
 import * as Args from "@effect/cli/Args"
 import * as CliCommand from "@effect/cli/Command"
 import * as Options from "@effect/cli/Options"
-import { NodeContext, NodeRuntime } from "@effect/platform-node"
+import { NodeContext, NodeHttpClient, NodeRuntime } from "@effect/platform-node"
 import { Cause, Console, Effect, Exit, Layer, Option, Schema } from "effect"
 import { residualDrivesExit } from "./report.js"
+import { Capturer, runDemo } from "./services/capturer.js"
 import { Cleaner } from "./services/cleaner.js"
 import { Humanizer } from "./services/humanizer.js"
 import { Inspector } from "./services/inspector.js"
@@ -50,7 +51,11 @@ const failTags = new Set([
 
 
 
-const stub = (name: string): Effect.Effect<void> => Console.error(`${name} is not implemented`)
+const modelOpt = Options.text("model").pipe(Options.withDescription("Pinned model ID. Unknown IDs are PreMarkModel."))
+
+const promptOpt = Options.text("prompt").pipe(
+  Options.withDescription("Prompt for a Claude Output you own. Does not watermark.")
+)
 
 const inspect = CliCommand.make(
   "inspect",
@@ -124,11 +129,14 @@ const humanize = CliCommand.make(
   )
 )
 
-const capture = CliCommand.make("capture", {}, () => stub("capture")).pipe(
-  CliCommand.withDescription("Fetch a Claude Output you own, for fixtures. Does not watermark.")
-)
+const capture = CliCommand.make("capture", { model: modelOpt, prompt: promptOpt }, ({ model, prompt }) =>
+  Effect.gen(function* () {
+    const result = yield* Capturer.capture({ model, prompt })
+    yield* Console.error(`wrote ${result.path}`)
+  }).pipe(Effect.provide(NodeHttpClient.layer))
+).pipe(CliCommand.withDescription("Fetch a Claude Output you own, for fixtures. Does not watermark."))
 
-const demo = CliCommand.make("demo", {}, () => stub("demo")).pipe(
+const demo = CliCommand.make("demo", {}, () => runDemo().pipe(Effect.provide(NodeHttpClient.layer))).pipe(
   CliCommand.withDescription(
     "capture → inspect → clean → humanize → inspect. Prints four channels. Never claims official text-kill."
   )
@@ -145,7 +153,8 @@ const services = Layer.mergeAll(
   Inspector.Default,
   Cleaner.Default,
   Humanizer.Default,
-  Reporter.Default
+  Reporter.Default,
+  Capturer.Default
 )
 
 const tagOf = (u: unknown): string | undefined => {

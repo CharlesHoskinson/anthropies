@@ -20,6 +20,5 @@
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts"],
-  "exclude": ["src/anthropies/**"]
+  "include": ["src/**/*.ts"]
 }

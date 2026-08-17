@@ -35,7 +35,6 @@ export default tseslint.config(
     ignores: [
       "dist/**",
       "node_modules/**",
-      "src/anthropies/**",
       "knowledge/**",
       ".superpowers/**",
       "graphify-out/**"
