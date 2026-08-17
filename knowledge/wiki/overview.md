@@ -23,6 +23,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 3 Task 2 Implementer Note]] — Family 2 required structure-change prompts; print-prompt snapshot tests; no official-kill
 - [[Wave 3 Task 1 Implementer Note]] — Family 1 real rewrite path; ollama / openai-compatible POST; rewrite_metric computed; 0.4.0
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on e4a76b6..4419c7a; Effect 3; no forbidden imports; Fail≠Finding; per-command R; no HTTP service
 - [[Wave 1 Full QA Audit]] — QA APPROVE; §16.2 named tests, --json purity, residual exit 1, official unavailable, Python gone

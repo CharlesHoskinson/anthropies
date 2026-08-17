@@ -13,4 +13,6 @@ Locked leapfrog spec at `docs/superpowers/specs/2026-08-17-anthropies-wave3-desi
 
 Family 1: real ollama / openai-compatible rewrite + `rewrite_metric` computed after a successful rewrite (`status: computed` when `n >= 200` prose tokens). print-prompt stays default (`not-run`). Origin blocklist unchanged. Tests use a fake HTTP backend.
 
-See [[Wave 3 Task 1 Implementer Note]]. Related: [[Wave 1 Design]].
+Family 2: stronger Layer B prompts require clause-order / sentence-boundary / discourse-marker change (H-gram break) and keep facts/URLs/fences. Snapshot tests assert print-prompt text contains those structure rules. No official-kill language.
+
+See [[Wave 3 Task 1 Implementer Note]] and [[Wave 3 Task 2 Implementer Note]]. Related: [[Wave 1 Design]].

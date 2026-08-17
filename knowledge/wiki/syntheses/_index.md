@@ -3,6 +3,7 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Wave 3 Task 2 Implementer Note]] — required clause-order / H-gram break prompts; print-prompt snapshot contains structure rules
 - [[Wave 3 Task 1 Implementer Note]] — ollama / openai-compatible POST; rewrite_metric computed at n>=200; print-prompt not-run; 0.4.0
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on e4a76b6..4419c7a; Effect 3; Fail≠Finding; per-command R; no HTTP service
 - [[Wave 1 Full QA Audit]] — QA APPROVE; §16.2 named tests, --json purity, residual exit 1, official unavailable, Python gone
