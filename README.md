@@ -56,7 +56,11 @@ npx anthropies capture --model <allowlisted-id> --prompt "..."
 npx anthropies demo
 ```
 
-Default `humanize` is print-prompt: it prints a rewrite prompt. Run that prompt on a **local unmarked** model (Llama, Qwen, Mistral, DeepSeek with watermarking off). Do not run it with Claude or Gemini.
+### Humanize (title restoration)
+
+`humanize` is title restoration: a best-effort wording rewrite on a **non-origin** model so the keyed text mark is no longer the shipped prose. Residual statistical risk remains. It is not an official-kill and does not prove the official Claude text detector will fail.
+
+Default `humanize` is print-prompt: it prints a rewrite prompt and **does not destamp**. Run that prompt on a **local unmarked** model (Llama, Qwen, Mistral, DeepSeek with watermarking off). Do not run it with Claude or Gemini.
 
 ```bash
 # Grok

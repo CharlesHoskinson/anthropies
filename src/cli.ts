@@ -127,7 +127,7 @@ const humanize = CliCommand.make(
     }).pipe(Effect.provide(NodeHttpClient.layer))
 ).pipe(
   CliCommand.withDescription(
-    "Rewrite wording on a non-origin model (best-effort). Refuses Claude and Gemini."
+    "Title restoration: rewrite wording on a non-origin model (best-effort). Refuses Claude and Gemini. print-prompt does not destamp."
   )
 )
 

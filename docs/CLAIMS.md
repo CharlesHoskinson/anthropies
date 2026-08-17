@@ -92,12 +92,20 @@ Restore clean title in Outputs you own. Strip git trailers, banners, and (once i
 inspect   Report marks by channel. Never a single watermark score.
 clean     Strip deterministic Layer A and hard-bound C2PA/metadata.
           Does not remove the keyed text mark.
-humanize  Rewrite wording on a non-origin model (best-effort).
-          Refuses Claude and Gemini.
+humanize  Title restoration: rewrite wording on a non-origin model (best-effort).
+          Refuses Claude and Gemini. print-prompt does not destamp.
 capture   Fetch a Claude Output you own, for fixtures. Does not watermark.
 demo      capture → inspect → clean → humanize → inspect.
           Prints four channels. Never claims official text-kill.
 ```
+
+## humanize
+
+| Command | Allowed claim |
+|---|---|
+| `humanize` | Title restoration via non-origin rewrite (best-effort). Residual statistical risk remains. print-prompt does not destamp. Not an official-kill or official-detector certificate. |
+
+`destamp` stays forbidden as a capability. The denial `print-prompt does not destamp` is required (Wave 3 section 2), same pattern as `does not prove the official Claude text detector will fail`.
 
 ## Report field meanings
 
