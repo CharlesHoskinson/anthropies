@@ -22,6 +22,9 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; no official-detect lie
+- [[Task 6 Style Auditor]] — STYLE APPROVE; fflate CD cap; ProcCommand.make only; missing tools degrade
+- [[Task 6 Docs Auditor]] — DOCS APPROVE-WITH-CHANGES; PDF honesty must not say c2pa: degraded
 - [[Task 6 Implementer Note]] — Families 3–5: SVG/HTML/MD + Layer A; DOCX/ODT zip cap; PDF missing-tool degrades; no HttpClient
 - [[Task 5 Implementer Note]] — raster C2PA inspect/strip for PNG/JPEG; soft-binding residual; FileSystem-only; skill trigger restored
 - [[Task 4 QA Auditor]] — QA APPROVE; origin_blocklist, print-prompt not-run, OriginBlocked exit 2, bytes unchanged
@@ -54,3 +57,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Task 5 Style Auditor]] — STYLE verdict on Task 5
 - [[Task 5 QA Auditor]] — QA verdict on Task 5
 - [[Task 5 Docs Auditor]] — DOCS verdict on Task 5
+- [[Task 6 Implementer Note]] — markup/office/PDF implementer
+- [[Task 6 Style Auditor]] — STYLE verdict on Task 6
+- [[Task 6 QA Auditor]] — QA verdict on Task 6
+- [[Task 6 Docs Auditor]] — DOCS verdict on Task 6

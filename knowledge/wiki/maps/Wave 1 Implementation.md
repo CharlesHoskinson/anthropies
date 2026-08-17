@@ -22,6 +22,9 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Task 6 QA Auditor]] — QA APPROVE; SVG c2pa row, zip_bomb_and_caps, PDF degraded exit 0; --json still Schema-only; no official-detect lie
+- [[Task 6 Style Auditor]] — STYLE APPROVE; fflate in-memory; ProcCommand.make only; missing tools are Findings
+- [[Task 6 Docs Auditor]] — DOCS APPROVE-WITH-CHANGES; PDF honesty must not say c2pa: degraded
 - [[Task 6 Implementer Note]] — Families 3–5: SVG/HTML/MD metadata + Layer A; DOCX/ODT in-memory zip with 128 MiB cap; PDF via ProcCommand with degraded missing-tool path.
 - [[Task 5 Implementer Note]] — Family 2: PNG/JPEG hard-bound C2PA inspect/strip. Soft-binding residual always on image reports. Skill trigger restored after tests green.
 - [[Task 4 Implementer Note]] — Family 1: print-prompt `humanize` + `originBlocked`. `rewrite_metric.status` is `not-run`. `OriginBlocked` exits 2, bytes unchanged. No `HttpClient`.
@@ -59,6 +62,9 @@ Classify + Layer A + text inspect/clean. Named tests `cert_layer_a_roundtrip`, `
 
 SVG/HTML/MD metadata + Layer A; DOCX/ODT zip budget; PDF exiftool/qpdf degraded path. Named tests `cert_c2pa_png_jpeg_svg` (SVG row), `zip_bomb_and_caps`.
 - [[Task 6 Implementer Note]] — markup / office / PDF implementer thoughts
+- [[Task 6 QA Auditor]] — QA verdict on Task 6
+- [[Task 6 Style Auditor]] — STYLE verdict on Task 6
+- [[Task 6 Docs Auditor]] — DOCS verdict on Task 6
 
 ## Task 5 (Family 2 raster C2PA)
 
@@ -76,3 +82,4 @@ Origin blocklist + print-prompt Humanizer. Named tests `origin_blocklist`, `huma
 - [[Task 5 Style Auditor]] — STYLE verdict on Task 5
 - [[Task 5 QA Auditor]] — QA verdict on Task 5
 - [[Task 5 Docs Auditor]] — DOCS verdict on Task 5
+- [[Task 6 Implementer Note]] — markup/office/PDF implementer
