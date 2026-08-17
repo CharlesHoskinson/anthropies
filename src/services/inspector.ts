@@ -39,7 +39,8 @@ export class Inspector extends Effect.Service<Inspector>()("Inspector", {
             return makeRasterReport({
               present: inspected.present,
               removed: false,
-              labels: inspected.labels
+              labels: inspected.labels,
+              applicable: inspected.applicable
             })
           }
           if (owned.kind === "svg" && !options.forceText) {

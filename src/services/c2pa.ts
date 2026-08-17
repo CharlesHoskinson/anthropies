@@ -8,6 +8,7 @@ import { Finding } from "../report.js"
 
 export interface C2paInspectResult {
   readonly present: boolean
+  readonly applicable: boolean
   readonly findings: ReadonlyArray<Finding>
   readonly labels: ReadonlyArray<string>
 }
@@ -15,6 +16,7 @@ export interface C2paInspectResult {
 export interface C2paStripResult {
   readonly bytes: Uint8Array
   readonly removed: boolean
+  readonly applicable: boolean
   readonly labels: ReadonlyArray<string>
 }
 
@@ -37,6 +39,7 @@ export class C2pa extends Effect.Service<C2pa>()("C2pa", {
           const parsed = inspectSvgText(text)
           return {
             present: parsed.present,
+            applicable: true,
             findings: [
               new Finding({
                 channel: "c2pa",
@@ -52,10 +55,15 @@ export class C2pa extends Effect.Service<C2pa>()("C2pa", {
         }
         return {
           present: parsed.present,
+          applicable: parsed.applicable,
           findings: [
             new Finding({
               channel: "c2pa",
-              status: parsed.present ? "present" : "absent"
+              status: parsed.applicable
+                ? parsed.present
+                  ? "present"
+                  : "absent"
+                : "degraded"
             })
           ],
           labels: parsed.labels
@@ -73,6 +81,7 @@ export class C2pa extends Effect.Service<C2pa>()("C2pa", {
           return {
             bytes: new TextEncoder().encode(stripped.text),
             removed: stripped.labels.length > 0,
+            applicable: true,
             labels: stripped.labels
           }
         }
@@ -83,6 +92,7 @@ export class C2pa extends Effect.Service<C2pa>()("C2pa", {
         return {
           bytes: parsed.bytes,
           removed: parsed.removed,
+          applicable: parsed.applicable,
           labels: parsed.labels
         }
       })
