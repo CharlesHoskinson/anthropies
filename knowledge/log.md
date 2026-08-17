@@ -6,3 +6,5 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - Created wiki skeleton.
 - Domain: Wave 1 implementation notes and auditor thoughts.
 
+## [2026-08-17] ingest | Task 1 implementer note
+

@@ -14,6 +14,16 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Sources
 
+- [[Wave 1 Design]]
+
 ## Concepts
 
 ## Entities
+
+## Syntheses
+
+- [[Task 1 Implementer Note]] — Family 0 complete. Claims/channels docs exist. Skill keeps Python. Plugin version stays `0.1.0`. Manifesto no longer cites missing legal briefs.
+
+## Task 1 (Family 0)
+
+Honesty patch. Markdown only. Grep over `skills` `commands` `.claude-plugin` is the check.

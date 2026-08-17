@@ -14,6 +14,12 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Sources
 
+- [[Wave 1 Design]] — locked Wave 1 spec
+
 ## Concepts
 
 ## Entities
+
+## Syntheses
+
+- [[Task 1 Implementer Note]] — Family 0 honesty patch landed; no official-kill or C2PA-from-Claude claims in skill/plugin/slash
