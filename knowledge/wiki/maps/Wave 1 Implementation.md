@@ -22,6 +22,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Task 6 Implementer Note]] — Families 3–5: SVG/HTML/MD metadata + Layer A; DOCX/ODT in-memory zip with 128 MiB cap; PDF via ProcCommand with degraded missing-tool path.
 - [[Task 5 Implementer Note]] — Family 2: PNG/JPEG hard-bound C2PA inspect/strip. Soft-binding residual always on image reports. Skill trigger restored after tests green.
 - [[Task 4 Implementer Note]] — Family 1: print-prompt `humanize` + `originBlocked`. `rewrite_metric.status` is `not-run`. `OriginBlocked` exits 2, bytes unchanged. No `HttpClient`.
 - [[Task 3 Implementer Note]] — Family 1: `classify`, `applyLayerA`, text inspect/clean. Non-text kinds fail closed (`BinaryInput`). `--json` stdout is Schema-only.
@@ -53,6 +54,11 @@ Classify + Layer A + text inspect/clean. Named tests `cert_layer_a_roundtrip`, `
 - [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
 - [[Task 3 Implementer Note]] — Layer A and text CLI implementer
 - [[Task 3 Style Auditor]] — STYLE verdict on Task 3
+
+## Task 6 (Families 3–5 markup, office, PDF)
+
+SVG/HTML/MD metadata + Layer A; DOCX/ODT zip budget; PDF exiftool/qpdf degraded path. Named tests `cert_c2pa_png_jpeg_svg` (SVG row), `zip_bomb_and_caps`.
+- [[Task 6 Implementer Note]] — markup / office / PDF implementer thoughts
 
 ## Task 5 (Family 2 raster C2PA)
 

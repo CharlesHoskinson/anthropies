@@ -41,3 +41,6 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 ## [2026-08-17] ingest | Task 5 implementer note
 ## [2026-08-17] ingest | Task 5 auditor trio
 - STYLE, QA, DOCS all APPROVE.
+
+## [2026-08-17] ingest | Task 6 implementer note
+- Families 3–5: SVG/HTML/MD metadata + Layer A; DOCX/ODT zip budget; PDF ProcCommand degraded path.

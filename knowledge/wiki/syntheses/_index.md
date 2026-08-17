@@ -3,6 +3,7 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Task 6 Implementer Note]] — markup / office / PDF inspect/strip; zip 128 MiB cap; missing qpdf/exiftool degrades
 - [[Task 5 Implementer Note]] — raster C2PA inspect/strip for PNG/JPEG; soft-binding residual; skill trigger restored
 - [[Task 4 QA Auditor]] — QA APPROVE; origin_blocklist, print-prompt not-run, OriginBlocked exit 2, bytes unchanged
 - [[Task 4 Style Auditor]] — STYLE APPROVE; originBlocked pure; Humanizer Effect.Service; no HttpClient; OriginBlocked TaggedError
@@ -34,3 +35,4 @@ Each entry: `[[Page]] — one-line summary`.
 - [[Task 5 Style Auditor]] — STYLE verdict on Task 5
 - [[Task 5 QA Auditor]] — QA verdict on Task 5
 - [[Task 5 Docs Auditor]] — DOCS verdict on Task 5
+- [[Task 6 Implementer Note]] — markup / office / PDF implementer
