@@ -3,6 +3,18 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Wave 3 Full Diff QA Auditor]] — QA APPROVE; real rewrite; fake HTTP; computed metric not a pass bar; origin blocklist; no /humanize; no official-kill
+- [[Wave 3 Full Diff Style Auditor]] — STYLE APPROVE on origin/main...HEAD; Effect 3; no /humanize; print-prompt default; rewrite_metric not a CI bar; 0.4.0
+- [[Wave 3 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch title restoration + residual risk; CLAIMS humanize row; destamp denial; origin blocklist; 0.4.0; no official-kill
+- [[Wave 3 Task 3 Docs Auditor]] — DOCS APPROVE; README/skill title restoration + residual risk; CLAIMS humanize row; no official-kill
+- [[Wave 3 Task 3 QA Auditor]] — QA APPROVE; title restoration + residual risk; print-prompt does not destamp; no official-kill
+- [[Wave 3 Task 3 Implementer Note]] — title-restoration copy; residual risk; print-prompt does not destamp; no official-kill
+- [[Wave 3 Task 2 Docs Auditor]] — DOCS APPROVE; required structure-change prompts; no undetectable/beats detector; print-prompt does not destamp
+- [[Wave 3 Task 2 QA Auditor]] — QA APPROVE; structure-rule print-prompt snapshots; facts/URLs/fences; no official-kill
+- [[Wave 3 Task 2 Style Auditor]] — STYLE APPROVE; prompt constants; structure-rule tests; no node:fs
+- [[Wave 3 Task 2 Implementer Note]] — required clause-order / H-gram break prompts; print-prompt snapshot contains structure rules
+- [[Wave 3 Task 1 QA Auditor]] — QA APPROVE; fake HTTP; computed vs not-run; origin block before POST; no live model; no official-kill
+- [[Wave 3 Task 1 Implementer Note]] — ollama / openai-compatible POST; rewrite_metric computed at n>=200; print-prompt not-run; 0.4.0
 - [[Wave 2 Full Diff QA Auditor]] — QA APPROVE; routes/payloads/loopback/bearer/OpenAPI/Docker/CI; 89cef71 raster honesty; 51 tests
 - [[Wave 2 Full Diff Style Auditor]] — STYLE APPROVE; Effect 3; platform HttpServer; loopback serve; no /humanize; no forbidden src imports
 - [[Wave 2 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch serve/loopback/Docker/CI; 0.3.0; no destamp/official-kill

@@ -49,7 +49,9 @@ const failTags = new Set([
   "PreMarkModel",
   "DecodeError",
   "WriteGuard",
-  "InputTooLarge"
+  "InputTooLarge",
+  "RewriteFailed",
+  "RewriteRemoteDenied"
 ])
 
 
@@ -125,10 +127,10 @@ const humanize = CliCommand.make(
       if (residualDrivesExit(report)) {
         return yield* new ResidualHits({ path })
       }
-    })
+    }).pipe(Effect.provide(NodeHttpClient.layer))
 ).pipe(
   CliCommand.withDescription(
-    "Rewrite wording on a non-origin model (best-effort). Refuses Claude and Gemini."
+    "Title restoration: rewrite wording on a non-origin model (best-effort). Refuses Claude and Gemini. print-prompt does not destamp."
   )
 )
 
@@ -175,7 +177,7 @@ export const cli = CliCommand.make("anthropies").pipe(
   CliCommand.withSubcommands([inspect, clean, humanize, capture, demo, serve])
 )
 
-const run = CliCommand.run(cli, { name: "anthropies", version: "0.3.0" })
+const run = CliCommand.run(cli, { name: "anthropies", version: "0.4.0" })
 
 const services = Layer.mergeAll(
   Inspector.Default,

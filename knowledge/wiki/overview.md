@@ -14,6 +14,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Sources
 
+- [[Wave 3 Design]] — locked Wave 3 Layer B leapfrog spec
 - [[Wave 1 Design]] — locked Wave 1 spec
 - [[Wave 2 Design]] — locked Wave 2 spec
 
@@ -23,6 +24,18 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 3 Full Diff QA Auditor]] — QA APPROVE; real rewrite; fake HTTP; computed metric not a pass bar; origin blocklist; no /humanize; no official-kill
+- [[Wave 3 Full Diff Style Auditor]] — STYLE APPROVE on origin/main...HEAD; Effect 3; no /humanize; print-prompt default; rewrite_metric not a CI bar; 0.4.0
+- [[Wave 3 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch title restoration + residual risk; CLAIMS humanize row; destamp denial; origin blocklist; 0.4.0; no official-kill
+- [[Wave 3 Task 3 Docs Auditor]] — DOCS APPROVE; README/skill title restoration + residual risk; CLAIMS humanize row; no official-kill
+- [[Wave 3 Task 3 QA Auditor]] — QA APPROVE; title restoration + residual risk; print-prompt does not destamp; no official-kill
+- [[Wave 3 Task 3 Implementer Note]] — Family 3 title-restoration copy; residual risk; print-prompt does not destamp; no official-kill
+- [[Wave 3 Task 2 Docs Auditor]] — DOCS APPROVE; required structure-change prompts; no undetectable/beats detector; print-prompt does not destamp
+- [[Wave 3 Task 2 QA Auditor]] — QA APPROVE; structure-rule print-prompt snapshots; facts/URLs/fences; no official-kill
+- [[Wave 3 Task 2 Style Auditor]] — STYLE APPROVE; prompt constants; structure-rule tests; no node:fs
+- [[Wave 3 Task 2 Implementer Note]] — Family 2 required structure-change prompts; print-prompt snapshot tests; no official-kill
+- [[Wave 3 Task 1 QA Auditor]] — QA APPROVE; fake HTTP; computed vs not-run; origin block; no live model; no official-kill
+- [[Wave 3 Task 1 Implementer Note]] — Family 1 real rewrite path; ollama / openai-compatible POST; rewrite_metric computed; 0.4.0
 - [[Wave 2 Full Diff QA Auditor]] — QA APPROVE; routes/payloads/loopback/bearer/OpenAPI/Docker/CI; 89cef71 raster honesty; 51 tests
 - [[Wave 2 Full Diff Style Auditor]] — STYLE APPROVE; Effect 3; platform HttpServer; loopback serve; no /humanize; no forbidden src imports
 - [[Wave 2 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch serve/loopback/Docker/CI; 0.3.0; no destamp/official-kill

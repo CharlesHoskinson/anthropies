@@ -1,9 +1,17 @@
 import type { FileSystem } from "@effect/platform/FileSystem"
-import { Effect, Option } from "effect"
-import { rewriteBackend, rewriteModel } from "../config.js"
+import { Effect, Option, type Redacted } from "effect"
+import {
+  rewriteAllowRemote,
+  rewriteApiKey,
+  rewriteBackend,
+  rewriteBaseUrl,
+  rewriteModel
+} from "../config.js"
 import {
   BinaryInput,
   OriginBlocked,
+  RewriteFailed,
+  RewriteRemoteDenied,
   type DecodeError,
   type InputTooLarge,
   type WriteGuard
@@ -12,7 +20,8 @@ import { handlerFor, loadOwned, pathSuffix } from "../formats/registry.js"
 import type { Kind } from "../kind.js"
 import { applyLayerA, type LayerARemoved } from "../layer-a.js"
 import { Finding, Report, type RewriteMetric } from "../report.js"
-import { notRunMetric } from "../rewrite-metric.js"
+import { completeRewrite } from "../rewrite-backend.js"
+import { computeRewriteMetric, notRunMetric } from "../rewrite-metric.js"
 import { destinationOf, makeTextReport, Reporter } from "./reporter.js"
 
 const ORIGIN_TOKENS = ["claude", "anthropic", "gemini", "google-gemini", "synthid"] as const
@@ -36,20 +45,32 @@ const CODE_SUFFIX = new Set([
   ".sql"
 ])
 
-/** Ported Layer B prose prefix. Rewrite H-grams; keep facts, URLs, fences. */
-export const PROSE_PROMPT = `Rewrite the text below so almost no original 5-word sequence survives.
+/** Layer B prose prefix. Require clause-order / H-gram break; keep facts, URLs, fences. */
+export const PROSE_PROMPT = `Rewrite the text below so almost no original 5-word sequence (H-gram) survives.
 
-Rules:
-- Keep every fact, number, name, URL, citation, and code fence byte-stable.
-- Change clause order, sentence boundaries, discourse markers, and function words.
+Required structure changes — do all of these:
+- Change clause order.
+- Change sentence boundaries.
+- Change discourse markers and function words.
 - Do not synonym-swap in place while keeping the same sentence skeleton.
-- Output only the rewritten text.
+
+Keep every fact, number, name, URL, citation, and code fence byte-stable.
+
+Output only the rewritten text.
 
 TEXT:
 `
 
-/** Ported Layer B code prefix. Touch comments and non-load-bearing strings only. */
-export const CODE_PROMPT = `Rewrite only comments, docstrings, and non-load-bearing string literals.
+/** Layer B code prefix. Require structure change in comments; keep facts, URLs, fences, APIs. */
+export const CODE_PROMPT = `Rewrite only comments, docstrings, and non-load-bearing string literals so almost no original 5-word sequence (H-gram) survives in those spans.
+
+Required structure changes in comments and docstrings — do all of these:
+- Change clause order.
+- Change sentence boundaries.
+- Change discourse markers and function words.
+- Do not synonym-swap in place while keeping the same sentence skeleton.
+
+Keep every fact, number, name, URL, citation, and code fence byte-stable.
 Do not change public APIs, protocol strings, test snapshots, imports, or behavior.
 Keep the code compiling. Output only the rewritten file.
 
@@ -101,10 +122,8 @@ const blocked = (path: string): OriginBlocked =>
     reason: "origin model would re-stamp the mark"
   })
 
-const printPromptNote = (backend: string): string =>
-  backend === "print-prompt"
-    ? "print-prompt: run this on an unmarked local model"
-    : `${backend} not implemented; falling back to print-prompt`
+const printPromptNote =
+  "print-prompt: does not destamp; run this on an unmarked local model"
 
 /** Attach rewrite_metric and mark statistical as best-effort. */
 export const reportFromHumanize = (input: {
@@ -134,31 +153,58 @@ export const reportFromHumanize = (input: {
   })
 }
 
-const readRewriteTarget = (): Effect.Effect<{ backend: string; model: string }> =>
+const readRewriteTarget = (): Effect.Effect<{
+  backend: "print-prompt" | "ollama" | "openai-compatible"
+  model: string
+  baseUrl: string
+  apiKey: Option.Option<Redacted.Redacted<string>>
+  allowRemote: string
+}> =>
   Effect.gen(function* () {
     const backend = yield* rewriteBackend.pipe(Effect.orDie)
     const model = Option.getOrElse(yield* rewriteModel.pipe(Effect.orDie), () => "")
-    return { backend, model }
+    const baseUrl = yield* rewriteBaseUrl.pipe(Effect.orDie)
+    const apiKey = yield* rewriteApiKey.pipe(Effect.orDie)
+    const allowRemote = yield* rewriteAllowRemote.pipe(Effect.orDie)
+    return { backend, model, baseUrl, apiKey, allowRemote }
   })
+
+type HumanizeError = OriginBlocked | RewriteFailed | RewriteRemoteDenied
 
 const rewrite = (
   text: string,
   options: HumanizeOptions
-): Effect.Effect<HumanizeResult, OriginBlocked> =>
+): Effect.Effect<HumanizeResult, HumanizeError> =>
   Effect.gen(function* () {
-    const { backend, model } = yield* readRewriteTarget()
+    const { backend, model, baseUrl, apiKey, allowRemote } = yield* readRewriteTarget()
     if (originBlocked(backend, model)) {
       return yield* blocked(options.path ?? "")
     }
     const cleaned = applyLayerA(text).text
+    if (backend === "print-prompt") {
+      return {
+        text: promptFor(options.kind) + cleaned,
+        note: printPromptNote,
+        metric: notRunMetric(options.kind)
+      }
+    }
+    const rewritten = yield* completeRewrite({
+      backend,
+      model,
+      baseUrl,
+      apiKey,
+      allowRemote,
+      prompt: promptFor(options.kind) + cleaned,
+      path: options.path ?? ""
+    })
     return {
-      text: promptFor(options.kind) + cleaned,
-      note: printPromptNote(backend),
-      metric: notRunMetric(options.kind)
+      text: rewritten,
+      note: `rewrote via ${backend} (${model})`,
+      metric: computeRewriteMetric(cleaned, rewritten, options.kind)
     }
   })
 
-/** Origin blocklist plus print-prompt rewrite. FileSystem only. */
+/** Origin blocklist plus print-prompt or HTTP rewrite. HttpClient only on HTTP backends. */
 export class Humanizer extends Effect.Service<Humanizer>()("Humanizer", {
   accessors: true,
   effect: Effect.gen(function* () {
@@ -167,13 +213,13 @@ export class Humanizer extends Effect.Service<Humanizer>()("Humanizer", {
       humanize: (
         text: string,
         options: HumanizeOptions
-      ): Effect.Effect<HumanizeResult, OriginBlocked, FileSystem> => rewrite(text, options),
+      ): Effect.Effect<HumanizeResult, HumanizeError, FileSystem> => rewrite(text, options),
       humanizeFile: (
         path: string,
         options: HumanizeFileOptions
       ): Effect.Effect<
         HumanizeFileResult,
-        OriginBlocked | BinaryInput | DecodeError | InputTooLarge | WriteGuard,
+        HumanizeError | BinaryInput | DecodeError | InputTooLarge | WriteGuard,
         FileSystem
       > =>
         Effect.gen(function* () {

@@ -1,6 +1,6 @@
 {
   "name": "anthropies",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Restore clean title in Outputs you own. Strip git trailers, banners, and hard-bound C2PA metadata. Does not defeat Anthropic’s unpublished text detector.",
   "author": {
     "name": "Charles Hoskinson",

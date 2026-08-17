@@ -46,7 +46,7 @@ pnpm build
 pnpm install -g .
 ```
 
-Or one-shot: `npx anthropies --help`. From this repo after `pnpm build`: `node dist/cli.js --help`. Version is `0.3.0`.
+Or one-shot: `npx anthropies --help`. From this repo after `pnpm build`: `node dist/cli.js --help`. Version is `0.4.0`.
 
 ```bash
 npx anthropies inspect COMMIT_EDITMSG
@@ -61,7 +61,11 @@ npx anthropies serve
 
 Docker (`Dockerfile` + `compose.yaml`) is the same service. `docker compose up --build` publishes `127.0.0.1:8765:8765`. The process inside binds `0.0.0.0:8765`; the host mapping stays loopback. The image does not install qpdf, exiftool, or c2patool. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set. GitHub Actions runs `pnpm test` and `pnpm build` on Ubuntu and Windows.
 
-Default `humanize` is print-prompt: it prints a rewrite prompt. Run that prompt on a **local unmarked** model (Llama, Qwen, Mistral, DeepSeek with watermarking off). Do not run it with Claude or Gemini.
+### Humanize (title restoration)
+
+`humanize` is title restoration: a best-effort wording rewrite on a **non-origin** model so the keyed text mark is no longer the shipped prose. Residual statistical risk remains. It is not an official-kill and does not prove the official Claude text detector will fail.
+
+Default `humanize` is print-prompt: it prints a rewrite prompt and **does not destamp**. Run that prompt on a **local unmarked** model (Llama, Qwen, Mistral, DeepSeek with watermarking off). Do not run it with Claude or Gemini.
 
 ```bash
 # Grok

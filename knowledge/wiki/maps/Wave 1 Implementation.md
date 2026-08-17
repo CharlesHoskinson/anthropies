@@ -14,6 +14,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Sources
 
+- [[Wave 3 Design]]
 - [[Wave 1 Design]]
 
 ## Concepts
@@ -22,6 +23,12 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 3 Full Diff QA Auditor]] — QA APPROVE; real rewrite; fake HTTP; computed metric not a pass bar; origin blocklist; no /humanize
+- [[Wave 3 Full Diff Style Auditor]] — STYLE APPROVE on full Wave 3 leapfrog; Effect 3; no /humanize; print-prompt default; 0.4.0
+- [[Wave 3 Full Diff Docs Auditor]] — DOCS APPROVE; full-branch title restoration + residual risk; CLAIMS humanize row; destamp denial; origin blocklist; 0.4.0
+- [[Wave 3 Task 3 Docs Auditor]] — DOCS APPROVE; Family 3 title-restoration copy; CLAIMS humanize row; no official-kill
+- [[Wave 3 Task 3 Implementer Note]] — Family 3: README/skill title-restoration copy; CLAIMS humanize row; print-prompt does not destamp
+- [[Wave 3 Task 1 Implementer Note]] — Family 1: real rewrite backends + computed rewrite_metric at 0.4.0
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on full branch; Effect 3; Fail≠Finding; per-command R; `@effect/cli`; no HTTP service
 - [[Wave 1 Full Docs Audit]] — DOCS APPROVE; full-branch honesty box; capture not sample; npx; 0.2.0
 - [[Task 7 Style Auditor]] — STYLE APPROVE; Capturer Effect.Service; HttpClient only on capture/demo Live

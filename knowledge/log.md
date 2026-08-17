@@ -2,6 +2,42 @@
 
 Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 
+## [2026-08-17] ingest | Wave 3 Full Diff QA auditor
+- QA APPROVE (0 blockers). Real rewrite; fake HTTP; computed metric not a pass bar; structure-rule tests; origin blocklist; print-prompt not-run; no src/http/; no official-kill. `pnpm test`/`pnpm build` not executed here (no shell).
+
+## [2026-08-17] ingest | Wave 3 Full Diff docs auditor
+- DOCS APPROVE (0 blockers). Title restoration + residual risk; CLAIMS humanize row; destamp denial; origin blocklist documented; 0.4.0; no official-kill.
+
+## [2026-08-17] ingest | Wave 3 full-diff STYLE auditor
+- STYLE APPROVE (0 blockers). Effect 3 ESM Node 22; no /humanize; origin blocklist; print-prompt default does not destamp; rewrite_metric not a CI bar; 0.4.0; real loopback rewrite; structure-changing prompts.
+
+## [2026-08-17] ingest | Wave 3 Task 3 docs auditor
+- DOCS APPROVE (0 blockers). README/skill title restoration + residual risk; CLAIMS humanize row; no official-kill.
+
+## [2026-08-17] ingest | Wave 3 Task 3 QA auditor
+- QA APPROVE (0 blockers). Title restoration + residual risk; print-prompt does not destamp; no official-kill.
+
+## [2026-08-17] ingest | Wave 3 Task 3 implementer note
+- Family 3: README/skill title restoration + residual risk; print-prompt does not destamp; CLAIMS humanize row; no official-kill.
+
+## [2026-08-17] ingest | Wave 3 Task 2 docs auditor
+- DOCS APPROVE (0 blockers). Structure-change prompts; no undetectable/beats detector; print-prompt does not destamp.
+
+## [2026-08-17] ingest | Wave 3 Task 2 QA auditor
+- QA APPROVE (0 blockers). Structure-rule print-prompt snapshots; facts/URLs/fences; no official-kill.
+
+## [2026-08-17] ingest | Wave 3 Task 2 STYLE auditor
+- STYLE APPROVE (0 blockers). Prompts are constants; structure-rule tests exist; no node:fs.
+
+## [2026-08-17] ingest | Wave 3 Task 2 implementer note
+- Family 2: required clause-order / H-gram break prompts; print-prompt snapshot contains structure rules; no official-kill.
+
+## [2026-08-17] ingest | Wave 3 Task 1 QA auditor
+- QA APPROVE (0 blockers). Fake HTTP; computed vs not-run; origin block before POST; no live model; no official-kill.
+
+## [2026-08-17] ingest | Wave 3 Task 1 implementer note
+- Family 1: real ollama / openai-compatible rewrite; rewrite_metric computed at n>=200; print-prompt not-run; 0.4.0.
+
 ## [2026-08-17] init | Anthropies Wave 1 Wiki
 - Created wiki skeleton.
 - Domain: Wave 1 implementation notes and auditor thoughts.

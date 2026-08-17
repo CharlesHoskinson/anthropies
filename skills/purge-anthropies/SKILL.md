@@ -12,6 +12,8 @@ description: >
 
 Restore clean title in Outputs the user already owns. The Claude text mark is a SynthID-class keyed sampler. It is the wording. Hidden-character strip does not touch it.
 
+`humanize` is title restoration: a best-effort wording rewrite on a non-origin model. Residual statistical risk remains. print-prompt does not destamp. This is not an official-kill.
+
 ## Hard rules
 
 - Do not rewrite with Claude, Gemini, or any origin/watermarked vendor. That re-stamps the mark.
@@ -80,7 +82,7 @@ If the current host is Claude or Gemini, do **not** rewrite in this session. Run
 ANTHROPIES_REWRITE_BACKEND=print-prompt npx anthropies humanize <path>
 ```
 
-Then execute that prompt on a **local unmarked** model (Ollama / local Llama / Qwen / Mistral / DeepSeek with watermarking off). Optional:
+print-prompt prints a rewrite prompt. It does not destamp. Then execute that prompt on a **local unmarked** model (Ollama / local Llama / Qwen / Mistral / DeepSeek with watermarking off). Optional:
 
 ```
 ANTHROPIES_REWRITE_BACKEND=ollama ANTHROPIES_REWRITE_MODEL=llama3.2 npx anthropies humanize --in-place <path>
@@ -98,7 +100,7 @@ If the current host is already unmarked (Grok, local open-weight, etc.), rewrite
 - what deterministic marks were removed
 - whether inspect/clean ran over HTTP (`ANTHROPIES_SERVICE_URL`) or the local CLI fallback
 - whether a rewrite ran, and on which backend
-- residual risk: statistical marks may remain; this is not an official-detector certificate
+- residual risk: statistical marks may remain; title restoration is best-effort; this is not an official-detector certificate and not an official-kill
 
 ## Do not
 

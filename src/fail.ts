@@ -41,3 +41,18 @@ export class InputTooLarge extends Schema.TaggedError<InputTooLarge>()("InputToo
   path: Schema.String,
   reason: Schema.String
 }) {}
+
+/** ollama / openai-compatible rewrite POST failed or response was empty. */
+export class RewriteFailed extends Schema.TaggedError<RewriteFailed>()("RewriteFailed", {
+  path: Schema.String,
+  reason: Schema.String
+}) {}
+
+/** Non-loopback rewrite URL without ANTHROPIES_REWRITE_ALLOW_REMOTE=1. */
+export class RewriteRemoteDenied extends Schema.TaggedError<RewriteRemoteDenied>()(
+  "RewriteRemoteDenied",
+  {
+    path: Schema.String,
+    reason: Schema.String
+  }
+) {}

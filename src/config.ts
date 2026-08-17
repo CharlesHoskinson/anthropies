@@ -14,7 +14,7 @@ export const anthropicDetectUrl = Config.option(Config.string("ANTHROPIC_DETECT_
 /** Unset means the HTTP service does not require Authorization. */
 export const serverApiKey = Config.option(Config.redacted("ANTHROPIES_SERVER_API_KEY"))
 
-/** print-prompt by default. ollama and openai-compatible are later HTTP backends. */
+/** print-prompt by default. ollama and openai-compatible POST to the rewrite URL. */
 export const rewriteBackend = rewriteBackendConfig.pipe(Config.withDefault("print-prompt"))
 
 /** Model name for a rewrite backend. */
