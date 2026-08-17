@@ -11,7 +11,7 @@ export const anthropicApiKey = Config.option(Config.redacted("ANTHROPIC_API_KEY"
 /** Unset yields OfficialFinding Unavailable. No default URL. */
 export const anthropicDetectUrl = Config.option(Config.string("ANTHROPIC_DETECT_URL"))
 
-/** print-prompt by default. ollama and openai-compatible are later HTTP backends. */
+/** print-prompt by default. ollama and openai-compatible POST to the rewrite URL. */
 export const rewriteBackend = rewriteBackendConfig.pipe(Config.withDefault("print-prompt"))
 
 /** Model name for a rewrite backend. */
