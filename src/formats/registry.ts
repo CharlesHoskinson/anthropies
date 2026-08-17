@@ -56,6 +56,10 @@ export const handlerFor = (kind: Kind, forceText: boolean): FormatHandler | unde
   return undefined
 }
 
+/** Raster is a byte family; later families register text handlers. */
+export const handlesKind = (kind: Kind, forceText: boolean): boolean =>
+  (kind === "raster" && !forceText) || handlerFor(kind, forceText) !== undefined
+
 /** Stat, refuse over-cap, then classify. */
 export const loadOwned = (path: string): Effect.Effect<OwnedFile, DecodeError | InputTooLarge, FileSystem> =>
   Effect.gen(function* () {

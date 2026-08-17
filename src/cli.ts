@@ -3,6 +3,7 @@ import * as CliCommand from "@effect/cli/Command"
 import * as Options from "@effect/cli/Options"
 import { NodeContext, NodeRuntime } from "@effect/platform-node"
 import { Cause, Console, Effect, Exit, Layer, Option, Schema } from "effect"
+import { residualDrivesExit } from "./report.js"
 import { Cleaner } from "./services/cleaner.js"
 import { Humanizer } from "./services/humanizer.js"
 import { Inspector } from "./services/inspector.js"
@@ -47,10 +48,7 @@ const failTags = new Set([
   "InputTooLarge"
 ])
 
-const presentOnCertificate = (report: { readonly findings: ReadonlyArray<{ readonly channel: string; readonly status: string }> }): boolean =>
-  report.findings.some(
-    (f) => (f.channel === "deterministic" || f.channel === "c2pa") && f.status === "present"
-  )
+
 
 const stub = (name: string): Effect.Effect<void> => Console.error(`${name} is not implemented`)
 
@@ -61,7 +59,7 @@ const inspect = CliCommand.make(
     Effect.gen(function* () {
       const report = yield* Inspector.inspect(path, { forceText, json })
       yield* Reporter.print(report, json)
-      if (presentOnCertificate(report)) {
+      if (residualDrivesExit(report)) {
         return yield* new ResidualHits({ path })
       }
     })
@@ -85,7 +83,7 @@ const clean = CliCommand.make(
         ...(Option.isSome(output) ? { output: output.value } : {})
       })
       yield* Reporter.print(report, json)
-      if (presentOnCertificate(report)) {
+      if (residualDrivesExit(report)) {
         return yield* new ResidualHits({ path })
       }
     })
@@ -116,7 +114,7 @@ const humanize = CliCommand.make(
       })
       yield* Console.error(note)
       yield* Reporter.print(report, json)
-      if (presentOnCertificate(report)) {
+      if (residualDrivesExit(report)) {
         return yield* new ResidualHits({ path })
       }
     })

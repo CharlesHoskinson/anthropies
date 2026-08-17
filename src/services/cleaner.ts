@@ -4,7 +4,8 @@ import { BinaryInput, type DecodeError, type InputTooLarge, type WriteGuard } fr
 import { applyLayerA } from "../layer-a.js"
 import { handlerFor, loadOwned } from "../formats/registry.js"
 import type { Report } from "../report.js"
-import { destinationOf, makeTextReport, Reporter } from "./reporter.js"
+import { C2pa } from "./c2pa.js"
+import { destinationOf, makeRasterReport, makeTextReport, Reporter } from "./reporter.js"
 
 export interface CleanOptions {
   readonly forceText: boolean
@@ -23,6 +24,7 @@ export class Cleaner extends Effect.Service<Cleaner>()("Cleaner", {
   accessors: true,
   effect: Effect.gen(function* () {
     const reporter = yield* Reporter
+    const c2pa = yield* C2pa
     return {
       clean: (
         path: string,
@@ -35,6 +37,17 @@ export class Cleaner extends Effect.Service<Cleaner>()("Cleaner", {
         Effect.gen(function* () {
           const dest = destinationOf(path, options)
           const owned = yield* loadOwned(path)
+          if (owned.kind === "raster" && !options.forceText) {
+            const stripped = yield* c2pa.strip(owned.bytes, owned.kind, path)
+            const after = yield* c2pa.inspect(stripped.bytes, owned.kind, path)
+            const report = makeRasterReport({
+              present: after.present,
+              removed: stripped.removed,
+              labels: stripped.labels
+            })
+            yield* reporter.writeAtomic(dest, stripped.bytes)
+            return { report, bytes: stripped.bytes }
+          }
           const handler = handlerFor(owned.kind, options.forceText)
           if (handler === undefined) {
             return yield* new BinaryInput({
@@ -56,5 +69,5 @@ export class Cleaner extends Effect.Service<Cleaner>()("Cleaner", {
         })
     }
   }),
-  dependencies: [Reporter.Default]
+  dependencies: [Reporter.Default, C2pa.Default]
 }) {}

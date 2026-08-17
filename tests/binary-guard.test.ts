@@ -13,7 +13,7 @@ const layers = Effect.provide(
 )
 
 describe("binary_guard_docx_png_stdin", () => {
-  it.scoped("refuses PNG inspect without force-text and writes nothing", () =>
+  it.scoped("refuses truncated PNG inspect and writes nothing", () =>
     layers(
       Effect.gen(function* () {
         const fs = yield* FileSystem.FileSystem
@@ -25,7 +25,7 @@ describe("binary_guard_docx_png_stdin", () => {
         )
         expect(Either.isLeft(result)).toBe(true)
         if (Either.isLeft(result)) {
-          expect(result.left._tag).toBe("BinaryInput")
+          expect(result.left._tag).toBe("DecodeError")
         }
         expect(yield* fs.exists(`${path}.cleaned`)).toBe(false)
         expect(yield* fs.exists(`${path}.bak`)).toBe(false)

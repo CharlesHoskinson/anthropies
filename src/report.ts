@@ -88,3 +88,16 @@ export const honestyStanza = (input: HonestyStanzaInput): Array<string> => [
   "this run does not prove the text is human-written",
   "absence of a mark does not prove Claude was uninvolved"
 ]
+
+/** Soft-binding residual. Always appended on raster reports. */
+export const softBindingSentence = "soft-binding and pixel marks are out of scope"
+
+/** Certificate residual drives exit 1 unless the run is degraded. */
+export const residualDrivesExit = (report: {
+  readonly degraded: boolean
+  readonly findings: ReadonlyArray<{ readonly channel: string; readonly status: string }>
+}): boolean =>
+  !report.degraded &&
+  report.findings.some(
+    (f) => (f.channel === "deterministic" || f.channel === "c2pa") && f.status === "present"
+  )

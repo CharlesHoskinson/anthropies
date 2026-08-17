@@ -23,7 +23,7 @@ describe("write_guard", () => {
         }).pipe(Effect.either)
         expect(Either.isLeft(result)).toBe(true)
         if (Either.isLeft(result)) {
-          expect(result.left._tag).toBe("BinaryInput")
+          expect(result.left._tag).toBe("DecodeError")
         }
         expect(Array.from(yield* fs.readFile(path))).toEqual(Array.from(PNG_MAGIC))
         expect(yield* fs.exists(`${path}.bak`)).toBe(false)

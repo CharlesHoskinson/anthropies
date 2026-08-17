@@ -3,6 +3,7 @@ name: purge-anthropies
 description: >
   Use when the user asks to purge anthropies, strip Co-Authored-By Claude,
   strip Generated-with banners, inspect owned files for vendor marks,
+  clean hard-bound C2PA metadata from owned png/jpg/svg (and other supported files),
   or runs /purge-anthropies or /anthropies.
   Does not claim official watermark removal.
 ---

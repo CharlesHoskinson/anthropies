@@ -9,7 +9,8 @@ import {
   honestyStanza,
   OfficialUnavailable,
   Removed,
-  Report
+  Report,
+  softBindingSentence
 } from "../report.js"
 
 export interface DestOptions {
@@ -74,6 +75,41 @@ export const makeTextReport = (input: {
   return input.present
     ? new Report({ ...base, anyDeterministicHits: true })
     : new Report(base)
+}
+
+/** Build a raster Report. Soft-binding sentence is always present. */
+export const makeRasterReport = (input: {
+  readonly present: boolean
+  readonly removed: boolean
+  readonly labels: ReadonlyArray<string>
+}): Report => {
+  const c2paHonesty = input.removed ? "removed" : input.present ? "present" : "absent"
+  const residual = input.removed
+    ? `hard-bound C2PA/metadata removed; ${softBindingSentence}`
+    : softBindingSentence
+  return new Report({
+    kind: "raster",
+    findings: [
+      new Finding({ channel: "deterministic", status: "absent" }),
+      new Finding({
+        channel: "c2pa",
+        status: input.present ? "present" : "absent"
+      }),
+      new Finding({ channel: "official", status: "unavailable" }),
+      new Finding({ channel: "statistical", status: "unavailable" })
+    ],
+    removed: new Removed(
+      input.removed && input.labels.length > 0 ? { c2pa: [...input.labels] } : {}
+    ),
+    degraded: false,
+    honesty: honestyStanza({
+      official: "unavailable (ANTHROPIC_DETECT_URL unset)",
+      c2pa: c2paHonesty,
+      deterministic: "none",
+      statistical: "not-run"
+    }).concat(residual),
+    official: new OfficialUnavailable()
+  })
 }
 
 /** Schema encode, honesty stanza, and atomic write policy. */

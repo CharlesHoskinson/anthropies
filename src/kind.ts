@@ -60,23 +60,36 @@ const suffixOf = (suffix: string | undefined): string | undefined => {
   return suffix.startsWith(".") ? suffix.toLowerCase() : `.${suffix.toLowerCase()}`
 }
 
+export type RasterCodec = "png" | "jpeg" | "gif" | "webp" | "avif" | "heic"
+
+/** PNG / JPEG / GIF / WebP / AVIF / HEIC magic. Undefined if not raster. */
+export const rasterCodec = (bytes: Uint8Array): RasterCodec | undefined => {
+  if (startsWithBytes(bytes, [0x89, 0x50, 0x4e, 0x47])) {
+    return "png"
+  }
+  if (startsWithBytes(bytes, [0xff, 0xd8, 0xff])) {
+    return "jpeg"
+  }
+  if (startsWithBytes(bytes, [0x47, 0x49, 0x46, 0x38])) {
+    return "gif"
+  }
+  if (bytes.length >= 12 && ascii(bytes, 0, 4) === "RIFF" && ascii(bytes, 8, 12) === "WEBP") {
+    return "webp"
+  }
+  const brand = ftypBrand(bytes)
+  if (brand === "avif" || brand === "avis") {
+    return "avif"
+  }
+  if (brand === "heic" || brand === "heif" || brand === "mif1") {
+    return "heic"
+  }
+  return undefined
+}
+
 /** Magic bytes beat suffixes. Unknown non-text magics are binary. */
 export const classify = (bytes: Uint8Array, suffix?: string): Kind => {
   const ext = suffixOf(suffix)
-  if (startsWithBytes(bytes, [0x89, 0x50, 0x4e, 0x47])) {
-    return "raster"
-  }
-  if (startsWithBytes(bytes, [0xff, 0xd8, 0xff])) {
-    return "raster"
-  }
-  if (startsWithBytes(bytes, [0x47, 0x49, 0x46, 0x38])) {
-    return "raster"
-  }
-  if (bytes.length >= 12 && ascii(bytes, 0, 4) === "RIFF" && ascii(bytes, 8, 12) === "WEBP") {
-    return "raster"
-  }
-  const brand = ftypBrand(bytes)
-  if (brand === "avif" || brand === "avis" || brand === "heic" || brand === "heif" || brand === "mif1") {
+  if (rasterCodec(bytes) !== undefined) {
     return "raster"
   }
   if (startsWithBytes(bytes, [0x25, 0x50, 0x44, 0x46])) {
