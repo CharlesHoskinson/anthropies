@@ -97,6 +97,8 @@ humanize  Title restoration: rewrite wording on a non-origin model (best-effort)
 capture   Fetch a Claude Output you own, for fixtures. Does not watermark.
 demo      capture → inspect → clean → humanize → inspect.
           Prints four channels. Never claims official text-kill.
+serve     Serve inspect and clean on loopback. Does not humanize.
+          Never claims official text-kill.
 ```
 
 ## humanize
@@ -106,6 +108,14 @@ demo      capture → inspect → clean → humanize → inspect.
 | `humanize` | Title restoration via non-origin rewrite (best-effort). Residual statistical risk remains. print-prompt does not destamp. Not an official-kill or official-detector certificate. |
 
 `destamp` stays forbidden as a capability. The denial `print-prompt does not destamp` is required (Wave 3 section 2), same pattern as `does not prove the official Claude text detector will fail`.
+
+## serve
+
+| Command | Allowed claim |
+|---|---|
+| `serve` | Local HTTP inspect/clean. Loopback by default. No `/humanize`. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set. |
+
+`/humanize` is not a route. Layer B stays CLI-only.
 
 ## Report field meanings
 

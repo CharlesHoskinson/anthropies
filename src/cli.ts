@@ -1,8 +1,11 @@
 import * as Args from "@effect/cli/Args"
 import * as CliCommand from "@effect/cli/Command"
 import * as Options from "@effect/cli/Options"
-import { NodeContext, NodeHttpClient, NodeRuntime } from "@effect/platform-node"
+import { NodeContext, NodeHttpClient, NodeHttpServer, NodeRuntime } from "@effect/platform-node"
 import { Cause, Console, Effect, Exit, Layer, Option, Schema } from "effect"
+import { createServer } from "node:http"
+import { defaultServeHost, defaultServePort } from "./http/openapi.js"
+import { HttpApp } from "./http/server.js"
 import { residualDrivesExit } from "./report.js"
 import { Capturer, runDemo } from "./services/capturer.js"
 import { Cleaner } from "./services/cleaner.js"
@@ -144,9 +147,34 @@ const demo = CliCommand.make("demo", {}, () => runDemo().pipe(Effect.provide(Nod
   )
 )
 
+const hostOpt = Options.text("host").pipe(
+  Options.withDefault(defaultServeHost),
+  Options.withDescription(
+    `Bind address. Defaults to ${defaultServeHost}. Remote bind requires an explicit --host.`
+  )
+)
+
+const portOpt = Options.integer("port").pipe(
+  Options.withDefault(defaultServePort),
+  Options.withDescription(`Bind port. Defaults to ${String(defaultServePort)}.`)
+)
+
+const serve = CliCommand.make("serve", { host: hostOpt, port: portOpt }, ({ host, port }) =>
+  Effect.gen(function* () {
+    yield* Console.error(`listening on http://${host}:${String(port)}`)
+    yield* Layer.launch(
+      HttpApp.pipe(Layer.provide(NodeHttpServer.layer(createServer, { host, port })))
+    )
+  })
+).pipe(
+  CliCommand.withDescription(
+    "Serve inspect and clean on loopback. Does not humanize. Never claims official text-kill."
+  )
+)
+
 export const cli = CliCommand.make("anthropies").pipe(
   CliCommand.withDescription("Restore clean title in Outputs the user already owns."),
-  CliCommand.withSubcommands([inspect, clean, humanize, capture, demo])
+  CliCommand.withSubcommands([inspect, clean, humanize, capture, demo, serve])
 )
 
 const run = CliCommand.run(cli, { name: "anthropies", version: "0.4.0" })

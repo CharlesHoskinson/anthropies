@@ -64,6 +64,12 @@ export default tseslint.config(
   {
     files: ["src/cli.ts"],
     rules: {
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          paths: forbiddenModules.filter((m) => m.name !== "node:http" && m.name !== "http")
+        }
+      ],
       "no-restricted-properties": [
         "error",
         {

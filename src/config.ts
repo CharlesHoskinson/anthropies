@@ -11,6 +11,9 @@ export const anthropicApiKey = Config.option(Config.redacted("ANTHROPIC_API_KEY"
 /** Unset yields OfficialFinding Unavailable. No default URL. */
 export const anthropicDetectUrl = Config.option(Config.string("ANTHROPIC_DETECT_URL"))
 
+/** Unset means the HTTP service does not require Authorization. */
+export const serverApiKey = Config.option(Config.redacted("ANTHROPIES_SERVER_API_KEY"))
+
 /** print-prompt by default. ollama and openai-compatible POST to the rewrite URL. */
 export const rewriteBackend = rewriteBackendConfig.pipe(Config.withDefault("print-prompt"))
 
@@ -34,6 +37,7 @@ export const rewriteAllowRemote = Config.string("ANTHROPIES_REWRITE_ALLOW_REMOTE
 export const appConfig = Config.all({
   anthropicApiKey,
   anthropicDetectUrl,
+  serverApiKey,
   rewriteBackend,
   rewriteModel,
   rewriteBaseUrl,
