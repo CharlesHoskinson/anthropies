@@ -102,3 +102,5 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - DOCS APPROVE (0 blockers). Honesty on report; 0.3.0; serve --help loopback; no destamp/official-kill.
 ## [2026-08-17] ingest | Wave 2 Task 2 auditor trio
 - STYLE, QA, DOCS all APPROVE.
+## [2026-08-17] ingest | Wave 2 Task 3 implementer note
+- Skill HTTP path; ANTHROPIES_SERVICE_URL default http://127.0.0.1:8765; health first; npx fallback; README 0.3.0 serve.

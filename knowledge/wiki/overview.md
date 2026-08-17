@@ -23,6 +23,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 2 Task 3 Implementer Note]] — skill HTTP path; ANTHROPIES_SERVICE_URL; health first; npx fallback; 0.3.0 serve
 - [[Wave 2 Task 2 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; serve --help loopback; no official-kill
 - [[Wave 2 Task 2 QA Auditor]] — QA APPROVE; OpenAPI 3.0.3 paths; serve loopback 127.0.0.1:8765; no /humanize
 - [[Wave 2 Task 2 Style Auditor]] — STYLE APPROVE; platform HttpServer; @effect/cli serve; no raw node:http

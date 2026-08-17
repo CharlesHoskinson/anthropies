@@ -23,6 +23,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Syntheses
 
+- [[Wave 2 Task 3 Implementer Note]] — skill HTTP path; `ANTHROPIES_SERVICE_URL`; health first; npx fallback
 - [[Wave 2 Task 1 Style Auditor]] — STYLE APPROVE; platform HttpServer; FileSystem temps; Fail≠Finding; no node:fs
 - [[Wave 2 Task 1 Implementer Note]] — `HttpApp` Layer; inspect/clean; bearer iff key; 256 MiB cap; official unavailable; no `/humanize`
 - [[Wave 2 Task 1 QA Auditor]] — QA APPROVE; trailer fixture, official unavailable, bearer 401, 256 MiB, no `/humanize`
@@ -52,7 +53,9 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Task 3 (Skill HTTP path)
 
-Not started. `ANTHROPIES_SERVICE_URL`, curl examples, health-check first.
+`skills/purge-anthropies/SKILL.md` prefers `ANTHROPIES_SERVICE_URL` (default `http://127.0.0.1:8765`). Health-check first. curl `POST /inspect` and `POST /clean` with base64. `npx anthropies` is the local fallback. README version `0.3.0` documents `anthropies serve`.
+
+- [[Wave 2 Task 3 Implementer Note]] — skill HTTP client path implementer thoughts
 
 ## Task 4 (Docker + compose)
 
