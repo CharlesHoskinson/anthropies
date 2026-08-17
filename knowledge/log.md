@@ -74,3 +74,6 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - DOCS APPROVE (0 blockers). Honesty box first; capture not sample; npx; 0.2.0; no destamp/official-kill.
 ## [2026-08-17] ingest | Wave 1 full-diff trio
 - STYLE, QA, DOCS all APPROVE. Wave 1 implementation review complete.
+
+## [2026-08-17] ingest | Wave 2 Task 1 implementer note
+- HTTP inspect/clean service; HttpApp Layer; 0.3.0; official stays unavailable; no /humanize.

@@ -3,6 +3,7 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Wave 2 Task 1 Implementer Note]] — HttpApp Layer; inspect/clean; bearer iff key; 256 MiB cap; official unavailable
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on e4a76b6..4419c7a; Effect 3; Fail≠Finding; per-command R; no HTTP service
 - [[Wave 1 Full QA Audit]] — QA APPROVE; §16.2 named tests, --json purity, residual exit 1, official unavailable, Python gone
 - [[Wave 1 Full Docs Audit]] — DOCS APPROVE; full-branch honesty box; capture not sample; npx; 0.2.0; no destamp/official-kill

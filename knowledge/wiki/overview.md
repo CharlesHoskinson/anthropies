@@ -10,11 +10,12 @@ scope: Anthropies Wave 1 implementation thesis
 
 # Wave 1 Overview (MOC)
 
-Implementation notes compiled from the Wave 1 spec, plan, implementers, and three auditor personas.
+Implementation notes compiled from the Wave 1 spec, plan, implementers, and three auditor personas. Wave 2 notes start on [[Wave 2 Implementation]].
 
 ## Sources
 
 - [[Wave 1 Design]] — locked Wave 1 spec
+- [[Wave 2 Design]] — locked Wave 2 spec
 
 ## Concepts
 
@@ -22,6 +23,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 2 Task 1 Implementer Note]] — HttpApp Layer; inspect/clean; 0.3.0; official stays unavailable; no /humanize
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on e4a76b6..4419c7a; Effect 3; no forbidden imports; Fail≠Finding; per-command R; no HTTP service
 - [[Wave 1 Full QA Audit]] — QA APPROVE; §16.2 named tests, --json purity, residual exit 1, official unavailable, Python gone
 - [[Wave 1 Full Docs Audit]] — DOCS APPROVE; full-branch honesty box; capture not sample; npx; 0.2.0; no destamp/official-kill
