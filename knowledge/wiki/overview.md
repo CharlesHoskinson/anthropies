@@ -22,6 +22,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Task 2 Implementer Note]] — Effect 3 ESM CLI scaffold at 0.2.0; Report has no suspicious; honesty stanza locked
 - [[Task 1 Implementer Note]] — Family 0 honesty patch landed; no official-kill or C2PA-from-Claude claims in skill/plugin/slash
 - [[Task 1 Implementer Note]] — honesty-patch implementer thoughts
 - [[Task 1 Style Auditor]] — STYLE verdict on Task 1
