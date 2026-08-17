@@ -4,7 +4,11 @@ import { FileSystem } from "@effect/platform"
 import { NodeContext } from "@effect/platform-node"
 import { describe, expect, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Either, Layer } from "effect"
+import { mkdtempSync, rmSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import { Humanizer } from "../src/services/humanizer.js"
+import { saveConfigFile, type AnthropiesConfig } from "../src/config-file.js"
 import { unicodeWords } from "../src/rewrite-metric.js"
 
 const longProse = (stem: string, n: number): string =>
@@ -16,6 +20,7 @@ const REWRITTEN = longProse("bravo", 220)
 interface RecordedPost {
   readonly href: string
   readonly method: string
+  readonly model?: string
 }
 
 const fakeClient = (
@@ -23,7 +28,11 @@ const fakeClient = (
   body: unknown
 ): HttpClient.HttpClient =>
   HttpClient.make((request, url) => {
-    recorded.push({ href: url.href, method: request.method })
+    const payload =
+      request.body._tag === "Uint8Array"
+        ? (JSON.parse(new TextDecoder().decode(request.body.body)) as { readonly model?: string })
+        : {}
+    recorded.push({ href: url.href, method: request.method, ...(payload.model !== undefined ? { model: payload.model } : {}) })
     return Effect.succeed(
       HttpClientResponse.fromWeb(
         request,
@@ -38,12 +47,22 @@ const fakeClient = (
 const runHumanize = <A, E>(
   env: ReadonlyArray<readonly [string, string]>,
   http: HttpClient.HttpClient,
-  effect: Effect.Effect<A, E, never>
-): Effect.Effect<A, E> =>
-  effect.pipe(
+  effect: Effect.Effect<A, E, never>,
+  config?: AnthropiesConfig
+): Effect.Effect<A, E> => {
+  const dir = mkdtempSync(join(tmpdir(), "anthropies-humanizer-test-"))
+  const path = join(dir, "config.json")
+  if (config !== undefined) {
+    saveConfigFile(config, path)
+  }
+  return effect.pipe(
     Effect.provide(Layer.mergeAll(Humanizer.Default, NodeContext.layer, Layer.succeed(HttpClient.HttpClient, http))),
-    Effect.withConfigProvider(ConfigProvider.fromMap(new Map(env)))
+    Effect.withConfigProvider(
+      ConfigProvider.fromMap(new Map([...env, ["ANTHROPIES_CONFIG_PATH", path]]))
+    ),
+    Effect.ensuring(Effect.sync(() => rmSync(dir, { recursive: true, force: true })))
   )
+}
 
 describe("humanize_rewrite_backends", () => {
   it.scoped("ollama POST computes rewrite_metric when n>=200", () => {
@@ -185,4 +204,80 @@ describe("humanize_rewrite_backends", () => {
       })
     )
   })
+
+  // --- Config file fallback tests ---
+  // Write a temporary ~/.anthropies/config.json, run humanize, verify the
+  // config file values are picked up when env vars are absent.
+
+  const configFileTest = (
+    name: string,
+    config: AnthropiesConfig,
+    env: ReadonlyArray<readonly [string, string]>,
+    body: unknown,
+    assert: (recorded: Array<RecordedPost>) => void
+  ): void => {
+    it.scoped(name, () => {
+      const recorded: Array<RecordedPost> = []
+      return runHumanize(env, fakeClient(recorded, body), Effect.gen(function* () {
+        yield* Humanizer.humanize(SOURCE, { kind: "prose" }).pipe(Effect.either)
+        assert(recorded)
+      }), config)
+    })
+  }
+
+  configFileTest(
+    "config file model is used when env ANTHROPIES_REWRITE_MODEL is absent",
+    { rewrite: { backend: "ollama", model: "file-model", baseUrl: "http://127.0.0.1:11434" } },
+    [["ANTHROPIES_REWRITE_BACKEND", "ollama"]],
+    { response: REWRITTEN },
+    (recorded) => {
+      expect(recorded).toHaveLength(1)
+      expect(recorded[0]?.href).toBe("http://127.0.0.1:11434/api/generate")
+      expect(recorded[0]?.model).toBe("file-model")
+    }
+  )
+
+  configFileTest(
+    "env ANTHROPIES_REWRITE_MODEL overrides config file model",
+    { rewrite: { backend: "ollama", model: "file-model", baseUrl: "http://127.0.0.1:11434" } },
+    [
+      ["ANTHROPIES_REWRITE_BACKEND", "ollama"],
+      ["ANTHROPIES_REWRITE_MODEL", "env-model"]
+    ],
+    { response: REWRITTEN },
+    (recorded) => {
+      expect(recorded).toHaveLength(1)
+      expect(recorded[0]?.href).toBe("http://127.0.0.1:11434/api/generate")
+      expect(recorded[0]?.model).toBe("env-model")
+    }
+  )
+
+  configFileTest(
+    "config file baseUrl is used when env ANTHROPIES_REWRITE_BASE_URL is absent",
+    { rewrite: { backend: "ollama", model: "llama3.2", baseUrl: "http://127.0.0.1:9999" } },
+    [["ANTHROPIES_REWRITE_BACKEND", "ollama"]],
+    { response: REWRITTEN },
+    (recorded) => {
+      expect(recorded).toHaveLength(1)
+      expect(recorded[0]?.href).toBe("http://127.0.0.1:9999/api/generate")
+    }
+  )
+
+  configFileTest(
+    "config file allowRemote permits non-loopback URL",
+    {
+      rewrite: {
+        backend: "openai-compatible",
+        model: "llama3.2",
+        baseUrl: "http://example.com:8080",
+        allowRemote: true
+      }
+    },
+    [["ANTHROPIES_REWRITE_BACKEND", "openai-compatible"]],
+    { choices: [{ message: { content: REWRITTEN } }] },
+    (recorded) => {
+      expect(recorded).toHaveLength(1)
+      expect(recorded[0]?.href).toBe("http://example.com:8080/v1/chat/completions")
+    }
+  )
 })

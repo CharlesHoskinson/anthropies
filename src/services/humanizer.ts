@@ -1,12 +1,14 @@
 import type { FileSystem } from "@effect/platform/FileSystem"
-import { Effect, Option, type Redacted } from "effect"
+import { Effect, Option, Redacted } from "effect"
 import {
-  rewriteAllowRemote,
   rewriteApiKey,
-  rewriteBackend,
-  rewriteBaseUrl,
+  rewriteBackendEnv,
+  rewriteBaseUrlEnv,
+  rewriteAllowRemoteEnv,
+  rewriteConfigPath,
   rewriteModel
 } from "../config.js"
+import { loadConfigFile } from "../config-file.js"
 import {
   BinaryInput,
   OriginBlocked,
@@ -161,11 +163,26 @@ const readRewriteTarget = (): Effect.Effect<{
   allowRemote: string
 }> =>
   Effect.gen(function* () {
-    const backend = yield* rewriteBackend.pipe(Effect.orDie)
-    const model = Option.getOrElse(yield* rewriteModel.pipe(Effect.orDie), () => "")
-    const baseUrl = yield* rewriteBaseUrl.pipe(Effect.orDie)
-    const apiKey = yield* rewriteApiKey.pipe(Effect.orDie)
-    const allowRemote = yield* rewriteAllowRemote.pipe(Effect.orDie)
+    // Precedence: env var > config file > built-in default.
+    // Option-typed env configs (rewriteBackendEnv, etc.) are None when the
+    // env var is absent, letting the config file (or default) fill in.
+    const path = yield* rewriteConfigPath.pipe(Effect.orDie)
+    const file = loadConfigFile(path)
+    const r = file.rewrite
+    const envBackend = yield* rewriteBackendEnv.pipe(Effect.orDie)
+    const envModel = yield* rewriteModel.pipe(Effect.orDie)
+    const envBaseUrl = yield* rewriteBaseUrlEnv.pipe(Effect.orDie)
+    const envApiKey = yield* rewriteApiKey.pipe(Effect.orDie)
+    const envAllowRemote = yield* rewriteAllowRemoteEnv.pipe(Effect.orDie)
+    const backend = Option.getOrElse(envBackend, () => r?.backend ?? "print-prompt")
+    const model = Option.getOrElse(envModel, () => r?.model ?? "")
+    const baseUrl = Option.getOrElse(envBaseUrl, () => r?.baseUrl ?? "http://127.0.0.1:11434")
+    const apiKey = Option.isSome(envApiKey)
+      ? envApiKey
+      : r?.apiKey !== undefined
+        ? Option.some(Redacted.make(r.apiKey))
+        : Option.none()
+    const allowRemote = Option.getOrElse(envAllowRemote, () => (r?.allowRemote ? "1" : "0"))
     return { backend, model, baseUrl, apiKey, allowRemote }
   })
 
