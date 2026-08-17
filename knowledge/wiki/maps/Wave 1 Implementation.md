@@ -27,3 +27,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 ## Task 1 (Family 0)
 
 Honesty patch. Markdown only. Grep over `skills` `commands` `.claude-plugin` is the check.
+- [[Task 1 Implementer Note]] — honesty-patch implementer thoughts
+- [[Task 1 Style Auditor]] — STYLE verdict on Task 1
+- [[Task 1 QA Auditor]] — QA verdict on Task 1
+- [[Task 1 Docs Auditor]] — DOCS verdict on Task 1
