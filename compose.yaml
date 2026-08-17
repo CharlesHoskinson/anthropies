@@ -1,0 +1,18 @@
+# Loopback-only publish. The process binds 0.0.0.0:8765 inside the container.
+# Host mapping is 127.0.0.1:8765 — not a LAN bind.
+# No heavy backends (qpdf / exiftool / c2patool). Official stays unavailable
+# unless ANTHROPIC_DETECT_URL is set. There is no HTTP /humanize.
+services:
+  anthropies:
+    build: .
+    image: anthropies:0.3.0
+    ports:
+      - "127.0.0.1:8765:8765"
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      NODE_ENV: production
+      # ANTHROPIES_SERVER_API_KEY:  # optional; if set, Bearer is required
+      # ANTHROPIC_DETECT_URL:       # unset → official unavailable
+    init: true
