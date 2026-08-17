@@ -3,6 +3,9 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Wave 2 Task 1 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; no official-kill; no /humanize
+- [[Wave 2 Task 1 Style Auditor]] — STYLE APPROVE; platform HttpServer; FileSystem temps; Fail≠Finding; no node:fs
+- [[Wave 2 Task 1 QA Auditor]] — QA APPROVE; trailer fixture, official unavailable, bearer 401, 256 MiB, no /humanize
 - [[Wave 2 Task 1 Implementer Note]] — HttpApp Layer; inspect/clean; bearer iff key; 256 MiB cap; official unavailable
 - [[Wave 1 Full Style Audit]] — STYLE APPROVE on e4a76b6..4419c7a; Effect 3; Fail≠Finding; per-command R; no HTTP service
 - [[Wave 1 Full QA Audit]] — QA APPROVE; §16.2 named tests, --json purity, residual exit 1, official unavailable, Python gone
@@ -58,3 +61,4 @@ Each entry: `[[Page]] — one-line summary`.
 - [[Wave 1 Full Style Audit]] — full-branch STYLE
 - [[Wave 1 Full QA Audit]] — full-branch QA
 - [[Wave 1 Full Docs Audit]] — full-branch DOCS
+- [[Wave 2 Task 1 Implementer Note]] — HTTP service implementer

@@ -77,3 +77,14 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 
 ## [2026-08-17] ingest | Wave 2 Task 1 implementer note
 - HTTP inspect/clean service; HttpApp Layer; 0.3.0; official stays unavailable; no /humanize.
+
+## [2026-08-17] ingest | Wave 2 Task 1 STYLE auditor
+- STYLE APPROVE (0 blockers). Platform HttpServer; FileSystem scoped temps; Fail≠Finding; no node:fs.
+
+## [2026-08-17] ingest | Wave 2 Task 1 QA auditor
+- QA APPROVE (0 blockers). Trailer fixture present; official unavailable; bearer 401; 256 MiB cap; no /humanize.
+
+## [2026-08-17] ingest | Wave 2 Task 1 docs auditor
+- DOCS APPROVE (0 blockers). Honesty on report; 0.3.0; no destamp/official-kill; no /humanize.
+## [2026-08-17] ingest | Wave 2 Task 1 auditor trio
+- STYLE, QA, DOCS all APPROVE.
