@@ -23,6 +23,9 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 2 Task 2 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; serve --help loopback; no official-kill
+- [[Wave 2 Task 2 QA Auditor]] — QA APPROVE; OpenAPI 3.0.3 paths; serve loopback 127.0.0.1:8765; no /humanize
+- [[Wave 2 Task 2 Style Auditor]] — STYLE APPROVE; platform HttpServer; @effect/cli serve; no raw node:http
 - [[Wave 2 Task 2 Implementer Note]] — OpenAPI 3.0.3; serve loopback 127.0.0.1:8765; no /humanize
 - [[Wave 2 Task 1 QA Auditor]] — QA APPROVE; trailer fixture, official unavailable, bearer 401, 256 MiB, no /humanize
 - [[Wave 2 Task 1 Style Auditor]] — STYLE APPROVE; platform HttpServer; FileSystem temps; Fail≠Finding; no node:fs
@@ -81,3 +84,4 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Wave 1 Full Docs Audit]] — full-branch DOCS
 - [[Wave 2 Task 1 Implementer Note]] — HTTP service implementer
 - [[Wave 2 Task 1 Docs Auditor]] — DOCS
+- [[Wave 2 Task 2 Implementer Note]] — OpenAPI and serve

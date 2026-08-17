@@ -3,6 +3,9 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Wave 2 Task 2 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; serve --help loopback; no official-kill
+- [[Wave 2 Task 2 QA Auditor]] — QA APPROVE; OpenAPI 3.0.3 paths; serve loopback 127.0.0.1:8765; no /humanize
+- [[Wave 2 Task 2 Style Auditor]] — STYLE APPROVE; platform HttpServer; @effect/cli serve; no raw node:http
 - [[Wave 2 Task 2 Implementer Note]] — OpenAPI 3.0.3; serve loopback 127.0.0.1:8765; no /humanize
 - [[Wave 2 Task 1 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; no official-kill; no /humanize
 - [[Wave 2 Task 1 Style Auditor]] — STYLE APPROVE; platform HttpServer; FileSystem temps; Fail≠Finding; no node:fs
@@ -64,3 +67,6 @@ Each entry: `[[Page]] — one-line summary`.
 - [[Wave 1 Full Docs Audit]] — full-branch DOCS
 - [[Wave 2 Task 1 Implementer Note]] — HTTP service implementer
 - [[Wave 2 Task 2 Implementer Note]] — OpenAPI + serve implementer
+- [[Wave 2 Task 2 QA Auditor]] — OpenAPI + serve QA
+- [[Wave 2 Task 2 Style Auditor]] — STYLE verdict on Wave 2 Task 2
+- [[Wave 2 Task 2 Implementer Note]] — OpenAPI and serve

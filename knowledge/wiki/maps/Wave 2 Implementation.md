@@ -28,6 +28,9 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 - [[Wave 2 Task 1 QA Auditor]] — QA APPROVE; trailer fixture, official unavailable, bearer 401, 256 MiB, no `/humanize`
 - [[Wave 2 Task 1 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; no official-kill
 - [[Wave 2 Task 2 Implementer Note]] — OpenAPI 3.0.3; `serve` loopback `127.0.0.1:8765`; no `/humanize`
+- [[Wave 2 Task 2 Style Auditor]] — STYLE APPROVE; platform HttpServer; `@effect/cli` serve; no raw `node:http`
+- [[Wave 2 Task 2 QA Auditor]] — QA APPROVE; OpenAPI 3.0.3 paths; serve loopback; no `/humanize`
+- [[Wave 2 Task 2 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; serve help; no official-kill
 
 ## Task 1 (HTTP inspect/clean)
 
@@ -43,6 +46,9 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 `GET /openapi.json` is OpenAPI 3.0.3 with `/health` `/capabilities` `/inspect` `/clean`. `anthropies serve` defaults to `127.0.0.1:8765`. No `/humanize`.
 
 - [[Wave 2 Task 2 Implementer Note]] — OpenAPI + serve implementer thoughts
+- [[Wave 2 Task 2 Style Auditor]] — STYLE APPROVE; 0 blockers; 2 nits (eslint `http` carve-out, OpenAPI `as`)
+- [[Wave 2 Task 2 QA Auditor]] — QA APPROVE; named OpenAPI + serve-help checks pass
+- [[Wave 2 Task 2 Docs Auditor]] — DOCS APPROVE; honesty; 0.3.0; serve --help; no official-kill
 
 ## Task 3 (Skill HTTP path)
 

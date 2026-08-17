@@ -91,3 +91,14 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 
 ## [2026-08-17] ingest | Wave 2 Task 2 implementer note
 - OpenAPI 3.0.3 at GET /openapi.json; anthropies serve defaults to 127.0.0.1:8765; no /humanize.
+
+## [2026-08-17] ingest | Wave 2 Task 2 STYLE auditor
+- STYLE APPROVE (0 blockers). Platform HttpServer; @effect/cli serve; createServer is NodeHttpServer factory only.
+
+## [2026-08-17] ingest | Wave 2 Task 2 QA auditor
+- QA APPROVE (0 blockers). OpenAPI 3.0.3 paths; serve loopback 127.0.0.1:8765; no /humanize.
+
+## [2026-08-17] ingest | Wave 2 Task 2 docs auditor
+- DOCS APPROVE (0 blockers). Honesty on report; 0.3.0; serve --help loopback; no destamp/official-kill.
+## [2026-08-17] ingest | Wave 2 Task 2 auditor trio
+- STYLE, QA, DOCS all APPROVE.
