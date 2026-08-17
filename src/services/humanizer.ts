@@ -45,20 +45,32 @@ const CODE_SUFFIX = new Set([
   ".sql"
 ])
 
-/** Ported Layer B prose prefix. Rewrite H-grams; keep facts, URLs, fences. */
-export const PROSE_PROMPT = `Rewrite the text below so almost no original 5-word sequence survives.
+/** Layer B prose prefix. Require clause-order / H-gram break; keep facts, URLs, fences. */
+export const PROSE_PROMPT = `Rewrite the text below so almost no original 5-word sequence (H-gram) survives.
 
-Rules:
-- Keep every fact, number, name, URL, citation, and code fence byte-stable.
-- Change clause order, sentence boundaries, discourse markers, and function words.
+Required structure changes — do all of these:
+- Change clause order.
+- Change sentence boundaries.
+- Change discourse markers and function words.
 - Do not synonym-swap in place while keeping the same sentence skeleton.
-- Output only the rewritten text.
+
+Keep every fact, number, name, URL, citation, and code fence byte-stable.
+
+Output only the rewritten text.
 
 TEXT:
 `
 
-/** Ported Layer B code prefix. Touch comments and non-load-bearing strings only. */
-export const CODE_PROMPT = `Rewrite only comments, docstrings, and non-load-bearing string literals.
+/** Layer B code prefix. Require structure change in comments; keep facts, URLs, fences, APIs. */
+export const CODE_PROMPT = `Rewrite only comments, docstrings, and non-load-bearing string literals so almost no original 5-word sequence (H-gram) survives in those spans.
+
+Required structure changes in comments and docstrings — do all of these:
+- Change clause order.
+- Change sentence boundaries.
+- Change discourse markers and function words.
+- Do not synonym-swap in place while keeping the same sentence skeleton.
+
+Keep every fact, number, name, URL, citation, and code fence byte-stable.
 Do not change public APIs, protocol strings, test snapshots, imports, or behavior.
 Keep the code compiling. Output only the rewritten file.
 
