@@ -27,6 +27,7 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 - [[Wave 2 Task 1 Implementer Note]] — `HttpApp` Layer; inspect/clean; bearer iff key; 256 MiB cap; official unavailable; no `/humanize`
 - [[Wave 2 Task 1 QA Auditor]] — QA APPROVE; trailer fixture, official unavailable, bearer 401, 256 MiB, no `/humanize`
 - [[Wave 2 Task 1 Docs Auditor]] — DOCS APPROVE; honesty on report; 0.3.0; no official-kill
+- [[Wave 2 Task 2 Implementer Note]] — OpenAPI 3.0.3; `serve` loopback `127.0.0.1:8765`; no `/humanize`
 
 ## Task 1 (HTTP inspect/clean)
 
@@ -39,7 +40,9 @@ One implementer and three Grok 4.6 auditors (style, QA, docs) per family. Each w
 
 ## Task 2 (OpenAPI + serve CLI)
 
-Not started. `GET /openapi.json`, `anthropies serve --host 127.0.0.1 --port 8765`.
+`GET /openapi.json` is OpenAPI 3.0.3 with `/health` `/capabilities` `/inspect` `/clean`. `anthropies serve` defaults to `127.0.0.1:8765`. No `/humanize`.
+
+- [[Wave 2 Task 2 Implementer Note]] — OpenAPI + serve implementer thoughts
 
 ## Task 3 (Skill HTTP path)
 

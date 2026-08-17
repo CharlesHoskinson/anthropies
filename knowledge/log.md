@@ -88,3 +88,6 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - DOCS APPROVE (0 blockers). Honesty on report; 0.3.0; no destamp/official-kill; no /humanize.
 ## [2026-08-17] ingest | Wave 2 Task 1 auditor trio
 - STYLE, QA, DOCS all APPROVE.
+
+## [2026-08-17] ingest | Wave 2 Task 2 implementer note
+- OpenAPI 3.0.3 at GET /openapi.json; anthropies serve defaults to 127.0.0.1:8765; no /humanize.

@@ -23,6 +23,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Wave 2 Task 2 Implementer Note]] — OpenAPI 3.0.3; serve loopback 127.0.0.1:8765; no /humanize
 - [[Wave 2 Task 1 QA Auditor]] — QA APPROVE; trailer fixture, official unavailable, bearer 401, 256 MiB, no /humanize
 - [[Wave 2 Task 1 Style Auditor]] — STYLE APPROVE; platform HttpServer; FileSystem temps; Fail≠Finding; no node:fs
 - [[Wave 2 Task 1 Implementer Note]] — HttpApp Layer; inspect/clean; 0.3.0; official stays unavailable; no /humanize
