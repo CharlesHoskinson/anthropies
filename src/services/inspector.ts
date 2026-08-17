@@ -1,29 +1,37 @@
-import type { FileSystem } from "@effect/platform/FileSystem"
 import { Effect } from "effect"
-import { BinaryInput, type DecodeError, type InputTooLarge } from "../fail.js"
-import { applyLayerA } from "../layer-a.js"
+import { BinaryInput, DecodeError } from "../fail.js"
+import { inspectDocx } from "../formats/docx.js"
+import { inspectHtmlText } from "../formats/html.js"
+import { inspectMdText } from "../formats/md.js"
+import { inspectOdt } from "../formats/odt.js"
+import { PdfTools } from "../formats/pdf.js"
 import { handlerFor, loadOwned } from "../formats/registry.js"
-import type { Report } from "../report.js"
+import { applyLayerA, type LayerARemoved } from "../layer-a.js"
+import { softBindingSentence } from "../report.js"
 import { C2pa } from "./c2pa.js"
 import { Detector } from "./detector.js"
-import { makeRasterReport, makeTextReport } from "./reporter.js"
+import { makeContainerReport, makeRasterReport, makeTextReport } from "./reporter.js"
 
 export interface InspectOptions {
   readonly forceText: boolean
   readonly json: boolean
 }
 
-/** Read, classify, and report. FileSystem only. */
+const layerPresent = (removed: LayerARemoved): boolean =>
+  removed.unicode + removed.trailer + removed.banner > 0
+
+/** Read, classify, and report. FileSystem plus optional PDF tools. */
 export class Inspector extends Effect.Service<Inspector>()("Inspector", {
   accessors: true,
   effect: Effect.gen(function* () {
     const detector = yield* Detector
     const c2pa = yield* C2pa
+    const pdf = yield* PdfTools
     return {
       inspect: (
         path: string,
         options: InspectOptions
-      ): Effect.Effect<Report, BinaryInput | DecodeError | InputTooLarge, FileSystem> =>
+      ) =>
         Effect.gen(function* () {
           const owned = yield* loadOwned(path)
           if (owned.kind === "raster" && !options.forceText) {
@@ -32,6 +40,106 @@ export class Inspector extends Effect.Service<Inspector>()("Inspector", {
               present: inspected.present,
               removed: false,
               labels: inspected.labels
+            })
+          }
+          if (owned.kind === "svg" && !options.forceText) {
+            const inspected = yield* c2pa.inspect(owned.bytes, owned.kind, path)
+            const handler = handlerFor("svg", false)
+            if (handler === undefined) {
+              return yield* new BinaryInput({ path, reason: "classified as svg" })
+            }
+            const text = yield* handler.decode(path, owned.bytes, false)
+            const { removed } = applyLayerA(text)
+            return makeContainerReport({
+              kind: "svg",
+              presentDeterministic: layerPresent(removed),
+              presentC2pa: inspected.present,
+              removed,
+              c2paLabels: inspected.labels,
+              c2paHonesty: inspected.present ? "present" : "absent",
+              degraded: false,
+              extraHonesty: [softBindingSentence]
+            })
+          }
+          if (owned.kind === "html" && !options.forceText) {
+            const handler = handlerFor("html", false)
+            if (handler === undefined) {
+              return yield* new BinaryInput({ path, reason: "classified as html" })
+            }
+            const text = yield* handler.decode(path, owned.bytes, false)
+            const meta = inspectHtmlText(text)
+            const { removed } = applyLayerA(text)
+            return makeContainerReport({
+              kind: "html",
+              presentDeterministic: layerPresent(removed),
+              presentC2pa: meta.present,
+              removed,
+              c2paLabels: meta.labels,
+              c2paHonesty: meta.present ? "present" : "absent",
+              degraded: false
+            })
+          }
+          if (owned.kind === "md" && !options.forceText) {
+            const handler = handlerFor("md", false)
+            if (handler === undefined) {
+              return yield* new BinaryInput({ path, reason: "classified as md" })
+            }
+            const text = yield* handler.decode(path, owned.bytes, false)
+            const meta = inspectMdText(text)
+            const { removed } = applyLayerA(text)
+            return makeContainerReport({
+              kind: "md",
+              presentDeterministic: layerPresent(removed),
+              presentC2pa: meta.present,
+              removed,
+              c2paLabels: meta.labels,
+              c2paHonesty: meta.present ? "present" : "absent",
+              degraded: false
+            })
+          }
+          if (owned.kind === "docx" && !options.forceText) {
+            const inspected = inspectDocx(owned.bytes, path)
+            if (!inspected.ok) {
+              return yield* new DecodeError({ path, reason: inspected.reason })
+            }
+            return makeContainerReport({
+              kind: "docx",
+              presentDeterministic: layerPresent(inspected.layer),
+              presentC2pa: inspected.present,
+              removed: inspected.layer,
+              c2paLabels: inspected.labels,
+              c2paHonesty: inspected.present ? "present" : "absent",
+              degraded: false
+            })
+          }
+          if (owned.kind === "odt" && !options.forceText) {
+            const inspected = inspectOdt(owned.bytes, path)
+            if (!inspected.ok) {
+              return yield* new DecodeError({ path, reason: inspected.reason })
+            }
+            return makeContainerReport({
+              kind: "odt",
+              presentDeterministic: layerPresent(inspected.layer),
+              presentC2pa: inspected.present,
+              removed: inspected.layer,
+              c2paLabels: inspected.labels,
+              c2paHonesty: inspected.present ? "present" : "absent",
+              degraded: false
+            })
+          }
+          if (owned.kind === "pdf" && !options.forceText) {
+            const inspected = yield* pdf.inspect(owned.bytes)
+            return makeContainerReport({
+              kind: "pdf",
+              presentDeterministic: false,
+              presentC2pa: inspected.present,
+              removed: { unicode: 0, trailer: 0, banner: 0 },
+              c2paLabels: inspected.labels,
+              c2paHonesty: inspected.degraded ? "degraded" : inspected.present ? "present" : "absent",
+              degraded: inspected.degraded,
+              extraHonesty: inspected.degraded
+                ? ["warning: exiftool or qpdf missing; PDF metadata not stripped"]
+                : [softBindingSentence]
             })
           }
           const handler = handlerFor(owned.kind, options.forceText)
@@ -52,5 +160,5 @@ export class Inspector extends Effect.Service<Inspector>()("Inspector", {
         })
     }
   }),
-  dependencies: [Detector.Default, C2pa.Default]
+  dependencies: [Detector.Default, C2pa.Default, PdfTools.Default]
 }) {}

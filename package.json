@@ -23,7 +23,8 @@
     "@effect/printer": "^0.51.0",
     "@effect/printer-ansi": "^0.51.0",
     "@effect/typeclass": "^0.41.0",
-    "effect": "^3.22.1"
+    "effect": "^3.22.1",
+    "fflate": "^0.8.3"
   },
   "devDependencies": {
     "@effect/vitest": "^0.30.0",

@@ -77,6 +77,66 @@ export const makeTextReport = (input: {
     : new Report(base)
 }
 
+/** Build a markup / office / PDF Report. Soft-binding is opt-in. */
+export const makeContainerReport = (input: {
+  readonly kind: Kind
+  readonly presentDeterministic: boolean
+  readonly presentC2pa: boolean
+  readonly removed: LayerARemoved
+  readonly c2paLabels: ReadonlyArray<string>
+  readonly c2paHonesty: "present" | "absent" | "removed" | "not-applicable" | "degraded"
+  readonly degraded: boolean
+  readonly extraHonesty?: ReadonlyArray<string>
+}): Report => {
+  const labels = removedLabels(input.removed)
+  const c2paStatus =
+    input.degraded && input.c2paHonesty === "degraded"
+      ? "degraded"
+      : input.presentC2pa
+        ? "present"
+        : "absent"
+  const findings = [
+    new Finding({
+      channel: "deterministic",
+      status: input.presentDeterministic ? "present" : "absent"
+    }),
+    new Finding({ channel: "c2pa", status: c2paStatus }),
+    new Finding({ channel: "official", status: "unavailable" }),
+    new Finding({ channel: "statistical", status: "unavailable" })
+  ]
+  const removed =
+    labels === undefined && input.c2paLabels.length === 0
+      ? new Removed({})
+      : new Removed({
+          ...(labels === undefined ? {} : { deterministic: labels }),
+          ...(input.c2paLabels.length > 0 ? { c2pa: [...input.c2paLabels] } : {})
+        })
+  const honesty = honestyStanza({
+    official: "unavailable (ANTHROPIC_DETECT_URL unset)",
+    c2pa: input.c2paHonesty,
+    deterministic: countLine(input.removed),
+    statistical: "not-run"
+  }).concat(input.extraHonesty ?? [])
+  return input.presentDeterministic
+    ? new Report({
+        kind: input.kind,
+        findings,
+        removed,
+        anyDeterministicHits: true,
+        degraded: input.degraded,
+        honesty,
+        official: new OfficialUnavailable()
+      })
+    : new Report({
+        kind: input.kind,
+        findings,
+        removed,
+        degraded: input.degraded,
+        honesty,
+        official: new OfficialUnavailable()
+      })
+}
+
 /** Build a raster Report. Soft-binding sentence is always present. */
 export const makeRasterReport = (input: {
   readonly present: boolean

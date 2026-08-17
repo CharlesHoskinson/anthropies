@@ -14,6 +14,9 @@ const fixturePng = fileURLToPath(
 const fixtureJpg = fileURLToPath(
   new URL("../fixtures/c2pa/fixture-c2pa-present.jpg", import.meta.url)
 )
+const fixtureSvg = fileURLToPath(
+  new URL("../fixtures/c2pa/fixture-c2pa-present.svg", import.meta.url)
+)
 
 const layers = Effect.provide(
   Layer.mergeAll(Inspector.Default, Cleaner.Default, NodeContext.layer)
@@ -75,6 +78,35 @@ describe("cert_c2pa_png_jpeg_svg", () => {
         expect(c2paPresent(after)).toBe(false)
         expect(after.degraded).toBe(false)
         expect(after.honesty.join("\n")).toMatch(/soft-binding/)
+      })
+    )
+  )
+
+  it.scoped("inspect sees planted svg metadata and clean drops it", () =>
+    layers(
+      Effect.gen(function* () {
+        const fs = yield* FileSystem.FileSystem
+        const dir = yield* fs.makeTempDirectoryScoped()
+        const src = `${dir}/fixture-c2pa-present.svg`
+        yield* fs.copy(fixtureSvg, src)
+        const before = yield* Inspector.inspect(src, { forceText: false, json: false })
+        expect(before.kind).toBe("svg")
+        expect(c2paPresent(before)).toBe(true)
+        expect(before.degraded).toBe(false)
+        const dest = `${dir}/out.svg`
+        const { bytes } = yield* Cleaner.clean(src, {
+          forceText: false,
+          json: false,
+          inPlace: false,
+          output: dest
+        })
+        const cleaned = new TextDecoder().decode(bytes)
+        expect(cleaned).toMatch(/<svg/)
+        expect(cleaned).not.toMatch(/<metadata/i)
+        expect(cleaned).not.toMatch(/c2pa/)
+        const after = yield* Inspector.inspect(dest, { forceText: false, json: false })
+        expect(c2paPresent(after)).toBe(false)
+        expect(after.degraded).toBe(false)
       })
     )
   )

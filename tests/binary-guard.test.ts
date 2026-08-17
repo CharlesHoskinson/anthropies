@@ -47,7 +47,7 @@ describe("binary_guard_docx_png_stdin", () => {
         }).pipe(Effect.either)
         expect(Either.isLeft(result)).toBe(true)
         if (Either.isLeft(result)) {
-          expect(result.left._tag).toBe("BinaryInput")
+          expect(result.left._tag).toBe("DecodeError")
         }
         expect(yield* fs.exists(`${path}.cleaned`)).toBe(false)
         expect(yield* fs.exists(`${path}.bak`)).toBe(false)
