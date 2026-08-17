@@ -14,3 +14,5 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 ## [2026-08-17] ingest | Task 2 implementer note
 ## [2026-08-17] ingest | Task 2 auditor trio
 - STYLE, QA, DOCS all APPROVE.
+
+## [2026-08-17] ingest | Task 3 implementer note
