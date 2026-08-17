@@ -84,17 +84,16 @@ export const makeContainerReport = (input: {
   readonly presentC2pa: boolean
   readonly removed: LayerARemoved
   readonly c2paLabels: ReadonlyArray<string>
-  readonly c2paHonesty: "present" | "absent" | "removed" | "not-applicable" | "degraded"
+  readonly c2paHonesty: "present" | "absent" | "removed" | "not-applicable"
   readonly degraded: boolean
   readonly extraHonesty?: ReadonlyArray<string>
 }): Report => {
   const labels = removedLabels(input.removed)
-  const c2paStatus =
-    input.degraded && input.c2paHonesty === "degraded"
-      ? "degraded"
-      : input.presentC2pa
-        ? "present"
-        : "absent"
+  const c2paStatus = input.degraded
+    ? "degraded"
+    : input.presentC2pa
+      ? "present"
+      : "absent"
   const findings = [
     new Finding({
       channel: "deterministic",

@@ -80,6 +80,32 @@ describe("cert_pdf_degraded", () => {
         expect(bytes[0]).toBe(0x25)
         expect(yield* fs.exists(dest)).toBe(true)
         expect(report.findings.some((f) => f.channel === "c2pa" && f.status === "degraded")).toBe(true)
+        const honesty = report.honesty.join("\n")
+        expect(honesty).not.toMatch(/^c2pa: degraded$/m)
+        expect(honesty).toMatch(/^c2pa: present$/m)
+      })
+    )
+  )
+
+  it.scoped("degraded clean of a marker-free pdf stanzas absent", () =>
+    layers(
+      Effect.gen(function* () {
+        const fs = yield* FileSystem.FileSystem
+        const dir = yield* fs.makeTempDirectoryScoped()
+        const src = `${dir}/plain.pdf`
+        const dest = `${dir}/out.pdf`
+        yield* fs.writeFile(src, MIN_PDF)
+        const { report } = yield* Cleaner.clean(src, {
+          forceText: false,
+          json: false,
+          inPlace: false,
+          output: dest
+        })
+        expect(report.degraded).toBe(true)
+        expect(report.findings.some((f) => f.channel === "c2pa" && f.status === "degraded")).toBe(true)
+        const honesty = report.honesty.join("\n")
+        expect(honesty).not.toMatch(/^c2pa: degraded$/m)
+        expect(honesty).toMatch(/^c2pa: absent$/m)
       })
     )
   )

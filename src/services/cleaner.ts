@@ -145,7 +145,15 @@ export class Cleaner extends Effect.Service<Cleaner>()("Cleaner", {
               presentC2pa: after.present,
               removed: { unicode: 0, trailer: 0, banner: 0 },
               c2paLabels: stripped.labels,
-              c2paHonesty: stripped.degraded ? "degraded" : stripped.removed ? "removed" : after.present ? "present" : "absent",
+              c2paHonesty: stripped.degraded
+                ? after.present
+                  ? "present"
+                  : "absent"
+                : stripped.removed
+                  ? "removed"
+                  : after.present
+                    ? "present"
+                    : "absent",
               degraded: stripped.degraded,
               extraHonesty: stripped.degraded
                 ? ["warning: exiftool or qpdf missing; PDF metadata not stripped"]

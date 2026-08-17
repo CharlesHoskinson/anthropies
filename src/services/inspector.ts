@@ -135,7 +135,7 @@ export class Inspector extends Effect.Service<Inspector>()("Inspector", {
               presentC2pa: inspected.present,
               removed: { unicode: 0, trailer: 0, banner: 0 },
               c2paLabels: inspected.labels,
-              c2paHonesty: inspected.degraded ? "degraded" : inspected.present ? "present" : "absent",
+              c2paHonesty: inspected.present ? "present" : "absent",
               degraded: inspected.degraded,
               extraHonesty: inspected.degraded
                 ? ["warning: exiftool or qpdf missing; PDF metadata not stripped"]
