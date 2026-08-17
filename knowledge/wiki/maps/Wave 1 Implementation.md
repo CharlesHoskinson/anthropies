@@ -57,3 +57,7 @@ Classify + Layer A + text inspect/clean. Named tests `cert_layer_a_roundtrip`, `
 
 Origin blocklist + print-prompt Humanizer. Named tests `origin_blocklist`, `humanize_print_prompt_default`.
 - [[Task 4 Implementer Note]] — print-prompt / origin blocklist implementer thoughts
+- [[Task 4 QA Auditor]] — QA verdict on Task 4
+- [[Task 4 Style Auditor]] — STYLE verdict on Task 4
+- [[Task 4 Docs Auditor]] — DOCS verdict on Task 4
+- [[Task 4 Implementer Note]] — humanize implementer

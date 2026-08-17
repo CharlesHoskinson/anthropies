@@ -22,6 +22,9 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 
 ## Syntheses
 
+- [[Task 4 QA Auditor]] — QA APPROVE; origin_blocklist, print-prompt not-run, OriginBlocked exit 2, bytes unchanged
+- [[Task 4 Style Auditor]] — STYLE APPROVE; originBlocked pure; Humanizer Effect.Service; FileSystem-only; OriginBlocked TaggedError
+- [[Task 4 Docs Auditor]] — DOCS APPROVE; no official-kill; print-prompt does not say watermark removed; CLI help still honest
 - [[Task 4 Implementer Note]] — print-prompt humanize + origin blocklist; FileSystem-only; rewrite_metric not-run
 - [[Task 3 QA Auditor]] — QA APPROVE; Layer A cert, trailer exit 1, PNG BinaryInput no-write, --json parseable
 - [[Task 3 Docs Auditor]] — DOCS APPROVE; honesty stanza required; no watermark-removed verdict
@@ -41,3 +44,7 @@ Implementation notes compiled from the Wave 1 spec, plan, implementers, and thre
 - [[Task 3 QA Auditor]] — QA verdict on Task 3
 - [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
 - [[Task 4 Implementer Note]] — print-prompt humanize implementer
+- [[Task 4 QA Auditor]] — QA verdict on Task 4
+- [[Task 4 Implementer Note]] — humanize implementer
+- [[Task 4 Style Auditor]] — STYLE verdict on Task 4
+- [[Task 4 Docs Auditor]] — DOCS verdict on Task 4

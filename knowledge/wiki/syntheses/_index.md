@@ -3,6 +3,9 @@
 Each entry: `[[Page]] — one-line summary`.
 
 <!-- entries added on ingest -->
+- [[Task 4 QA Auditor]] — QA APPROVE; origin_blocklist, print-prompt not-run, OriginBlocked exit 2, bytes unchanged
+- [[Task 4 Style Auditor]] — STYLE APPROVE; originBlocked pure; Humanizer Effect.Service; no HttpClient; OriginBlocked TaggedError
+- [[Task 4 Docs Auditor]] — DOCS APPROVE; no official-kill; print-prompt does not say watermark removed; CLI help still honest
 - [[Task 4 Implementer Note]] — print-prompt humanize + origin blocklist; OriginBlocked exit 2; no HttpClient
 - [[Task 3 QA Auditor]] — QA APPROVE; cert_layer_a, BinaryInput no-write, --json parseable, inspect exit 1
 - [[Task 3 Docs Auditor]] — DOCS APPROVE; honesty stanza required; no watermark-removed / removesWatermark / sample_watermarked
@@ -22,3 +25,7 @@ Each entry: `[[Page]] — one-line summary`.
 - [[Task 3 QA Auditor]] — QA verdict on Task 3
 - [[Task 3 Docs Auditor]] — DOCS verdict on Task 3
 - [[Task 4 Implementer Note]] — print-prompt humanize implementer
+- [[Task 4 Implementer Note]] — humanize implementer
+- [[Task 4 Style Auditor]] — STYLE verdict on Task 4
+- [[Task 4 QA Auditor]] — QA verdict on Task 4
+- [[Task 4 Docs Auditor]] — DOCS verdict on Task 4

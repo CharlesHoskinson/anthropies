@@ -26,3 +26,14 @@ Append-only. One line per event: `## [YYYY-MM-DD] <op> | <title>`.
 - STYLE, QA, DOCS all APPROVE.
 
 ## [2026-08-17] ingest | Task 4 implementer note
+
+## [2026-08-17] ingest | Task 4 docs auditor
+- DOCS APPROVE (0 blockers). No official-kill; print-prompt does not say watermark removed; CLI help still honest.
+
+## [2026-08-17] ingest | Task 4 style auditor
+- STYLE APPROVE (0 blockers). originBlocked pure; Humanizer Effect.Service; no HttpClient in default path; OriginBlocked TaggedError.
+
+## [2026-08-17] ingest | Task 4 QA auditor
+- QA APPROVE (0 blockers). origin_blocklist, print-prompt not-run, OriginBlocked exit 2, bytes unchanged.
+## [2026-08-17] ingest | Task 4 auditor trio
+- STYLE, QA, DOCS all APPROVE.
