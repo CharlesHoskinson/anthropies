@@ -110,12 +110,17 @@ export class Availability extends Schema.Class<Availability>("Availability")(
   [undefined, undefined, excessPropertyError]
 ) {}
 
+const EvidenceFields = {
+  kind: EvidenceKind,
+  rawReference: Schema.optionalWith(Schema.String, { exact: true }),
+  versionFingerprint: Schema.optionalWith(Schema.String, { exact: true })
+} as const
+
+/** Nested evidence accepts plain objects and Evidence class instances. */
+const EvidenceNested = Schema.Struct(EvidenceFields).annotations(excessPropertyError)
+
 export class Evidence extends Schema.Class<Evidence>("Evidence")(
-  {
-    kind: EvidenceKind,
-    rawReference: Schema.optionalWith(Schema.String, { exact: true }),
-    versionFingerprint: Schema.optionalWith(Schema.String, { exact: true })
-  },
+  EvidenceFields,
   [undefined, undefined, excessPropertyError]
 ) {}
 
@@ -124,7 +129,7 @@ export class KernelFinding extends Schema.Class<KernelFinding>("KernelFinding")(
     channel: Channel,
     markClass: MarkClass,
     status: KernelFindingStatus,
-    evidence: Evidence,
+    evidence: EvidenceNested,
     packId: Schema.String,
     packImplementationVersion: Schema.String
   },
@@ -136,7 +141,7 @@ export class Removal extends Schema.Class<Removal>("Removal")(
     channel: Channel,
     markClass: MarkClass,
     changedScope: Schema.Literal("bytes", "metadata", "text-layer"),
-    evidence: Evidence,
+    evidence: EvidenceNested,
     labels: Schema.Array(Schema.String)
   },
   [undefined, undefined, excessPropertyError]
@@ -146,7 +151,7 @@ export class TransformResult extends Schema.Class<TransformResult>("TransformRes
   {
     artifact: Artifact,
     removals: Schema.Array(Removal),
-    evidence: Evidence,
+    evidence: EvidenceNested,
     residualFindings: Schema.Array(KernelFinding),
     warnings: Schema.Array(Schema.String),
     remediation: Remediation

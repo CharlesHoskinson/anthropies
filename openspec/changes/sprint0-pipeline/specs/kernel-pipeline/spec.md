@@ -36,6 +36,16 @@ WHEN a pack.transform fails with a reason for which shouldPreserveOriginal is tr
 - **WHEN** transform fails with reason timeout
 - **THEN** returned artifact.digest SHALL equal the input digest
 
+#### Scenario: later timeout restores original after a prior change
+
+- **WHEN** the first pack.transform returns a new artifact and the second pack.transform fails with timeout
+- **THEN** returned artifact.digest SHALL equal the input digest
+
+#### Scenario: transforms run in plan order
+
+- **WHEN** two planned packs both implement transform
+- **THEN** the second pack.transform SHALL receive the artifact returned by the first
+
 ### Requirement: plan conflict fails closed
 
 IF plan returns conflict, THEN inspectArtifact and transformArtifact SHALL fail with CapabilityFailure code `conflict`.
@@ -45,6 +55,11 @@ IF plan returns conflict, THEN inspectArtifact and transformArtifact SHALL fail 
 - **WHEN** planned packs have a cycle
 - **THEN** inspectArtifact SHALL fail with code conflict
 
+#### Scenario: cycle fails transform
+
+- **WHEN** planned packs have a cycle
+- **THEN** transformArtifact SHALL fail with code conflict
+
 ### Requirement: pipeline does not write files
 
 WHILE pipeline runs, it SHALL NOT call writeFile, writeFileSync, or writeAtomic.
@@ -53,3 +68,17 @@ WHILE pipeline runs, it SHALL NOT call writeFile, writeFileSync, or writeAtomic.
 
 - **WHEN** `src/core/pipeline.ts` is searched for those names
 - **THEN** there SHALL be no matches
+
+### Requirement: nested evidence construction
+
+WHEN KernelFinding, Removal, or TransformResult is constructed, the evidence field SHALL accept an Evidence instance or a struct with `kind` and optional `rawReference` and `versionFingerprint`.
+
+#### Scenario: transform result accepts evidence struct
+
+- **WHEN** a pack.transform returns `evidence: { kind: "contract" }`
+- **THEN** TransformResult construction SHALL succeed
+
+#### Scenario: Removal and Evidence instance are accepted
+
+- **WHEN** Removal is constructed with an evidence struct and with `new Evidence({ kind: "contract" })`
+- **THEN** both constructions SHALL succeed
