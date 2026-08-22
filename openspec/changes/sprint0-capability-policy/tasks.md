@@ -5,4 +5,4 @@
 - [ ] 1.3 Create `src/core/policy.ts`.
 - [ ] 1.4 Run `pnpm test tests/core-policy.test.ts`. Expect PASS.
 
-Do not start until `sprint0-kernel-strict-decode` archives.
+`sprint0-kernel-strict-decode` archived 2026-08-21.
