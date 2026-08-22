@@ -10,6 +10,7 @@ import { rasterStripPack } from "../packs/raster-strip.js"
 import { pdfToolsPack } from "../packs/pdf-tools.js"
 import { xlsxPack } from "../packs/xlsx.js"
 import { pptxPack } from "../packs/pptx.js"
+import { epubPack } from "../packs/epub.js"
 import { markllmPack } from "../packs/markllm.js"
 import { markDiffusionPack } from "../packs/markdiffusion.js"
 import { ctrlRegenPack } from "../packs/ctrlregen.js"
@@ -30,6 +31,7 @@ export const builtinRegistry = (): PackRegistry => {
   registry.register(pdfToolsPack)
   registry.register(xlsxPack)
   registry.register(pptxPack)
+  registry.register(epubPack)
   registry.register(markllmPack)
   registry.register(markDiffusionPack)
   registry.register(ctrlRegenPack)
