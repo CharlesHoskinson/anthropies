@@ -80,7 +80,27 @@ ln -sfn "$(pwd)/skills/purge-anthropies" ~/.claude/skills/purge-anthropies
 
 In an agent session: `/purge-anthropies`. Skill: [`skills/purge-anthropies/SKILL.md`](skills/purge-anthropies/SKILL.md). Slash: [`commands/purge-anthropies.md`](commands/purge-anthropies.md). Plugin: [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
 
-`capture` and `demo` need `ANTHROPIC_API_KEY` only when the committed allowlist has a model ID. An empty allowlist is valid; then those commands skip live fetch. Live captures land in `fixtures/live/` and are gitignored. They are pipeline smoke, not a “this is watermarked” proof.
+`capture` and `demo` need `ANTHROPIC_API_KEY` only when the committed allowlist has a model ID. An empty allowlist is valid; then those commands skip live fetch. Live captures land in `fixtures/live/` and are gitignored. They are pipeline smoke, not a "this is watermarked" proof.
+
+### Configuring the rewrite backend
+
+`humanize` defaults to `print-prompt` (no HTTP call). To point it at a local or remote rewrite model, run the interactive setup:
+
+```bash
+anthropies init-rewrite
+```
+
+This walks you through backend, model, base URL, API key, and remote-allow, then writes `~/.anthropies/config.json` with `0600` permissions.
+
+| Setting | Config file key | Env var override | Default |
+|---|---|---|---|
+| Backend | `rewrite.backend` | `ANTHROPIES_REWRITE_BACKEND` | `print-prompt` |
+| Model | `rewrite.model` | `ANTHROPIES_REWRITE_MODEL` | *(unset)* |
+| Base URL | `rewrite.baseUrl` | `ANTHROPIES_REWRITE_BASE_URL` | `http://127.0.0.1:11434` |
+| API key | `rewrite.apiKey` | `ANTHROPIES_REWRITE_API_KEY` | *(unset)* |
+| Allow remote | `rewrite.allowRemote` | `ANTHROPIES_REWRITE_ALLOW_REMOTE` | `false` |
+
+Precedence: **env var > config file > built-in default.** Env vars win for CI/CD and Docker; the config file is for day-to-day interactive use. Non-loopback base URLs require `allowRemote: true` (or `ANTHROPIES_REWRITE_ALLOW_REMOTE=1`) — this is a fail-closed guard because the rewrite request sends your full text to the remote server.
 
 ---
 

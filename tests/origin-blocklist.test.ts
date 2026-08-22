@@ -2,12 +2,19 @@ import { FileSystem } from "@effect/platform"
 import { NodeContext } from "@effect/platform-node"
 import { describe, expect, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Either, Layer } from "effect"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
 import { Humanizer, originBlocked } from "../src/services/humanizer.js"
 
 const layers = Effect.provide(Layer.mergeAll(Humanizer.Default, NodeContext.layer))
 
 const blockedModel = Effect.withConfigProvider(
-  ConfigProvider.fromMap(new Map([["ANTHROPIES_REWRITE_MODEL", "claude-opus"]]))
+  ConfigProvider.fromMap(
+    new Map([
+      ["ANTHROPIES_REWRITE_MODEL", "claude-opus"],
+      ["ANTHROPIES_CONFIG_PATH", join(tmpdir(), `anthropies-no-config-${String(process.pid)}.json`)]
+    ])
+  )
 )
 
 describe("origin_blocklist", () => {
