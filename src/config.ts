@@ -33,6 +33,23 @@ export const rewriteAllowRemote = Config.string("ANTHROPIES_REWRITE_ALLOW_REMOTE
   Config.withDefault("0")
 )
 
+/** Operator checkout of pinned THU-BPM/MarkLLM. Unset → optional pack unavailable. */
+export const markllmDir = Config.option(Config.string("MARKLLM_DIR"))
+
+/** Operator checkout of pinned THU-BPM/MarkDiffusion. Unset → optional pack unavailable. */
+export const markDiffusionDir = Config.option(Config.string("MARKDIFFUSION_DIR"))
+
+/** Operator-supplied CtrlRegen-method weights path. Unset → optional pack unavailable. */
+export const ctrlRegenWeights = Config.option(Config.string("CTRLREGEN_WEIGHTS"))
+
+/** Runner for MarkLLM detect entry. Defaults to python3; tests may set process.execPath. */
+export const markllmRunner = Config.string("MARKLLM_RUNNER").pipe(Config.withDefault("python3"))
+
+/** Runner for MarkDiffusion detect entry. Defaults to python3. */
+export const markDiffusionRunner = Config.string("MARKDIFFUSION_RUNNER").pipe(
+  Config.withDefault("python3")
+)
+
 /** All env knobs as Config. Never read process.env in library code. */
 export const appConfig = Config.all({
   anthropicApiKey,
@@ -42,5 +59,10 @@ export const appConfig = Config.all({
   rewriteModel,
   rewriteBaseUrl,
   rewriteApiKey,
-  rewriteAllowRemote
+  rewriteAllowRemote,
+  markllmDir,
+  markDiffusionDir,
+  ctrlRegenWeights,
+  markllmRunner,
+  markDiffusionRunner
 })

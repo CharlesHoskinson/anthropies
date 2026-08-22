@@ -9,6 +9,7 @@ ENV COREPACK_ENABLE_DOWNLOAD_PROMPT=0
 RUN corepack enable && corepack prepare pnpm@11.22.0 --activate
 
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.json ./
+# Publishable core copies only src/. Do not COPY yepengliu/CtrlRegen or mertizci/noai-watermark.
 COPY src ./src
 
 RUN pnpm install --frozen-lockfile
