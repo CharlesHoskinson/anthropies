@@ -1,8 +1,9 @@
-import { c2paPack } from "../packs/c2pa.js"
-import { htmlPack } from "../packs/html.js"
 import { layerAPack } from "../packs/layer-a.js"
-import { mdPack } from "../packs/md.js"
+import { c2paPack } from "../packs/c2pa.js"
 import { pdfPack } from "../packs/pdf.js"
+import { htmlPack } from "../packs/html.js"
+import { mdPack } from "../packs/md.js"
+import { svgStripPack } from "../packs/svg-strip.js"
 import { createRegistry, type PackRegistry } from "./registry.js"
 
 /** Register the core packs for Inspector and Cleaner. */
@@ -13,5 +14,6 @@ export const builtinRegistry = (): PackRegistry => {
   registry.register(pdfPack)
   registry.register(htmlPack)
   registry.register(mdPack)
+  registry.register(svgStripPack)
   return registry
 }
