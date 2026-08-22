@@ -1,4 +1,5 @@
 import { Either, Encoding, Schema } from "effect"
+import { Availability, kernelApiVersion } from "../core/domain.js"
 import { DecodeError, InputTooLarge } from "../fail.js"
 import { fileCapBytes } from "../formats/registry.js"
 import { Kind } from "../kind.js"
@@ -64,11 +65,25 @@ export class ScorerPresence extends Schema.Class<ScorerPresence>("ScorerPresence
   officialDetect: Schema.Boolean
 }) {}
 
+/** One pack row on GET /capabilities. No score field. */
+export class PackCapabilityView extends Schema.Class<PackCapabilityView>("PackCapabilityView")({
+  id: Schema.String,
+  implementationVersion: Schema.String,
+  availability: Availability,
+  license: Schema.String,
+  privacy: Schema.String,
+  network: Schema.String,
+  artifactKinds: Schema.Array(Kind),
+  operations: Schema.Array(Schema.String)
+}) {}
+
 /** GET /capabilities. */
 export class CapabilitiesResponse extends Schema.Class<CapabilitiesResponse>("CapabilitiesResponse")({
   version: Schema.Literal(serviceVersion),
+  kernelApiVersion: Schema.Literal(kernelApiVersion),
   tools: ToolPresence,
-  scorers: ScorerPresence
+  scorers: ScorerPresence,
+  packs: Schema.Array(PackCapabilityView)
 }) {}
 
 /** POST /inspect success body. Honesty stays on report.honesty. */
