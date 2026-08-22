@@ -1,4 +1,8 @@
 import { Effect } from "effect"
+import { RunContext } from "../core/capability.js"
+import { makeArtifact } from "../core/domain.js"
+import { builtinRegistry } from "../core/builtin-registry.js"
+import { inspectArtifact } from "../core/pipeline.js"
 import { BinaryInput, DecodeError } from "../fail.js"
 import { inspectDocx } from "../formats/docx.js"
 import { inspectHtmlText } from "../formats/html.js"
@@ -9,7 +13,6 @@ import { handlerFor, loadOwned } from "../formats/registry.js"
 import { applyLayerA, type LayerARemoved } from "../layer-a.js"
 import { softBindingSentence } from "../report.js"
 import { C2pa } from "./c2pa.js"
-import { Detector } from "./detector.js"
 import { makeContainerReport, makeRasterReport, makeTextReport } from "./reporter.js"
 
 export interface InspectOptions {
@@ -20,13 +23,22 @@ export interface InspectOptions {
 const layerPresent = (removed: LayerARemoved): boolean =>
   removed.unicode + removed.trailer + removed.banner > 0
 
+const inspectContext = (options: InspectOptions): RunContext =>
+  new RunContext({
+    operation: "inspect",
+    forceText: options.forceText,
+    json: options.json,
+    requireCapability: [],
+    kernelApiVersion: "1.0.0"
+  })
+
 /** Read, classify, and report. FileSystem plus optional PDF tools. */
 export class Inspector extends Effect.Service<Inspector>()("Inspector", {
   accessors: true,
   effect: Effect.gen(function* () {
-    const detector = yield* Detector
     const c2pa = yield* C2pa
     const pdf = yield* PdfTools
+    const registry = builtinRegistry()
     return {
       inspect: (
         path: string,
@@ -151,15 +163,29 @@ export class Inspector extends Effect.Service<Inspector>()("Inspector", {
             })
           }
           const text = yield* handler.decode(path, owned.bytes, options.forceText)
-          const findings = detector.deterministic(text)
+          const artifact = makeArtifact(new TextEncoder().encode(text), "text", {
+            name: path,
+            ...(owned.suffix !== undefined ? { suffix: owned.suffix } : {})
+          })
+          const findings = yield* inspectArtifact(registry, artifact, inspectContext(options)).pipe(
+            Effect.mapError(
+              (failure) =>
+                new DecodeError({
+                  path,
+                  reason: failure.diagnostics ?? `${failure.code}:${failure.reason}`
+                })
+            )
+          )
           const { removed } = applyLayerA(text)
           return makeTextReport({
             kind: owned.kind,
             removed,
-            present: findings.some((f) => f.status === "present")
+            present: findings.some(
+              (finding) => finding.channel === "deterministic" && finding.status === "present"
+            )
           })
         })
     }
   }),
-  dependencies: [Detector.Default, C2pa.Default, PdfTools.Default]
+  dependencies: [C2pa.Default, PdfTools.Default]
 }) {}
