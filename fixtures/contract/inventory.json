@@ -1,0 +1,11 @@
+{
+  "cases": [
+    "available",
+    "unavailable",
+    "degraded",
+    "incompatible",
+    "timeout",
+    "malformed-output",
+    "conflicting-owner"
+  ]
+}
