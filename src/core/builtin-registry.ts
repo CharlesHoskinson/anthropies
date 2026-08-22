@@ -6,6 +6,8 @@ import { mdPack } from "../packs/md.js"
 import { svgStripPack } from "../packs/svg-strip.js"
 import { docxPack } from "../packs/docx.js"
 import { odtPack } from "../packs/odt.js"
+import { rasterStripPack } from "../packs/raster-strip.js"
+import { pdfToolsPack } from "../packs/pdf-tools.js"
 import { createRegistry, type PackRegistry } from "./registry.js"
 
 /** Register the core packs for Inspector and Cleaner. */
@@ -19,5 +21,7 @@ export const builtinRegistry = (): PackRegistry => {
   registry.register(svgStripPack)
   registry.register(docxPack)
   registry.register(odtPack)
+  registry.register(rasterStripPack)
+  registry.register(pdfToolsPack)
   return registry
 }

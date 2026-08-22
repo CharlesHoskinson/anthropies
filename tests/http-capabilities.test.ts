@@ -2,6 +2,7 @@ import { HttpClient } from "@effect/platform"
 import { NodeHttpServer } from "@effect/platform-node"
 import { describe, expect, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Layer } from "effect"
+import { readFileSync } from "node:fs"
 import { HttpApp } from "../src/http/server.js"
 
 const TestLive = HttpApp.pipe(
@@ -17,6 +18,12 @@ describe("http_capabilities_inventory", () => {
       expect(yield* res.json).toEqual({ ok: true, version: "0.3.0" })
     }).pipe(Effect.provide(TestLive))
   )
+
+  it("inspector source still names inspectDocx", () => {
+    const src = readFileSync("src/services/inspector.ts", "utf8")
+    expect(src).toMatch(/inspectDocx/)
+    expect(src).toMatch(/inspectOdt/)
+  })
 
   it.scoped("GET /capabilities has kernelApiVersion and nonempty packs", () =>
     Effect.gen(function* () {
@@ -46,6 +53,21 @@ describe("http_capabilities_inventory", () => {
       expect(body.scorers).toEqual({ officialDetect: expect.any(Boolean) })
       expect(body.packs.length).toBeGreaterThan(0)
       expect(body.packs.some((pack) => pack.id === "anthropies.layer-a")).toBe(true)
+      const ids = body.packs.map((pack) => pack.id)
+      for (const id of [
+        "anthropies.layer-a",
+        "anthropies.c2pa",
+        "anthropies.pdf",
+        "anthropies.html",
+        "anthropies.md",
+        "anthropies.svg-strip",
+        "anthropies.docx",
+        "anthropies.odt",
+        "anthropies.raster-strip",
+        "anthropies.pdf-tools"
+      ]) {
+        expect(ids).toContain(id)
+      }
       for (const pack of body.packs) {
         expect(pack.id.length).toBeGreaterThan(0)
         expect(pack.availability.status.length).toBeGreaterThan(0)

@@ -8,16 +8,14 @@ import {
 import { FileSystem } from "@effect/platform/FileSystem"
 import { Effect, Either, Layer, Option, Redacted, Schema } from "effect"
 import { anthropicDetectUrl, serverApiKey } from "../config.js"
-import { RunContext, type CapabilityPack } from "../core/capability.js"
+import { RunContext } from "../core/capability.js"
+import { builtinRegistry } from "../core/builtin-registry.js"
 import { kernelApiVersion } from "../core/domain.js"
-import { createRegistry } from "../core/registry.js"
 import { DecodeError } from "../fail.js"
-import { c2paPack } from "../packs/c2pa.js"
-import { layerAPack } from "../packs/layer-a.js"
-import { pdfPack } from "../packs/pdf.js"
 import { Report } from "../report.js"
 import { Cleaner } from "../services/cleaner.js"
 import { Inspector } from "../services/inspector.js"
+import { PdfTools } from "../formats/pdf.js"
 import { openApiDocument } from "./openapi.js"
 import {
   CapabilitiesResponse,
@@ -133,20 +131,12 @@ const probeContext = new RunContext({
   kernelApiVersion
 })
 
-const builtinPacks = (): ReadonlyArray<CapabilityPack> => {
-  const registry = createRegistry()
-  registry.register(layerAPack)
-  registry.register(c2paPack)
-  registry.register(pdfPack)
-  return registry.list()
-}
-
 const capabilities = Effect.gen(function* () {
   const qpdf = yield* toolPresent("qpdf", "--version")
   const exiftool = yield* toolPresent("exiftool", "-ver")
   const c2patool = yield* toolPresent("c2patool", "--version")
   const detect = yield* anthropicDetectUrl
-  const packs = yield* Effect.forEach(builtinPacks(), (pack) =>
+  const packs = yield* Effect.forEach(builtinRegistry().list(), (pack) =>
     Effect.map(
       pack.probe(probeContext),
       (availability) =>
@@ -223,7 +213,7 @@ export const router = HttpRouter.empty.pipe(
   HttpRouter.catchAll(onError)
 )
 
-const services = Layer.mergeAll(Inspector.Default, Cleaner.Default)
+const services = Layer.mergeAll(Inspector.Default, Cleaner.Default, PdfTools.Default)
 
 /** HttpServer Layer wrapping Wave 1 Inspector and Cleaner. */
 export const HttpApp = HttpServer.serve(router).pipe(Layer.provide(services))
