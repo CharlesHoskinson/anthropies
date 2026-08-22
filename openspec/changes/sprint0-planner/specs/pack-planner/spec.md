@@ -26,6 +26,11 @@ WHEN `context.forceText` is true, the planner SHALL still use the classified kin
 
 IF no listed pack is applicable, THEN plan SHALL return `{ ok: false, code: "none" }`.
 
+#### Scenario: raster with only a text pack
+
+- **WHEN** the registry lists a text-only pack and kind is `raster`
+- **THEN** plan SHALL return `{ ok: false, code: "none" }`
+
 ### Requirement: ordering and priority
 
 WHEN two applicable packs have no cycle, plan SHALL order them by `ordering.before`/`ordering.after` edges, then by priority descending, then by id.
@@ -43,3 +48,8 @@ WHEN two applicable packs have no cycle, plan SHALL order them by `ordering.befo
 ### Requirement: ordering cycle is conflict
 
 IF before/after edges form a cycle, THEN plan SHALL return `{ ok: false, code: "conflict" }`.
+
+#### Scenario: mutual after edges
+
+- **WHEN** pack A lists `ordering.after: ["b"]` and pack B lists `ordering.after: ["a"]`
+- **THEN** plan SHALL return `{ ok: false, code: "conflict" }`
