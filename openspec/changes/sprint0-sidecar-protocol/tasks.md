@@ -4,4 +4,4 @@
 - [ ] 1.2 Add `src/sidecars/protocol.ts` and `fixtures/sidecars/v1/` goldens.
 - [ ] 1.3 Run `pnpm test tests/sidecar-protocol.test.ts`. Expect PASS.
 
-Do not start until `sprint0-kernel-strict-decode` archives.
+`sprint0-kernel-strict-decode` archived 2026-08-21.
