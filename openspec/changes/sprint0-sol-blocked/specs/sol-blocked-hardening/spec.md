@@ -42,12 +42,17 @@ WHEN a sidecar Artifact is decoded, digest SHALL equal sha256 of the decoded byt
 
 ### Requirement: sidecar findings reject score
 
-WHEN sidecar inspect/transform response findings are decoded, an object that contains `score` SHALL fail decode.
+WHEN sidecar inspect findings or transform removals are decoded, an object that contains `score` SHALL fail decode.
 
 #### Scenario: score on a finding is rejected
 
 - **WHEN** findings is `[{ "score": 1 }]`
 - **THEN** SidecarInspectResponse decode SHALL throw
+
+#### Scenario: score on a transform removal is rejected
+
+- **WHEN** SidecarTransformResponse removals is `[{ "score": 1 }]`
+- **THEN** decode SHALL throw
 
 ### Requirement: self ordering edge is conflict
 

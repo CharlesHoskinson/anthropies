@@ -283,8 +283,7 @@ describe("sol_blocked_hardening", () => {
         ok: true,
         packId: "anthropies.layer-a",
         artifact: { bytes, kind: "text", digest },
-        findings: [{ score: 1 }],
-        removals: []
+        removals: [{ score: 1 }]
       })
     ).toThrow()
   })
