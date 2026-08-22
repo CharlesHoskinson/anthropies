@@ -274,7 +274,36 @@ describe("sol_blocked_hardening", () => {
     expect(exit._tag).toBe("Failure")
   })
 
-  it("score on a transform finding is rejected", () => {
+  it("required unavailable pack fails transform", async () => {
+    const registry = createRegistry()
+    const required: CapabilityPack = {
+      manifest: decodeManifest({
+        ...baseInput,
+        id: "anthropies.required-absent-transform",
+        distribution: "core"
+      }),
+      probe: () =>
+        Effect.succeed(new Availability({ status: "unavailable", reason: "optional-absent" })),
+      inspect: () => Effect.succeed([]),
+      transform: () =>
+        Effect.succeed(
+          new TransformResult({
+            artifact: makeArtifact(new TextEncoder().encode("hello"), "text"),
+            removals: [],
+            evidence: { kind: "contract" },
+            residualFindings: [],
+            warnings: [],
+            remediation: "unchanged"
+          })
+        )
+    }
+    expect(registry.register(required)).toEqual({ ok: true })
+    const artifact = makeArtifact(new TextEncoder().encode("hello"), "text")
+    const exit = await Effect.runPromiseExit(transformArtifact(registry, artifact, removeCtx))
+    expect(exit._tag).toBe("Failure")
+  })
+
+  it("score on a transform removal is rejected", () => {
     const bytes = "b3duZWQgb3V0cHV0"
     const digest = "b8078cfc621040f79f42dcd4eb598a5bf73b640e78b573eb344202696095b1c2"
     expect(() =>
