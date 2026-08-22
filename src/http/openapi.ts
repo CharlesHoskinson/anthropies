@@ -1,3 +1,4 @@
+import { kernelApiVersion } from "../core/domain.js"
 import { serviceVersion } from "./schema.js"
 
 /** Loopback default for `anthropies serve --host`. */
@@ -126,16 +127,18 @@ export const openApiDocument = {
     "/capabilities": {
       get: {
         operationId: "capabilities",
-        summary: "Tool and scorer presence",
+        summary: "Tool, scorer, and pack inventory",
         security: optionalBearer,
         responses: {
           "200": {
-            description: "Version, tool probes, officialDetect presence bit",
+            description:
+              "Version, kernelApiVersion, tool probes, officialDetect presence bit, and probed packs",
             ...jsonContent({
               type: "object",
-              required: ["version", "tools", "scorers"],
+              required: ["version", "kernelApiVersion", "tools", "scorers", "packs"],
               properties: {
                 version: { type: "string", enum: [serviceVersion] },
+                kernelApiVersion: { type: "string", enum: [kernelApiVersion] },
                 tools: {
                   type: "object",
                   required: ["qpdf", "exiftool", "c2patool"],
@@ -152,6 +155,40 @@ export const openApiDocument = {
                     officialDetect: {
                       type: "boolean",
                       description: "True when ANTHROPIC_DETECT_URL is set. Not a score."
+                    }
+                  }
+                },
+                packs: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    required: [
+                      "id",
+                      "implementationVersion",
+                      "availability",
+                      "license",
+                      "privacy",
+                      "network",
+                      "artifactKinds",
+                      "operations"
+                    ],
+                    properties: {
+                      id: { type: "string" },
+                      implementationVersion: { type: "string" },
+                      availability: {
+                        type: "object",
+                        required: ["status", "reason"],
+                        properties: {
+                          status: { type: "string" },
+                          reason: { type: "string" },
+                          detail: { type: "string" }
+                        }
+                      },
+                      license: { type: "string" },
+                      privacy: { type: "string" },
+                      network: { type: "string" },
+                      artifactKinds: { type: "array", items: { type: "string" } },
+                      operations: { type: "array", items: { type: "string" } }
                     }
                   }
                 }
