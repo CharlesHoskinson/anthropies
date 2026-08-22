@@ -14,6 +14,7 @@ import { epubPack } from "../packs/epub.js"
 import { markllmPack } from "../packs/markllm.js"
 import { markDiffusionPack } from "../packs/markdiffusion.js"
 import { ctrlRegenPack } from "../packs/ctrlregen.js"
+import { auditDirectoryPack } from "../packs/audit-directory.js"
 import { createRegistry, type PackRegistry } from "./registry.js"
 
 /** Register the core packs for Inspector and Cleaner. */
@@ -35,5 +36,6 @@ export const builtinRegistry = (): PackRegistry => {
   registry.register(markllmPack)
   registry.register(markDiffusionPack)
   registry.register(ctrlRegenPack)
+  registry.register(auditDirectoryPack)
   return registry
 }
