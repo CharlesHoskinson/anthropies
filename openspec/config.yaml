@@ -1,0 +1,22 @@
+schema: spec-driven
+
+context: |
+  Product: Anthropies. Restore clean title in Outputs the user already owns.
+  Stack: TypeScript, Effect 3, vitest, pnpm. Version 0.4.0. HTTP /health stays 0.3.0 until a dedicated change.
+  Delivery: Foreman. Grok implements. Codex GPT-5.6 Sol audits (QA, code, docs). Claude advises at commitment boundaries.
+  Requirements: Easy Approach to Requirements Syntax (EARS). Clause order is While, When, the system SHALL. One response verb SHALL per requirement sentence.
+  EARS patterns: ubiquitous (The kernel SHALL); state-driven (WHILE); event-driven (WHEN); optional (WHERE); unwanted (IF ... THEN); complex (WHILE ... WHEN ...).
+  Channels: deterministic, c2pa, official, statistical. Never mix. No watermarkScore, suspicious, destamped, or official-kill claims.
+  Tests: every SHALL has a known-good and known-bad control. Empty selection is an error.
+
+rules:
+  proposal:
+    - Always include Non-goals
+    - Name the Foreman worktree and verification command
+  specs:
+    - Phrase every requirement in EARS
+    - Each requirement has at least one Scenario with WHEN and THEN
+    - Scenario names describe the discriminating control, not the happy path only
+  tasks:
+    - One Grok implementer deliverable per task group
+    - First step is a failing test. Do not tell the implementer to read ROADMAP then implement

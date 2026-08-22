@@ -1,4 +1,8 @@
 import { Effect } from "effect"
+import { RunContext } from "../core/capability.js"
+import { makeArtifact } from "../core/domain.js"
+import { builtinRegistry } from "../core/builtin-registry.js"
+import { transformArtifact } from "../core/pipeline.js"
 import { BinaryInput, DecodeError } from "../fail.js"
 import { cleanDocx, inspectDocx } from "../formats/docx.js"
 import { cleanHtmlText, inspectHtmlText } from "../formats/html.js"
@@ -26,6 +30,15 @@ export interface CleanResult {
 const layerPresent = (removed: LayerARemoved): boolean =>
   removed.unicode + removed.trailer + removed.banner > 0
 
+const removeContext = (options: CleanOptions): RunContext =>
+  new RunContext({
+    operation: "remove",
+    forceText: options.forceText,
+    json: options.json,
+    requireCapability: [],
+    kernelApiVersion: "1.0.0"
+  })
+
 /** Format clean plus Layer A on text-bearing kinds. */
 export class Cleaner extends Effect.Service<Cleaner>()("Cleaner", {
   accessors: true,
@@ -33,6 +46,7 @@ export class Cleaner extends Effect.Service<Cleaner>()("Cleaner", {
     const reporter = yield* Reporter
     const c2pa = yield* C2pa
     const pdf = yield* PdfTools
+    const registry = builtinRegistry()
     return {
       clean: (
         path: string,
@@ -171,16 +185,34 @@ export class Cleaner extends Effect.Service<Cleaner>()("Cleaner", {
             })
           }
           const text = yield* handler.decode(path, owned.bytes, options.forceText)
-          const cleaned = handler.clean(text)
-          const residual = applyLayerA(cleaned.text).removed
+          const artifact = makeArtifact(new TextEncoder().encode(text), "text", {
+            name: path,
+            ...(owned.suffix !== undefined ? { suffix: owned.suffix } : {})
+          })
+          const transformed = yield* transformArtifact(
+            registry,
+            artifact,
+            removeContext(options)
+          ).pipe(
+            Effect.mapError(
+              (failure) =>
+                new DecodeError({
+                  path,
+                  reason: failure.diagnostics ?? `${failure.code}:${failure.reason}`
+                })
+            )
+          )
+          const cleanedText = new TextDecoder("utf-8").decode(transformed.artifact.bytes)
+          const removed = applyLayerA(text).removed
+          const residual = applyLayerA(cleanedText).removed
           const present = residual.unicode + residual.trailer + residual.banner > 0
           const report = makeTextReport({
             kind: owned.kind,
-            removed: cleaned.removed,
+            removed,
             present
           })
-          yield* reporter.writeAtomic(dest, cleaned.bytes)
-          return { report, bytes: cleaned.bytes }
+          yield* reporter.writeAtomic(dest, transformed.artifact.bytes)
+          return { report, bytes: transformed.artifact.bytes }
         })
     }
   }),

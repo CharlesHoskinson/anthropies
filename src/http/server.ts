@@ -8,7 +8,13 @@ import {
 import { FileSystem } from "@effect/platform/FileSystem"
 import { Effect, Either, Layer, Option, Redacted, Schema } from "effect"
 import { anthropicDetectUrl, serverApiKey } from "../config.js"
+import { RunContext, type CapabilityPack } from "../core/capability.js"
+import { kernelApiVersion } from "../core/domain.js"
+import { createRegistry } from "../core/registry.js"
 import { DecodeError } from "../fail.js"
+import { c2paPack } from "../packs/c2pa.js"
+import { layerAPack } from "../packs/layer-a.js"
+import { pdfPack } from "../packs/pdf.js"
 import { Report } from "../report.js"
 import { Cleaner } from "../services/cleaner.js"
 import { Inspector } from "../services/inspector.js"
@@ -19,6 +25,7 @@ import {
   decodeRequestFile,
   FileRequest,
   InspectResponse,
+  PackCapabilityView,
   ScorerPresence,
   serviceVersion,
   ToolPresence
@@ -118,17 +125,51 @@ const health = HttpServerResponse.unsafeJson({ ok: true, version: serviceVersion
 
 const openapi = HttpServerResponse.unsafeJson(openApiDocument)
 
+const probeContext = new RunContext({
+  operation: "inspect",
+  forceText: false,
+  json: true,
+  requireCapability: [],
+  kernelApiVersion
+})
+
+const builtinPacks = (): ReadonlyArray<CapabilityPack> => {
+  const registry = createRegistry()
+  registry.register(layerAPack)
+  registry.register(c2paPack)
+  registry.register(pdfPack)
+  return registry.list()
+}
+
 const capabilities = Effect.gen(function* () {
   const qpdf = yield* toolPresent("qpdf", "--version")
   const exiftool = yield* toolPresent("exiftool", "-ver")
   const c2patool = yield* toolPresent("c2patool", "--version")
   const detect = yield* anthropicDetectUrl
+  const packs = yield* Effect.forEach(builtinPacks(), (pack) =>
+    Effect.map(
+      pack.probe(probeContext),
+      (availability) =>
+        new PackCapabilityView({
+          id: pack.manifest.id,
+          implementationVersion: pack.manifest.implementationVersion,
+          availability,
+          license: pack.manifest.license,
+          privacy: pack.manifest.privacy,
+          network: pack.manifest.network,
+          artifactKinds: [...pack.manifest.artifactKinds],
+          operations: [...pack.manifest.operations]
+        })
+    )
+  )
   return HttpServerResponse.unsafeJson(
     Schema.encodeUnknownSync(CapabilitiesResponse)(
       new CapabilitiesResponse({
         version: serviceVersion,
+        kernelApiVersion,
         tools: new ToolPresence({ qpdf, exiftool, c2patool }),
-        scorers: new ScorerPresence({ officialDetect: Option.isSome(detect) })
+        scorers: new ScorerPresence({ officialDetect: Option.isSome(detect) }),
+        packs
       })
     )
   )
