@@ -67,7 +67,15 @@ export const formatHandlers: Partial<Record<Kind, FormatHandler>> = {
   md: mdHandler
 }
 
-const byteKinds: ReadonlySet<Kind> = new Set(["raster", "docx", "odt", "pdf"])
+const byteKinds: ReadonlySet<Kind> = new Set([
+  "raster",
+  "docx",
+  "odt",
+  "xlsx",
+  "pptx",
+  "epub",
+  "pdf"
+])
 
 /** Suffix from a path. Hidden files with no extension yield undefined. */
 export const pathSuffix = (path: string): string | undefined => {
