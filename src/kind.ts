@@ -60,9 +60,9 @@ const suffixOf = (suffix: string | undefined): string | undefined => {
   return suffix.startsWith(".") ? suffix.toLowerCase() : `.${suffix.toLowerCase()}`
 }
 
-export type RasterCodec = "png" | "jpeg" | "gif" | "webp" | "avif" | "heic"
+export type RasterCodec = "png" | "jpeg" | "gif" | "webp" | "avif" | "heic" | "bmp" | "tiff"
 
-/** PNG / JPEG / GIF / WebP / AVIF / HEIC magic. Undefined if not raster. */
+/** PNG / JPEG / GIF / WebP / AVIF / HEIC / BMP / TIFF magic. Undefined if not raster. */
 export const rasterCodec = (bytes: Uint8Array): RasterCodec | undefined => {
   if (startsWithBytes(bytes, [0x89, 0x50, 0x4e, 0x47])) {
     return "png"
@@ -75,6 +75,15 @@ export const rasterCodec = (bytes: Uint8Array): RasterCodec | undefined => {
   }
   if (bytes.length >= 12 && ascii(bytes, 0, 4) === "RIFF" && ascii(bytes, 8, 12) === "WEBP") {
     return "webp"
+  }
+  if (startsWithBytes(bytes, [0x42, 0x4d])) {
+    return "bmp"
+  }
+  if (
+    startsWithBytes(bytes, [0x49, 0x49, 0x2a, 0x00]) ||
+    startsWithBytes(bytes, [0x4d, 0x4d, 0x00, 0x2a])
+  ) {
+    return "tiff"
   }
   const brand = ftypBrand(bytes)
   if (brand === "avif" || brand === "avis") {
