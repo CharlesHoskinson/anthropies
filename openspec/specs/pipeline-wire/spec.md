@@ -23,6 +23,11 @@ WHEN `Inspector.inspect` runs, it SHALL call `inspectArtifact` and SHALL keep th
 - **WHEN** Inspector inspects `fixtures/layer-a/trailer-claude.txt`
 - **THEN** the Report kind SHALL be `text`, deterministic status SHALL be `present`, and JSON SHALL NOT contain `"score"`
 
+#### Scenario: inspectArtifact uses classified kind
+
+- **WHEN** `src/services/inspector.ts` is read
+- **THEN** it SHALL contain `makeArtifact(owned.bytes, owned.kind`
+
 ### Requirement: Cleaner transforms through the pipeline for text
 
 WHEN `Cleaner.clean` runs on a text artifact, it SHALL call `transformArtifact` and SHALL call `writeAtomic` only after success.
