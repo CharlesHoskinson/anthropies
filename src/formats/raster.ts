@@ -321,7 +321,359 @@ const stripJpeg = (bytes: Uint8Array): RasterStripOk | RasterFail => {
   return { ok: true, bytes: out, removed: true, labels, applicable: true }
 }
 
-/** Inspect hard-bound C2PA/XMP on parsed PNG/JPEG; other rasters are not-applicable. */
+const u32le = (bytes: Uint8Array, offset: number): number =>
+  (((bytes[offset + 3] ?? 0) << 24) |
+    ((bytes[offset + 2] ?? 0) << 16) |
+    ((bytes[offset + 1] ?? 0) << 8) |
+    (bytes[offset] ?? 0)) >>>
+  0
+
+const writeU32le = (out: Uint8Array, offset: number, value: number): void => {
+  out[offset] = value & 0xff
+  out[offset + 1] = (value >>> 8) & 0xff
+  out[offset + 2] = (value >>> 16) & 0xff
+  out[offset + 3] = (value >>> 24) & 0xff
+}
+
+const writeU32be = (out: Uint8Array, offset: number, value: number): void => {
+  out[offset] = (value >>> 24) & 0xff
+  out[offset + 1] = (value >>> 16) & 0xff
+  out[offset + 2] = (value >>> 8) & 0xff
+  out[offset + 3] = value & 0xff
+}
+
+const latin1 = (data: Uint8Array): string => new TextDecoder("latin1").decode(data)
+
+const payloadHasProvenance = (data: Uint8Array): boolean => {
+  const text = latin1(data)
+  return (
+    text.includes("c2pa") ||
+    text.includes("digitalSourceType") ||
+    text.includes("<?xpacket")
+  )
+}
+
+interface WebpChunk {
+  readonly type: string
+  readonly data: Uint8Array
+  readonly raw: Uint8Array
+}
+
+const dropWebpChunk = (type: string, data: Uint8Array): string | undefined => {
+  if (type !== "XMP " && type !== "EXIF") {
+    return undefined
+  }
+  if (!payloadHasProvenance(data)) {
+    return undefined
+  }
+  return `${type.trimEnd()}:provenance`
+}
+
+const parseWebp = (
+  bytes: Uint8Array
+): { readonly ok: true; readonly chunks: ReadonlyArray<WebpChunk> } | RasterFail => {
+  if (bytes.length < 12) {
+    return { ok: false, reason: "truncated webp" }
+  }
+  if (ascii(bytes, 0, 4) !== "RIFF" || ascii(bytes, 8, 12) !== "WEBP") {
+    return { ok: false, reason: "not a webp" }
+  }
+  const chunks: Array<WebpChunk> = []
+  let off = 12
+  while (off < bytes.length) {
+    if (off + 8 > bytes.length) {
+      return { ok: false, reason: "truncated webp chunk header" }
+    }
+    const type = ascii(bytes, off, off + 4)
+    const size = u32le(bytes, off + 4)
+    const dataStart = off + 8
+    const dataEnd = dataStart + size
+    if (dataEnd > bytes.length) {
+      return { ok: false, reason: "truncated webp chunk data" }
+    }
+    const padded = dataEnd + (size % 2)
+    if (padded > bytes.length) {
+      return { ok: false, reason: "truncated webp chunk pad" }
+    }
+    chunks.push({
+      type,
+      data: bytes.subarray(dataStart, dataEnd),
+      raw: bytes.subarray(off, padded)
+    })
+    off = padded
+  }
+  if (chunks.length === 0) {
+    return { ok: false, reason: "webp has no chunks" }
+  }
+  return { ok: true, chunks }
+}
+
+const inspectWebp = (bytes: Uint8Array): RasterInspectOk | RasterFail => {
+  const parsed = parseWebp(bytes)
+  if (!parsed.ok) {
+    return { ok: true, present: false, labels: [], applicable: false }
+  }
+  const labels: Array<string> = []
+  for (const chunk of parsed.chunks) {
+    const hit = dropWebpChunk(chunk.type, chunk.data)
+    if (hit !== undefined) {
+      labels.push(hit)
+    }
+  }
+  return { ok: true, present: labels.length > 0, labels, applicable: true }
+}
+
+const stripWebp = (bytes: Uint8Array): RasterStripOk | RasterFail => {
+  const parsed = parseWebp(bytes)
+  if (!parsed.ok) {
+    return { ok: true, bytes, removed: false, labels: [], applicable: false }
+  }
+  const labels: Array<string> = []
+  const kept: Array<Uint8Array> = []
+  for (const chunk of parsed.chunks) {
+    const hit = dropWebpChunk(chunk.type, chunk.data)
+    if (hit !== undefined) {
+      labels.push(hit)
+      continue
+    }
+    kept.push(chunk.raw)
+  }
+  if (labels.length === 0) {
+    return { ok: true, bytes, removed: false, labels, applicable: true }
+  }
+  let body = 0
+  for (const raw of kept) {
+    body += raw.length
+  }
+  const out = new Uint8Array(12 + body)
+  out.set(bytes.subarray(0, 12), 0)
+  writeU32le(out, 4, 4 + body)
+  let off = 12
+  for (const raw of kept) {
+    out.set(raw, off)
+    off += raw.length
+  }
+  return { ok: true, bytes: out, removed: true, labels, applicable: true }
+}
+
+interface BmffBox {
+  readonly type: string
+  readonly data: Uint8Array
+  readonly raw: Uint8Array
+}
+
+const CONTAINER_BOXES = new Set([
+  "moov",
+  "moof",
+  "traf",
+  "mfra",
+  "meta",
+  "dinf",
+  "iprp",
+  "ipco",
+  "meco",
+  "mere",
+  "udta"
+])
+
+const parseBmffBoxes = (
+  bytes: Uint8Array
+): { readonly ok: true; readonly boxes: ReadonlyArray<BmffBox> } | RasterFail => {
+  const boxes: Array<BmffBox> = []
+  let off = 0
+  while (off < bytes.length) {
+    if (off + 8 > bytes.length) {
+      return { ok: false, reason: "truncated bmff box header" }
+    }
+    let size = u32be(bytes, off)
+    const type = ascii(bytes, off + 4, off + 8)
+    let header = 8
+    if (size === 1) {
+      if (off + 16 > bytes.length) {
+        return { ok: false, reason: "truncated bmff largesize" }
+      }
+      const high = u32be(bytes, off + 8)
+      const low = u32be(bytes, off + 12)
+      if (high !== 0 || low > 0x7fffffff) {
+        return { ok: false, reason: "bmff box too large" }
+      }
+      size = low
+      header = 16
+    } else if (size === 0) {
+      size = bytes.length - off
+    }
+    if (size < header || off + size > bytes.length) {
+      return { ok: false, reason: "truncated bmff box" }
+    }
+    boxes.push({
+      type,
+      data: bytes.subarray(off + header, off + size),
+      raw: bytes.subarray(off, off + size)
+    })
+    off += size
+  }
+  if (boxes.length === 0) {
+    return { ok: false, reason: "bmff has no boxes" }
+  }
+  return { ok: true, boxes }
+}
+
+const nestedBoxPayload = (box: BmffBox): Uint8Array => {
+  if (box.type === "meta" || box.type === "udta") {
+    if (box.data.length >= 4) {
+      return box.data.subarray(4)
+    }
+  }
+  return box.data
+}
+
+const collectBmffLabels = (boxes: ReadonlyArray<BmffBox>, labels: Array<string>): void => {
+  for (const box of boxes) {
+    if (box.type === "xml " || box.type === "Exif") {
+      if (box.type === "xml " || payloadHasProvenance(box.data)) {
+        labels.push(`${box.type.trimEnd()}:provenance`)
+        continue
+      }
+    }
+    if (payloadHasProvenance(box.data)) {
+      labels.push(`${box.type.trimEnd()}:provenance`)
+      continue
+    }
+    if (CONTAINER_BOXES.has(box.type)) {
+      const inner = parseBmffBoxes(nestedBoxPayload(box))
+      if (inner.ok) {
+        collectBmffLabels(inner.boxes, labels)
+      }
+    }
+  }
+}
+
+const stripBmffBoxes = (
+  boxes: ReadonlyArray<BmffBox>,
+  labels: Array<string>
+): { readonly kept: ReadonlyArray<Uint8Array>; readonly removed: boolean } => {
+  const kept: Array<Uint8Array> = []
+  let removed = false
+  for (const box of boxes) {
+    if (box.type === "xml " || box.type === "Exif") {
+      if (box.type === "xml " || payloadHasProvenance(box.data)) {
+        labels.push(`${box.type.trimEnd()}:provenance`)
+        removed = true
+        continue
+      }
+    }
+    if (payloadHasProvenance(box.data) && !CONTAINER_BOXES.has(box.type)) {
+      labels.push(`${box.type.trimEnd()}:provenance`)
+      removed = true
+      continue
+    }
+    if (CONTAINER_BOXES.has(box.type)) {
+      const headerLen = box.raw.length - box.data.length
+      const fullHeader =
+        box.type === "meta" || box.type === "udta"
+          ? box.raw.subarray(0, headerLen + 4)
+          : box.raw.subarray(0, headerLen)
+      const innerBytes =
+        box.type === "meta" || box.type === "udta" ? box.data.subarray(4) : box.data
+      const inner = parseBmffBoxes(innerBytes)
+      if (!inner.ok) {
+        if (payloadHasProvenance(box.data)) {
+          labels.push(`${box.type.trimEnd()}:provenance`)
+          removed = true
+          continue
+        }
+        kept.push(box.raw)
+        continue
+      }
+      const nested = stripBmffBoxes(inner.boxes, labels)
+      if (!nested.removed) {
+        kept.push(box.raw)
+        continue
+      }
+      removed = true
+      let innerSize = 0
+      for (const raw of nested.kept) {
+        innerSize += raw.length
+      }
+      const outSize = fullHeader.length + innerSize
+      const out = new Uint8Array(outSize)
+      out.set(fullHeader, 0)
+      writeU32be(out, 0, outSize)
+      let off = fullHeader.length
+      for (const raw of nested.kept) {
+        out.set(raw, off)
+        off += raw.length
+      }
+      kept.push(out)
+      continue
+    }
+    kept.push(box.raw)
+  }
+  return { kept, removed }
+}
+
+const inspectBmff = (
+  bytes: Uint8Array,
+  brand: "avif" | "heic"
+): RasterInspectOk | RasterFail => {
+  const parsed = parseBmffBoxes(bytes)
+  if (!parsed.ok) {
+    return { ok: true, present: false, labels: [], applicable: false }
+  }
+  if (parsed.boxes.length < 2 || parsed.boxes[0]?.type !== "ftyp") {
+    return { ok: true, present: false, labels: [], applicable: false }
+  }
+  const ftypBrand = ascii(parsed.boxes[0].data, 0, 4)
+  if (brand === "avif" && ftypBrand !== "avif" && ftypBrand !== "avis") {
+    return { ok: true, present: false, labels: [], applicable: false }
+  }
+  if (
+    brand === "heic" &&
+    ftypBrand !== "heic" &&
+    ftypBrand !== "heif" &&
+    ftypBrand !== "mif1"
+  ) {
+    return { ok: true, present: false, labels: [], applicable: false }
+  }
+  const labels: Array<string> = []
+  collectBmffLabels(parsed.boxes, labels)
+  return { ok: true, present: labels.length > 0, labels, applicable: true }
+}
+
+const stripBmff = (
+  bytes: Uint8Array,
+  brand: "avif" | "heic"
+): RasterStripOk | RasterFail => {
+  const inspected = inspectBmff(bytes, brand)
+  if (!inspected.ok) {
+    return inspected
+  }
+  if (!inspected.applicable) {
+    return { ok: true, bytes, removed: false, labels: [], applicable: false }
+  }
+  const parsed = parseBmffBoxes(bytes)
+  if (!parsed.ok) {
+    return { ok: true, bytes, removed: false, labels: [], applicable: false }
+  }
+  const labels: Array<string> = []
+  const stripped = stripBmffBoxes(parsed.boxes, labels)
+  if (!stripped.removed) {
+    return { ok: true, bytes, removed: false, labels: [], applicable: true }
+  }
+  let size = 0
+  for (const raw of stripped.kept) {
+    size += raw.length
+  }
+  const out = new Uint8Array(size)
+  let off = 0
+  for (const raw of stripped.kept) {
+    out.set(raw, off)
+    off += raw.length
+  }
+  return { ok: true, bytes: out, removed: true, labels, applicable: true }
+}
+
+/** Inspect hard-bound C2PA/XMP on parsed rasters; undecodable codecs stay not-applicable. */
 export const inspectRasterBytes = (bytes: Uint8Array): RasterInspectOk | RasterFail => {
   const codec = rasterCodec(bytes)
   if (codec === "png") {
@@ -330,13 +682,22 @@ export const inspectRasterBytes = (bytes: Uint8Array): RasterInspectOk | RasterF
   if (codec === "jpeg") {
     return inspectJpeg(bytes)
   }
+  if (codec === "webp") {
+    return inspectWebp(bytes)
+  }
+  if (codec === "avif") {
+    return inspectBmff(bytes, "avif")
+  }
+  if (codec === "heic") {
+    return inspectBmff(bytes, "heic")
+  }
   if (codec === undefined) {
     return { ok: false, reason: "not a raster image" }
   }
   return { ok: true, present: false, labels: [], applicable: false }
 }
 
-/** Drop hard-bound C2PA/XMP on PNG/JPEG. Unparsed rasters stay not-applicable. */
+/** Drop hard-bound C2PA/XMP on parsed rasters. Undecodable codecs stay not-applicable. */
 export const stripRasterBytes = (bytes: Uint8Array): RasterStripOk | RasterFail => {
   const codec = rasterCodec(bytes)
   if (codec === "png") {
@@ -344,6 +705,15 @@ export const stripRasterBytes = (bytes: Uint8Array): RasterStripOk | RasterFail 
   }
   if (codec === "jpeg") {
     return stripJpeg(bytes)
+  }
+  if (codec === "webp") {
+    return stripWebp(bytes)
+  }
+  if (codec === "avif") {
+    return stripBmff(bytes, "avif")
+  }
+  if (codec === "heic") {
+    return stripBmff(bytes, "heic")
   }
   if (codec === undefined) {
     return { ok: false, reason: "not a raster image" }
