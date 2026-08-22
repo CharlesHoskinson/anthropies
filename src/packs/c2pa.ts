@@ -19,12 +19,19 @@ const PACK_VERSION = "0.4.0"
 
 const contractEvidence = (): Evidence => new Evidence({ kind: "contract" })
 
-const presentFromArtifact = (artifact: Artifact): boolean => {
+const statusFromArtifact = (
+  artifact: Artifact
+): "present" | "absent" | "indeterminate" => {
   if (artifact.kind === "svg") {
     return inspectSvgText(new TextDecoder("utf-8").decode(artifact.bytes)).present
+      ? "present"
+      : "absent"
   }
   const parsed = inspectRasterBytes(artifact.bytes)
-  return parsed.ok ? parsed.present : false
+  if (!parsed.ok) {
+    return "indeterminate"
+  }
+  return parsed.present ? "present" : "absent"
 }
 
 export const c2paPack: CapabilityPack = {
@@ -57,7 +64,7 @@ export const c2paPack: CapabilityPack = {
       new KernelFinding({
         channel: "c2pa",
         markClass: "provenance-metadata",
-        status: presentFromArtifact(artifact) ? "present" : "absent",
+        status: statusFromArtifact(artifact),
         evidence: contractEvidence(),
         packId: PACK_ID,
         packImplementationVersion: PACK_VERSION

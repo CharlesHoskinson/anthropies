@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto"
 import { Schema } from "effect"
 
 export const sidecarProtocolVersion = "1.0.0" as const
@@ -7,6 +8,9 @@ const excessPropertyError = {
 }
 
 const Sha256Hex = Schema.String.pipe(Schema.pattern(/^[0-9a-f]{64}$/))
+
+const digestMatches = (a: { readonly bytes: Uint8Array; readonly digest: string }): boolean =>
+  createHash("sha256").update(a.bytes).digest("hex") === a.digest
 
 // Empty Struct ignores onExcessProperty; filter rejects any keys (including score).
 const EmptyObject = Schema.Struct({}).pipe(
@@ -19,7 +23,13 @@ const Artifact = Schema.Struct({
   bytes: Schema.Uint8ArrayFromBase64,
   kind: Schema.Literal("text"),
   digest: Sha256Hex
-}).annotations(excessPropertyError)
+})
+  .annotations(excessPropertyError)
+  .pipe(
+    Schema.filter((a) => digestMatches(a), {
+      message: () => "digest does not match bytes"
+    })
+  )
 
 export const isLoopbackBaseUrl = (url: string): boolean => {
   try {

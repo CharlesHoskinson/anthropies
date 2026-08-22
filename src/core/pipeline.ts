@@ -1,5 +1,5 @@
 import { Effect } from "effect"
-import type { RunContext } from "./capability.js"
+import type { CapabilityPack, RunContext } from "./capability.js"
 import {
   CapabilityFailure,
   Evidence,
@@ -9,7 +9,7 @@ import {
   TransformResult
 } from "./domain.js"
 import { plan } from "./planner.js"
-import { shouldPreserveOriginal } from "./policy.js"
+import { isOptionalFailSoft, shouldPreserveOriginal } from "./policy.js"
 import type { PackRegistry } from "./registry.js"
 
 const planConflict = (): CapabilityFailure =>
@@ -23,6 +23,27 @@ const unchangedResult = (artifact: Artifact): TransformResult =>
     residualFindings: [],
     warnings: [],
     remediation: "unchanged"
+  })
+
+const probeGate = (
+  pack: CapabilityPack,
+  context: RunContext
+): Effect.Effect<"run" | "skip", CapabilityFailure> =>
+  Effect.gen(function* () {
+    const availability = yield* pack.probe(context)
+    if (availability.status !== "unavailable") {
+      return "run" as const
+    }
+    if (isOptionalFailSoft(pack.manifest, context.requireCapability)) {
+      return "skip" as const
+    }
+    return yield* Effect.fail(
+      new CapabilityFailure({
+        code: "unavailable",
+        packId: pack.manifest.id,
+        reason: availability.reason
+      })
+    )
   })
 
 export const inspectArtifact = (
@@ -40,6 +61,10 @@ export const inspectArtifact = (
   return Effect.gen(function* () {
     const findings: Array<KernelFinding> = []
     for (const pack of planned.packs) {
+      const gate = yield* probeGate(pack, context)
+      if (gate === "skip") {
+        continue
+      }
       const packFindings = yield* pack.inspect(artifact, context)
       findings.push(...packFindings)
     }
@@ -68,6 +93,10 @@ export const transformArtifact = (
     let changed = false
 
     for (const pack of planned.packs) {
+      const gate = yield* probeGate(pack, context)
+      if (gate === "skip") {
+        continue
+      }
       if (pack.transform === undefined) {
         continue
       }
@@ -82,12 +111,15 @@ export const transformArtifact = (
       if (outcome._tag === "preserve") {
         return unchangedResult(artifact)
       }
-      current = outcome.result.artifact
+      const next = outcome.result.artifact
       removals.push(...outcome.result.removals)
       residualFindings.push(...outcome.result.residualFindings)
       warnings.push(...outcome.result.warnings)
       evidence = outcome.result.evidence
-      changed = true
+      if (next.digest !== current.digest) {
+        changed = true
+      }
+      current = next
     }
 
     return new TransformResult({

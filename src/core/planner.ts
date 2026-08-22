@@ -19,25 +19,26 @@ const isApplicable = (pack: CapabilityPack, request: PlanRequest): boolean => {
   )
 }
 
-/** Directed edge A→B means A runs before B. */
+/** Directed edge A→B means A runs before B. Returns false on a self-edge. */
 const addEdge = (
   successors: Map<string, Set<string>>,
   inDegree: Map<string, number>,
   from: string,
   to: string
-): void => {
+): boolean => {
   if (from === to) {
-    return
+    return false
   }
   const outs = successors.get(from)
   if (outs === undefined || inDegree.get(to) === undefined) {
-    return
+    return true
   }
   if (outs.has(to)) {
-    return
+    return true
   }
   outs.add(to)
   inDegree.set(to, (inDegree.get(to) ?? 0) + 1)
+  return true
 }
 
 const compareReady = (left: CapabilityPack, right: CapabilityPack): number => {
@@ -68,13 +69,17 @@ const orderPacks = (packs: ReadonlyArray<CapabilityPack>): PlanResult => {
     if (before !== undefined) {
       for (const otherId of before) {
         // this pack runs before other → id → other
-        addEdge(successors, inDegree, id, otherId)
+        if (!addEdge(successors, inDegree, id, otherId)) {
+          return { ok: false, code: "conflict" }
+        }
       }
     }
     if (after !== undefined) {
       for (const otherId of after) {
         // this pack runs after other → other → id
-        addEdge(successors, inDegree, otherId, id)
+        if (!addEdge(successors, inDegree, otherId, id)) {
+          return { ok: false, code: "conflict" }
+        }
       }
     }
   }
