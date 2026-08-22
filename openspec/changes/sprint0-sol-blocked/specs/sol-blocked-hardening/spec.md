@@ -13,6 +13,21 @@ WHEN inspectArtifact or transformArtifact runs, each planned pack SHALL be probe
 - **WHEN** a text inspect plans layer-a and an optional pack whose probe is optional-absent
 - **THEN** inspectArtifact SHALL succeed with layer-a findings
 
+#### Scenario: optional absent pack does not fail layer-a transform
+
+- **WHEN** a text transform plans layer-a and an optional pack whose probe is optional-absent
+- **THEN** transformArtifact SHALL succeed
+
+#### Scenario: required unavailable pack fails inspect
+
+- **WHEN** a core pack probe status is unavailable
+- **THEN** inspectArtifact SHALL fail
+
+#### Scenario: required unavailable pack fails transform
+
+- **WHEN** a core pack probe status is unavailable
+- **THEN** transformArtifact SHALL fail
+
 ### Requirement: unchanged transform is unchanged
 
 WHEN a planned pack.transform returns an artifact whose digest equals its input digest, the pipeline SHALL NOT set remediation to `changed` for that pack.
@@ -61,6 +76,11 @@ IF a pack lists its own id in ordering.before or ordering.after, THEN plan SHALL
 #### Scenario: after self is conflict
 
 - **WHEN** pack `loop` lists `ordering.after: ["loop"]`
+- **THEN** plan SHALL return conflict
+
+#### Scenario: before self is conflict
+
+- **WHEN** pack `loop` lists `ordering.before: ["loop"]`
 - **THEN** plan SHALL return conflict
 
 #### Scenario: before edge is honored
