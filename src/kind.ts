@@ -9,6 +9,9 @@ export const Kind = Schema.Literal(
   "md",
   "docx",
   "odt",
+  "xlsx",
+  "pptx",
+  "epub",
   "pdf",
   "binary"
 )
@@ -110,6 +113,15 @@ export const classify = (bytes: Uint8Array, suffix?: string): Kind => {
     }
     if (ext === ".odt") {
       return "odt"
+    }
+    if (ext === ".xlsx") {
+      return "xlsx"
+    }
+    if (ext === ".pptx") {
+      return "pptx"
+    }
+    if (ext === ".epub") {
+      return "epub"
     }
     return "binary"
   }

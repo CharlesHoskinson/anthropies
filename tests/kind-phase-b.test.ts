@@ -1,5 +1,6 @@
 import { describe, expect, it } from "@effect/vitest"
-import { classify, rasterCodec } from "../src/kind.js"
+import { Schema } from "effect"
+import { Kind, classify, rasterCodec } from "../src/kind.js"
 
 describe("kind_phase_b", () => {
   it("BMP magic is raster", () => {
@@ -34,5 +35,31 @@ describe("kind_phase_b", () => {
     ])
     expect(classify(bytes)).toBe("raster")
     expect(rasterCodec(bytes)).toBe("avif")
+  })
+
+  it("Kind literals include office and epub", () => {
+    const kinds = Schema.decodeSync(Schema.Array(Kind))(["xlsx", "pptx", "epub"])
+    expect(kinds).toEqual(["xlsx", "pptx", "epub"])
+  })
+
+  it("xlsx suffix on PK is xlsx", () => {
+    const bytes = new Uint8Array([0x50, 0x4b, 0x03, 0x04])
+    expect(classify(bytes, ".xlsx")).toBe("xlsx")
+  })
+
+  it("pptx suffix on PK is pptx", () => {
+    const bytes = new Uint8Array([0x50, 0x4b, 0x03, 0x04])
+    expect(classify(bytes, ".pptx")).toBe("pptx")
+  })
+
+  it("epub suffix on PK is epub", () => {
+    const bytes = new Uint8Array([0x50, 0x4b, 0x03, 0x04])
+    expect(classify(bytes, ".epub")).toBe("epub")
+  })
+
+  it("PK without known office suffix stays binary", () => {
+    const bytes = new Uint8Array([0x50, 0x4b, 0x03, 0x04])
+    expect(classify(bytes)).toBe("binary")
+    expect(classify(bytes, ".zip")).toBe("binary")
   })
 })
