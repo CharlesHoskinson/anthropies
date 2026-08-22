@@ -99,6 +99,33 @@ const HEIC_STUB = new Uint8Array([0, 0, 0, 0x18, 0x66, 0x74, 0x79, 0x70, 0x68, 0
 const undecodableHeic = (): Uint8Array =>
   concat(HEIC_STUB, new Uint8Array([0x00, 0x00, 0x00, 0x10, 0x6d, 0x65, 0x74]))
 
+/** Minimal GIF89a with Adobe XMP application extension (`XMP DataXMP`). */
+const gifWithXmp = (): Uint8Array => {
+  const header = concat(
+    enc.encode("GIF89a"),
+    new Uint8Array([0x01, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00])
+  )
+  const appIntro = new Uint8Array([0x21, 0xff, 0x0b])
+  const appId = enc.encode("XMP DataXMP")
+  const xmpBlocks: Array<Uint8Array> = []
+  let i = 0
+  while (i < XMP_PAYLOAD.length) {
+    const slice = XMP_PAYLOAD.subarray(i, Math.min(i + 255, XMP_PAYLOAD.length))
+    xmpBlocks.push(concat(new Uint8Array([slice.length]), slice))
+    i += slice.length
+  }
+  xmpBlocks.push(new Uint8Array([0x00]))
+  const image = new Uint8Array([
+    0x2c, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x01, 0x00, 0x00, 0x02, 0x02, 0x44, 0x01, 0x00
+  ])
+  const trailer = new Uint8Array([0x3b])
+  return concat(header, appIntro, appId, ...xmpBlocks, image, trailer)
+}
+
+/** TIFF little-endian magic with IFD offset past EOF so IFD parse fails. */
+const undecodableTiff = (): Uint8Array =>
+  new Uint8Array([0x49, 0x49, 0x2a, 0x00, 0x00, 0x10, 0x00, 0x00])
+
 describe("formats_phase_b_raster", () => {
   it("strip preserves image dimensions metadata contract", () => {
     const input = webpWithProvenance()
@@ -185,5 +212,41 @@ describe("formats_phase_b_raster", () => {
     expect(stripped.applicable).toBe(false)
     expect(stripped.removed).toBe(false)
     expect(digest(stripped.bytes)).toBe(before)
+  })
+
+  it("GIF with XMP extension is present", () => {
+    const bytes = gifWithXmp()
+    expect(rasterCodec(bytes)).toBe("gif")
+    const inspected = inspectRasterBytes(bytes)
+    expect(inspected.ok).toBe(true)
+    if (!inspected.ok) {
+      return
+    }
+    expect(inspected.applicable).toBe(true)
+    expect(inspected.present).toBe(true)
+    const stripped = stripRasterBytes(bytes)
+    expect(stripped.ok).toBe(true)
+    if (!stripped.ok) {
+      return
+    }
+    expect(stripped.applicable).toBe(true)
+    expect(stripped.removed).toBe(true)
+    const reinspected = inspectRasterBytes(stripped.bytes)
+    expect(reinspected.ok).toBe(true)
+    if (!reinspected.ok) {
+      return
+    }
+    expect(reinspected.applicable).toBe(true)
+    expect(reinspected.present).toBe(false)
+  })
+
+  it("undecodable TIFF is not absent", () => {
+    const bytes = undecodableTiff()
+    expect(rasterCodec(bytes)).toBe("tiff")
+    const inspected = inspectRasterBytes(bytes)
+    if (!inspected.ok) {
+      return
+    }
+    expect(inspected.applicable && inspected.present === false).toBe(false)
   })
 })
