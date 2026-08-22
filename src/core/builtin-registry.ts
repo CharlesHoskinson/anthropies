@@ -3,6 +3,9 @@ import { c2paPack } from "../packs/c2pa.js"
 import { pdfPack } from "../packs/pdf.js"
 import { htmlPack } from "../packs/html.js"
 import { mdPack } from "../packs/md.js"
+import { svgStripPack } from "../packs/svg-strip.js"
+import { docxPack } from "../packs/docx.js"
+import { odtPack } from "../packs/odt.js"
 import { rasterStripPack } from "../packs/raster-strip.js"
 import { pdfToolsPack } from "../packs/pdf-tools.js"
 import { createRegistry, type PackRegistry } from "./registry.js"
@@ -15,6 +18,9 @@ export const builtinRegistry = (): PackRegistry => {
   registry.register(pdfPack)
   registry.register(htmlPack)
   registry.register(mdPack)
+  registry.register(svgStripPack)
+  registry.register(docxPack)
+  registry.register(odtPack)
   registry.register(rasterStripPack)
   registry.register(pdfToolsPack)
   return registry
