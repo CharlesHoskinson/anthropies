@@ -20,7 +20,8 @@ import { layerAPack } from "../src/packs/layer-a.js"
 import {
   sidecarProtocolVersion,
   SidecarInspectRequest,
-  SidecarInspectResponse
+  SidecarInspectResponse,
+  SidecarTransformResponse
 } from "../src/sidecars/protocol.js"
 
 const inspectCtx = {
@@ -230,5 +231,80 @@ describe("sol_blocked_hardening", () => {
       findings: []
     })
     expect(encoded.protocolVersion).toBe("1.0.0")
+  })
+
+  it("optional absent pack does not fail layer-a transform", async () => {
+    const registry = createRegistry()
+    expect(registry.register(layerAPack)).toEqual({ ok: true })
+    const optional: CapabilityPack = {
+      manifest: decodeManifest({ ...baseInput, id: "anthropies.optional-absent" }),
+      probe: () =>
+        Effect.succeed(new Availability({ status: "unavailable", reason: "optional-absent" })),
+      inspect: () => Effect.succeed([]),
+      transform: () =>
+        Effect.fail(
+          new CapabilityFailure({
+            code: "unavailable",
+            packId: "anthropies.optional-absent",
+            reason: "optional-absent"
+          })
+        )
+    }
+    expect(registry.register(optional)).toEqual({ ok: true })
+    const artifact = makeArtifact(new TextEncoder().encode("hello"), "text")
+    const result = await Effect.runPromise(transformArtifact(registry, artifact, removeCtx))
+    expect(result.artifact.digest.length).toBe(64)
+  })
+
+  it("required unavailable pack fails inspect", async () => {
+    const registry = createRegistry()
+    const required: CapabilityPack = {
+      manifest: decodeManifest({
+        ...baseInput,
+        id: "anthropies.required-absent",
+        distribution: "core"
+      }),
+      probe: () =>
+        Effect.succeed(new Availability({ status: "unavailable", reason: "optional-absent" })),
+      inspect: () => Effect.succeed([])
+    }
+    expect(registry.register(required)).toEqual({ ok: true })
+    const artifact = makeArtifact(new TextEncoder().encode("hello"), "text")
+    const exit = await Effect.runPromiseExit(inspectArtifact(registry, artifact, inspectCtx))
+    expect(exit._tag).toBe("Failure")
+  })
+
+  it("score on a transform finding is rejected", () => {
+    const bytes = "b3duZWQgb3V0cHV0"
+    const digest = "b8078cfc621040f79f42dcd4eb598a5bf73b640e78b573eb344202696095b1c2"
+    expect(() =>
+      Schema.decodeUnknownSync(SidecarTransformResponse)({
+        protocolVersion: "1.0.0",
+        ok: true,
+        packId: "anthropies.layer-a",
+        artifact: { bytes, kind: "text", digest },
+        findings: [{ score: 1 }],
+        removals: []
+      })
+    ).toThrow()
+  })
+
+  it("before self is conflict", () => {
+    const registry = createRegistry()
+    const pack: CapabilityPack = {
+      manifest: decodeManifest({
+        ...baseInput,
+        id: "loop",
+        distribution: "core",
+        ordering: { before: ["loop"] }
+      }),
+      probe: () => Effect.succeed(new Availability({ status: "available", reason: "ready" })),
+      inspect: () => Effect.succeed([])
+    }
+    expect(registry.register(pack)).toEqual({ ok: true })
+    expect(plan(registry, { kind: "text", context: inspectCtx })).toEqual({
+      ok: false,
+      code: "conflict"
+    })
   })
 })
