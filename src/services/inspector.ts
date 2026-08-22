@@ -46,6 +46,23 @@ export class Inspector extends Effect.Service<Inspector>()("Inspector", {
       ) =>
         Effect.gen(function* () {
           const owned = yield* loadOwned(path)
+          const artifact = makeArtifact(owned.bytes, owned.kind, {
+            name: path,
+            ...(owned.suffix !== undefined ? { suffix: owned.suffix } : {})
+          })
+          const findings = yield* inspectArtifact(
+            registry,
+            artifact,
+            inspectContext(options)
+          ).pipe(
+            Effect.mapError(
+              (failure) =>
+                new DecodeError({
+                  path,
+                  reason: failure.diagnostics ?? `${failure.code}:${failure.reason}`
+                })
+            )
+          )
           if (owned.kind === "raster" && !options.forceText) {
             const inspected = yield* c2pa.inspect(owned.bytes, owned.kind, path)
             return makeRasterReport({
@@ -163,19 +180,6 @@ export class Inspector extends Effect.Service<Inspector>()("Inspector", {
             })
           }
           const text = yield* handler.decode(path, owned.bytes, options.forceText)
-          const artifact = makeArtifact(new TextEncoder().encode(text), "text", {
-            name: path,
-            ...(owned.suffix !== undefined ? { suffix: owned.suffix } : {})
-          })
-          const findings = yield* inspectArtifact(registry, artifact, inspectContext(options)).pipe(
-            Effect.mapError(
-              (failure) =>
-                new DecodeError({
-                  path,
-                  reason: failure.diagnostics ?? `${failure.code}:${failure.reason}`
-                })
-            )
-          )
           const { removed } = applyLayerA(text)
           return makeTextReport({
             kind: owned.kind,

@@ -88,4 +88,23 @@ describe("pipeline_compat", () => {
     expect(src).toMatch(/cleanOdt/)
     expect(src).not.toMatch(/pdfPack/)
   })
+
+  it("inspector source builds an artifact from classified kind", () => {
+    const src = readFileSync("src/services/inspector.ts", "utf8")
+    expect(src).toMatch(/makeArtifact\(owned\.bytes,\s*owned\.kind/)
+    expect(src).toMatch(/inspectArtifact/)
+  })
+
+  it.scoped("inspects raster fixture as kind raster without score", () =>
+    layers(
+      Effect.gen(function* () {
+        const path = fileURLToPath(
+          new URL("../fixtures/c2pa/fixture-c2pa-present.png", import.meta.url)
+        )
+        const report = yield* Inspector.inspect(path, { forceText: false, json: true })
+        expect(report.kind).toBe("raster")
+        expect(JSON.stringify(report)).not.toMatch(/"score"/)
+      })
+    )
+  )
 })
