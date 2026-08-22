@@ -6,12 +6,32 @@ import { inspectPdfBytes, PdfTools } from "../src/formats/pdf.js"
 import { Finding, Removed, Report, residualDrivesExit } from "../src/report.js"
 import { Cleaner } from "../src/services/cleaner.js"
 
-const MIN_PDF = new TextEncoder().encode(
+const enc = new TextEncoder()
+
+const MIN_PDF = enc.encode(
   "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\ntrailer\n<< /Root 1 0 R >>\n%%EOF\n"
 )
 
-const XMP_PDF = new TextEncoder().encode(
-  "%PDF-1.4\n<?xpacket begin=''?>c2pa planted<?xpacket end='w'?>\n%%EOF\n"
+/** Provenance XMP inside a /Metadata stream (document-level, not page content). */
+const XMP_PDF = (() => {
+  const xmp =
+    "<?xpacket begin=''?>" +
+    "<digitalSourceType>trainedAlgorithmicMedia</digitalSourceType>" +
+    "<?xpacket end='w'?>"
+  return enc.encode(
+    "%PDF-1.4\n" +
+      "1 0 obj\n<< /Type /Catalog /Metadata 2 0 R >>\nendobj\n" +
+      `2 0 obj\n<< /Type /Metadata /Subtype /XML /Length ${xmp.length} >>\nstream\n` +
+      `${xmp}\nendstream\nendobj\n` +
+      "trailer\n<< /Root 1 0 R >>\n%%EOF\n"
+  )
+})()
+
+/** `c2pa` only as content-stream noise — must not certify present. */
+const STREAM_NOISE_PDF = enc.encode(
+  "%PDF-1.4\n1 0 obj\n<< /Type /Catalog >>\nendobj\n" +
+    "2 0 obj\n<< /Length 12 >>\nstream\nxxc2payy\nendstream\nendobj\n" +
+    "trailer\n<< /Root 1 0 R >>\n%%EOF\n"
 )
 
 const missingTools = Layer.succeed(
@@ -41,6 +61,7 @@ describe("cert_pdf_degraded", () => {
   it("byte scan sees xmp c2pa markers", () => {
     expect(inspectPdfBytes(XMP_PDF).present).toBe(true)
     expect(inspectPdfBytes(MIN_PDF).present).toBe(false)
+    expect(inspectPdfBytes(STREAM_NOISE_PDF).present).toBe(false)
   })
 
   it("missing tools are Finding degraded and do not drive exit 1", () => {

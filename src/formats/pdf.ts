@@ -16,24 +16,30 @@ export interface PdfStripResult {
   readonly degraded: boolean
 }
 
-const XMP_RE = /<\?xpacket begin[\s\S]*?<\?xpacket end[^?]*\?>/iu
+const XMP_RE = /<\?xpacket begin[\s\S]*?<\?xpacket end[^?]*\?>/giu
 const MARK_RE = /c2pa|jumbf|digitalSourceType|trainedAlgorithmicMedia|SoftwareAgent/iu
 
-const structuredPdf = (bytes: Uint8Array): string => {
-  const raw = new TextDecoder("latin1").decode(bytes)
-  return raw.replace(/stream\r?\n.*?endstream/gsu, "stream endstream")
-}
+/** Drop stream bodies so compressed page content cannot fake provenance markers. */
+const withoutStreamBodies = (raw: string): string =>
+  raw.replace(/stream\r?\n[\s\S]*?endstream/gu, "stream\nendstream")
 
-/** Byte-scan PDF dictionaries and XMP packets for provenance markers. */
+/** Structure-aware scan: XMP packets (incl. /Metadata streams) plus non-stream dictionaries. */
 export const inspectPdfBytes = (bytes: Uint8Array): { readonly present: boolean; readonly labels: ReadonlyArray<string> } => {
-  const text = structuredPdf(bytes)
+  const raw = new TextDecoder("latin1").decode(bytes)
   const labels: Array<string> = []
-  if (XMP_RE.test(text)) {
-    labels.push("pdf-xmp")
+
+  for (const packet of raw.matchAll(XMP_RE)) {
+    if (MARK_RE.test(packet[0]!)) {
+      labels.push("pdf-xmp")
+      break
+    }
   }
-  if (MARK_RE.test(text)) {
+
+  const dictionaries = withoutStreamBodies(raw)
+  if (MARK_RE.test(dictionaries)) {
     labels.push("pdf-marker")
   }
+
   return { present: labels.length > 0, labels }
 }
 
