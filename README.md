@@ -61,6 +61,14 @@ npx anthropies serve
 
 Docker (`Dockerfile` + `compose.yaml`) is the same service. `docker compose up --build` publishes `127.0.0.1:8765:8765`. The process inside binds `0.0.0.0:8765`; the host mapping stays loopback. The image does not install qpdf, exiftool, or c2patool. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set. GitHub Actions runs `pnpm test` and `pnpm build` on Ubuntu and Windows.
 
+### Operator profiles and compatibility
+
+The default Compose profile is local-only TypeScript core. Licensed and heavy optional packs stay off until you enable one optional pack profile independently, for example `docker compose --profile markllm up` (or `markdiffusion`, `ctrlregen`, `image-scoring`).
+
+License disposition and redistribution limits apply per profile. `image-scoring` is `optional-noncommercial` and is not redistributed inside the core image. `markllm` / `markdiffusion` wrap Apache-2.0 upstreams. `ctrlregen` keeps operator-supplied weights out of the default image.
+
+Kernel ranges, sidecar protocol `1.0.0`, pins, and troubleshooting for unavailable or incompatible optional packs are in [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md).
+
 ### Humanize (title restoration)
 
 `humanize` is title restoration: a best-effort wording rewrite on a **non-origin** model so the keyed text mark is no longer the shipped prose. Residual statistical risk remains. It is not an official-kill and does not prove the official Claude text detector will fail.
