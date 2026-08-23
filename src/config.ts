@@ -42,6 +42,12 @@ export const markDiffusionDir = Config.option(Config.string("MARKDIFFUSION_DIR")
 /** Operator-supplied CtrlRegen-method weights path. Unset → optional pack unavailable. */
 export const ctrlRegenWeights = Config.option(Config.string("CTRLREGEN_WEIGHTS"))
 
+/**
+ * Loopback base URL for the optional CtrlRegen-method sidecar.
+ * Unset → pack probe reports unavailable (env-unset).
+ */
+export const ctrlRegenSidecarUrl = Config.option(Config.string("CTRLREGEN_SIDECAR_URL"))
+
 /** Runner for MarkLLM detect entry. Defaults to python3; tests may set process.execPath. */
 export const markllmRunner = Config.string("MARKLLM_RUNNER").pipe(Config.withDefault("python3"))
 
@@ -70,6 +76,7 @@ export const appConfig = Config.all({
   markllmDir,
   markDiffusionDir,
   ctrlRegenWeights,
+  ctrlRegenSidecarUrl,
   markllmRunner,
   markDiffusionRunner,
   imageScoringBaseUrl
