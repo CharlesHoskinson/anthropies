@@ -82,19 +82,49 @@ const cleanResponse = {
   }
 }
 
+const detectResponse = {
+  type: "object",
+  required: ["ok", "kind", "report"],
+  properties: {
+    ok: { type: "boolean" },
+    kind: { type: "string" },
+    report: reportSchema
+  }
+}
+
+const detectQuery = {
+  type: "object",
+  required: ["file", "name"],
+  properties: {
+    file: {
+      type: "string",
+      format: "byte",
+      description: "Base64-encoded owned file. Decoded size cap 256 MiB."
+    },
+    name: {
+      type: "string",
+      description: "Upload filename. Only the basename is written to a scoped temp dir."
+    },
+    forceText: {
+      type: "string",
+      description: "Optional. When \"true\", force text classification."
+    }
+  }
+}
+
 const bearerNote =
   "Required only when ANTHROPIES_SERVER_API_KEY is set. Missing or wrong key returns 401."
 
 const optionalBearer = [{}, { bearerAuth: [] }]
 
-/** OpenAPI 3.0.3 for the local inspect/clean service. No /humanize. */
+/** OpenAPI 3.0.3 for the local inspect/clean/detect service. No /humanize. */
 export const openApiDocument = {
   openapi: "3.0.3",
   info: {
     title: "anthropies",
     version: serviceVersion,
     description:
-      "Local HTTP inspect and clean for files the user already owns. Does not humanize. Does not claim official-detector failure. Honesty remains on report.honesty."
+      "Local HTTP inspect, clean, and detect for files the user already owns. Does not humanize. Does not claim official-detector failure. Detection is not a clean certificate. Honesty remains on report.honesty."
   },
   servers: [
     {
@@ -241,6 +271,54 @@ export const openApiDocument = {
         },
         responses: {
           "200": { description: "Clean report plus cleaned base64", ...jsonContent(cleanResponse) },
+          "400": { description: "Decode, cap, or fail-closed input", ...jsonContent(errorBody) },
+          "401": { description: "Missing or wrong bearer", ...jsonContent(errorBody) }
+        }
+      }
+    },
+    "/detect": {
+      get: {
+        operationId: "detectGet",
+        summary:
+          "Channel-separated detector findings for owned text. Same contract as POST. Not a clean certificate.",
+        security: optionalBearer,
+        parameters: [
+          {
+            name: "file",
+            in: "query",
+            required: true,
+            schema: detectQuery.properties.file
+          },
+          {
+            name: "name",
+            in: "query",
+            required: true,
+            schema: detectQuery.properties.name
+          },
+          {
+            name: "forceText",
+            in: "query",
+            required: false,
+            schema: detectQuery.properties.forceText
+          }
+        ],
+        responses: {
+          "200": { description: "Detect report", ...jsonContent(detectResponse) },
+          "400": { description: "Decode, cap, or fail-closed input", ...jsonContent(errorBody) },
+          "401": { description: "Missing or wrong bearer", ...jsonContent(errorBody) }
+        }
+      },
+      post: {
+        operationId: "detectPost",
+        summary:
+          "Channel-separated detector findings for owned text. Not a clean certificate. No watermarkScore.",
+        security: optionalBearer,
+        requestBody: {
+          required: true,
+          content: { "application/json": { schema: fileRequest } }
+        },
+        responses: {
+          "200": { description: "Detect report", ...jsonContent(detectResponse) },
           "400": { description: "Decode, cap, or fail-closed input", ...jsonContent(errorBody) },
           "401": { description: "Missing or wrong bearer", ...jsonContent(errorBody) }
         }
