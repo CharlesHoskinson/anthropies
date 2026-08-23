@@ -15,6 +15,7 @@ import { markllmPack } from "../packs/markllm.js"
 import { markDiffusionPack } from "../packs/markdiffusion.js"
 import { ctrlRegenPack } from "../packs/ctrlregen.js"
 import { auditDirectoryPack } from "../packs/audit-directory.js"
+import { rewriteStylometryPack } from "../packs/rewrite-stylometry.js"
 import { createRegistry, type PackRegistry } from "./registry.js"
 
 /** Register the core packs for Inspector and Cleaner. */
@@ -37,5 +38,6 @@ export const builtinRegistry = (): PackRegistry => {
   registry.register(markDiffusionPack)
   registry.register(ctrlRegenPack)
   registry.register(auditDirectoryPack)
+  registry.register(rewriteStylometryPack)
   return registry
 }
