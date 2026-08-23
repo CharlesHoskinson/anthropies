@@ -50,6 +50,13 @@ export const markDiffusionRunner = Config.string("MARKDIFFUSION_RUNNER").pipe(
   Config.withDefault("python3")
 )
 
+/**
+ * Loopback base URL for the optional image-scoring sidecar.
+ * Unset → pack probe reports unavailable (optional-absent).
+ * Default resolved URL for operators is http://127.0.0.1:18765 (see packs/image-scoring.ts).
+ */
+export const imageScoringBaseUrl = Config.option(Config.string("IMAGE_SCORING_BASE_URL"))
+
 /** All env knobs as Config. Never read process.env in library code. */
 export const appConfig = Config.all({
   anthropicApiKey,
@@ -64,5 +71,6 @@ export const appConfig = Config.all({
   markDiffusionDir,
   ctrlRegenWeights,
   markllmRunner,
-  markDiffusionRunner
+  markDiffusionRunner,
+  imageScoringBaseUrl
 })

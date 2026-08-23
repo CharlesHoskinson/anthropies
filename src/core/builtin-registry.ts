@@ -18,6 +18,7 @@ import { auditDirectoryPack } from "../packs/audit-directory.js"
 import { rewriteStylometryPack } from "../packs/rewrite-stylometry.js"
 import { geminiSynthidPack } from "../packs/gemini-synthid.js"
 import { anthropicOfficialPack } from "../packs/anthropic-official.js"
+import { imageScoringPack } from "../packs/image-scoring.js"
 import { createRegistry, type PackRegistry } from "./registry.js"
 
 /** Register the core packs for Inspector and Cleaner. */
@@ -43,5 +44,6 @@ export const builtinRegistry = (): PackRegistry => {
   registry.register(rewriteStylometryPack)
   registry.register(geminiSynthidPack)
   registry.register(anthropicOfficialPack)
+  registry.register(imageScoringPack)
   return registry
 }
