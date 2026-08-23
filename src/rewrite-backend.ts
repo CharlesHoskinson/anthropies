@@ -3,6 +3,7 @@ import * as HttpClientRequest from "@effect/platform/HttpClientRequest"
 import { Effect, Option, Redacted, Schema } from "effect"
 import type { RewriteBackend } from "./config.js"
 import { RewriteFailed, RewriteRemoteDenied } from "./fail.js"
+import { unicodeWords } from "./rewrite-metric.js"
 
 export type HttpRewriteBackend = Exclude<RewriteBackend, "print-prompt">
 
@@ -31,6 +32,39 @@ export const ollamaGenerateUrl = (baseUrl: string): string => `${trimSlash(baseU
 export const openaiChatUrl = (baseUrl: string): string => {
   const trimmed = trimSlash(baseUrl)
   return trimmed.endsWith("/v1") ? `${trimmed}/chat/completions` : `${trimmed}/v1/chat/completions`
+}
+
+const fiveGrams = (tokens: ReadonlyArray<string>): Array<string> => {
+  if (tokens.length < 5) {
+    return []
+  }
+  const out: Array<string> = []
+  for (let i = 0; i <= tokens.length - 5; i++) {
+    out.push(tokens.slice(i, i + 5).join(" "))
+  }
+  return out
+}
+
+/**
+ * Lexical / five-gram survival for candidate ranking. Lower is better.
+ * Falls back to token Jaccard when fewer than five tokens exist.
+ * Detector scores must never enter this function.
+ */
+export const lexicalSurvival = (before: string, after: string): number => {
+  const beforeTokens = unicodeWords(before)
+  const afterTokens = unicodeWords(after)
+  const beforeGrams = fiveGrams(beforeTokens)
+  if (beforeGrams.length > 0) {
+    const afterSet = new Set(fiveGrams(afterTokens))
+    const surviving = beforeGrams.filter((g) => afterSet.has(g)).length
+    return surviving / beforeGrams.length
+  }
+  if (beforeTokens.length === 0) {
+    return afterTokens.length === 0 ? 1 : 0
+  }
+  const afterSet = new Set(afterTokens)
+  const overlap = beforeTokens.filter((t) => afterSet.has(t)).length
+  return overlap / beforeTokens.length
 }
 
 /** localhost, ::1, and 127.0.0.0/8. Fail-closed on anything else. */
