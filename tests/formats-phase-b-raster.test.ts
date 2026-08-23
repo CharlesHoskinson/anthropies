@@ -249,4 +249,25 @@ describe("formats_phase_b_raster", () => {
     }
     expect(inspected.applicable && inspected.present === false).toBe(false)
   })
+
+  it("BMFF mdat with c2pa letters is not stripped", () => {
+    const ftypPayload = concat(enc.encode("avif"), u32be(0), enc.encode("avif"))
+    const bytes = concat(box("ftyp", ftypPayload), box("mdat", enc.encode("c2pa")))
+    expect(rasterCodec(bytes)).toBe("avif")
+    const before = digest(bytes)
+    const inspected = inspectRasterBytes(bytes)
+    expect(inspected.ok).toBe(true)
+    if (!inspected.ok) {
+      return
+    }
+    expect(inspected.applicable).toBe(true)
+    expect(inspected.present).toBe(false)
+    const stripped = stripRasterBytes(bytes)
+    expect(stripped.ok).toBe(true)
+    if (!stripped.ok) {
+      return
+    }
+    expect(stripped.removed).toBe(false)
+    expect(digest(stripped.bytes)).toBe(before)
+  })
 })

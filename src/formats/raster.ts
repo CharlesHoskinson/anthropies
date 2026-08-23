@@ -527,16 +527,22 @@ const nestedBoxPayload = (box: BmffBox): Uint8Array => {
   return box.data
 }
 
+/** Drop only BMFF metadata boxes; never scan mdat/iloc/ipco/sample payloads. */
+const dropBmffLeaf = (type: string, data: Uint8Array): string | undefined => {
+  if (type !== "xml " && type !== "Exif" && type !== "uuid") {
+    return undefined
+  }
+  if (!payloadHasProvenance(data)) {
+    return undefined
+  }
+  return `${type.trimEnd()}:provenance`
+}
+
 const collectBmffLabels = (boxes: ReadonlyArray<BmffBox>, labels: Array<string>): void => {
   for (const box of boxes) {
-    if (box.type === "xml " || box.type === "Exif") {
-      if (box.type === "xml " || payloadHasProvenance(box.data)) {
-        labels.push(`${box.type.trimEnd()}:provenance`)
-        continue
-      }
-    }
-    if (payloadHasProvenance(box.data)) {
-      labels.push(`${box.type.trimEnd()}:provenance`)
+    const hit = dropBmffLeaf(box.type, box.data)
+    if (hit !== undefined) {
+      labels.push(hit)
       continue
     }
     if (CONTAINER_BOXES.has(box.type)) {
@@ -555,15 +561,9 @@ const stripBmffBoxes = (
   const kept: Array<Uint8Array> = []
   let removed = false
   for (const box of boxes) {
-    if (box.type === "xml " || box.type === "Exif") {
-      if (box.type === "xml " || payloadHasProvenance(box.data)) {
-        labels.push(`${box.type.trimEnd()}:provenance`)
-        removed = true
-        continue
-      }
-    }
-    if (payloadHasProvenance(box.data) && !CONTAINER_BOXES.has(box.type)) {
-      labels.push(`${box.type.trimEnd()}:provenance`)
+    const hit = dropBmffLeaf(box.type, box.data)
+    if (hit !== undefined) {
+      labels.push(hit)
       removed = true
       continue
     }
@@ -577,11 +577,6 @@ const stripBmffBoxes = (
         box.type === "meta" || box.type === "udta" ? box.data.subarray(4) : box.data
       const inner = parseBmffBoxes(innerBytes)
       if (!inner.ok) {
-        if (payloadHasProvenance(box.data)) {
-          labels.push(`${box.type.trimEnd()}:provenance`)
-          removed = true
-          continue
-        }
         kept.push(box.raw)
         continue
       }
