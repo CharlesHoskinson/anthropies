@@ -8,10 +8,22 @@ import { fileURLToPath } from "node:url"
 import { builtinRegistry } from "../src/core/builtin-registry.js"
 import { HttpApp } from "../src/http/server.js"
 import {
+  rejectsOfficialRemovalClaim,
   rewriteStylometryPack,
   selectRewriteCandidate
 } from "../src/packs/rewrite-stylometry.js"
-import { Humanizer, PROSE_PROMPT, originBlocked } from "../src/services/humanizer.js"
+import { honestyStanza } from "../src/report.js"
+import { observeRewrite, unicodeWords } from "../src/rewrite-metric.js"
+import {
+  CODE_PROMPT,
+  Humanizer,
+  PROSE_PROMPT,
+  originBlocked,
+  reportFromHumanize
+} from "../src/services/humanizer.js"
+
+const longProse = (stem: string, n: number): string =>
+  Array.from({ length: n }, (_, i) => `${stem}${["a", "b", "c", "d"][i % 4] ?? "a"}`).join(" ")
 
 const layers = Effect.provide(Layer.mergeAll(Humanizer.Default, NodeContext.layer))
 
@@ -267,5 +279,203 @@ describe("packs_rewrite_stylometry", () => {
     expect(selected.isCleanCertificate).toBe(false)
     expect(selected.note).toMatch(/not a clean certificate/i)
     expect(selected.note).not.toMatch(/official.?kill|destamp success|certified absent/i)
+  })
+
+  it("not-run when rewrite skipped", () => {
+    const obs = observeRewrite({ executed: false, domain: "prose" })
+    expect(obs.metric.status).toBe("not-run")
+    expect(obs.metric.surviving_ratio).toBeNull()
+    expect(obs.stylometry.status).toBe("not-run")
+  })
+
+  it("insufficient for short prose", () => {
+    const before = "The compiler rejected the patch after review."
+    const after = "After review the compiler rejected the patch."
+    expect(unicodeWords(before).length).toBeLessThan(200)
+    const obs = observeRewrite({
+      executed: true,
+      before,
+      after,
+      domain: "prose"
+    })
+    expect(obs.metric.status).toBe("insufficient")
+    expect(obs.metric.surviving_ratio).toBeNull()
+    expect(obs.stylometry.status).toBe("insufficient")
+  })
+
+  it("insufficient for code domain", () => {
+    const before = longProse("tok", 220)
+    const after = longProse("rew", 220)
+    const obs = observeRewrite({
+      executed: true,
+      before,
+      after,
+      domain: "code"
+    })
+    expect(obs.metric.status).toBe("insufficient")
+    expect(obs.metric.surviving_ratio).toBeNull()
+    expect(obs.stylometry.status).toBe("insufficient")
+  })
+
+  it("computed for long prose rewrite", () => {
+    const before = longProse("alpha", 220)
+    const after = longProse("bravo", 220)
+    expect(unicodeWords(before).length).toBeGreaterThanOrEqual(200)
+    const obs = observeRewrite({
+      executed: true,
+      before,
+      after,
+      domain: "prose"
+    })
+    expect(obs.metric.status).toBe("computed")
+    expect(obs.metric.ngram).toBe(5)
+    expect(obs.metric.tokenizer).toBe("unicode-words")
+    expect(obs.metric.surviving_ratio).not.toBeNull()
+    expect(obs.stylometry.status).toBe("computed")
+  })
+
+  it.scoped("stylometry not-run on print-prompt", () =>
+    withEnv([["ANTHROPIES_REWRITE_BACKEND", "print-prompt"]])(
+      layers(
+        Effect.gen(function* () {
+          const result = yield* Humanizer.humanize("The compiler rejected the patch.", {
+            kind: "prose"
+          })
+          expect(result.metric.status).toBe("not-run")
+          const obs = observeRewrite({ executed: false, domain: "prose" })
+          expect(obs.stylometry.status).toBe("not-run")
+        })
+      )
+    )
+  )
+
+  it("stylometry insufficient under 200 tokens", () => {
+    const before = "Short prose only."
+    const after = "Only short prose."
+    expect(unicodeWords(before).length).toBeLessThan(200)
+    const obs = observeRewrite({
+      executed: true,
+      before,
+      after,
+      domain: "prose"
+    })
+    expect(obs.stylometry.status).toBe("insufficient")
+    expect(obs.metric.surviving_ratio).toBeNull()
+  })
+
+  it("stylometry computed only after sufficient prose rewrite", () => {
+    const before = longProse("alpha", 220)
+    const after = longProse("bravo", 220)
+    const skipped = observeRewrite({ executed: false, domain: "prose" })
+    expect(skipped.stylometry.status).toBe("not-run")
+    const short = observeRewrite({
+      executed: true,
+      before: "Too short.",
+      after: "Still short.",
+      domain: "prose"
+    })
+    expect(short.stylometry.status).toBe("insufficient")
+    const obs = observeRewrite({
+      executed: true,
+      before,
+      after,
+      domain: "prose"
+    })
+    expect(obs.stylometry.status).toBe("computed")
+    expect(obs.metric.status).toBe("computed")
+  })
+
+  it("no CI gate on surviving ratio", () => {
+    const before = longProse("alpha", 220)
+    const highOverlap = observeRewrite({
+      executed: true,
+      before,
+      after: before,
+      domain: "prose"
+    })
+    const lowOverlap = observeRewrite({
+      executed: true,
+      before,
+      after: longProse("omega", 220),
+      domain: "prose"
+    })
+    expect(highOverlap.metric.status).toBe("computed")
+    expect(lowOverlap.metric.status).toBe("computed")
+    expect(highOverlap.metric.surviving_ratio).not.toBeNull()
+    expect(lowOverlap.metric.surviving_ratio).not.toBeNull()
+    // Both ratios are observations only. Neither becomes a pass/fail verb.
+    expect(highOverlap.stylometry.status).toBe("computed")
+    expect(lowOverlap.stylometry.status).toBe("computed")
+    const selected = selectRewriteCandidate({
+      source: before,
+      domain: "prose",
+      candidates: [
+        { id: "high", text: before },
+        { id: "low", text: longProse("omega", 220) }
+      ]
+    })
+    expect(selected.selectedId).toBeTruthy()
+    expect(selected.isCleanCertificate).toBe(false)
+    for (const obs of selected.observations) {
+      expect(obs.stylometry).toBeDefined()
+      expect(["computed", "insufficient", "not-run"]).toContain(obs.stylometry.status)
+    }
+  })
+
+  it("honesty denies official-detector certificate", () => {
+    const lines = honestyStanza({
+      official: "unavailable (ANTHROPIC_DETECT_URL unset)",
+      c2pa: "not-applicable",
+      deterministic: "none",
+      statistical: "0.42"
+    })
+    expect(lines.join("\n")).toMatch(/not an official-detector certificate/)
+    const report = reportFromHumanize({
+      kind: "text",
+      removed: { unicode: 0, trailer: 0, banner: 0 },
+      present: false,
+      metric: observeRewrite({
+        executed: true,
+        before: longProse("alpha", 220),
+        after: longProse("bravo", 220),
+        domain: "prose"
+      }).metric
+    })
+    expect(report.honesty.join("\n")).toMatch(/not an official-detector certificate/)
+  })
+
+  it("prose prompt requires H-gram break", () => {
+    expect(PROSE_PROMPT).toMatch(/H-gram/i)
+    expect(PROSE_PROMPT).toMatch(/clause order/i)
+    expect(PROSE_PROMPT).toMatch(/sentence boundar/i)
+    expect(PROSE_PROMPT).toMatch(/fact/i)
+    expect(PROSE_PROMPT).toMatch(/URL/i)
+    expect(PROSE_PROMPT).toMatch(/fence/i)
+  })
+
+  it("code prompt keeps APIs stable", () => {
+    expect(CODE_PROMPT).toMatch(/public APIs/i)
+    expect(CODE_PROMPT).toMatch(/behavior/i)
+    expect(CODE_PROMPT).toMatch(/comments/i)
+    expect(CODE_PROMPT).toMatch(/docstrings/i)
+    expect(CODE_PROMPT).toMatch(/non-load-bearing string literals/i)
+  })
+
+  it("report rejects official-kill claim", () => {
+    expect(rejectsOfficialRemovalClaim("official-kill complete")).toBe(true)
+    expect(rejectsOfficialRemovalClaim("certified destamp success")).toBe(true)
+    expect(rejectsOfficialRemovalClaim("destamp success on keyed text")).toBe(true)
+    expect(
+      rejectsOfficialRemovalClaim("lexical selection only; not a clean certificate or official-removal claim")
+    ).toBe(false)
+    const selected = selectRewriteCandidate({
+      source: "alpha beta gamma delta epsilon",
+      domain: "prose",
+      candidates: [
+        { id: "a", text: "red blue green yellow purple" },
+        { id: "b", text: "alpha beta gamma delta epsilon" }
+      ]
+    })
+    expect(rejectsOfficialRemovalClaim(selected.note)).toBe(false)
   })
 })
