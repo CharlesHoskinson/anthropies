@@ -20,6 +20,8 @@ import { openApiDocument } from "./openapi.js"
 import {
   CapabilitiesResponse,
   CleanResponse,
+  DetectQuery,
+  DetectResponse,
   decodeRequestFile,
   FileRequest,
   InspectResponse,
@@ -41,6 +43,13 @@ const encodeInspect = (report: Report): HttpServerResponse.HttpServerResponse =>
   HttpServerResponse.unsafeJson(
     Schema.encodeUnknownSync(InspectResponse)(
       new InspectResponse({ ok: true, kind: report.kind, report })
+    )
+  )
+
+const encodeDetect = (report: Report): HttpServerResponse.HttpServerResponse =>
+  HttpServerResponse.unsafeJson(
+    Schema.encodeUnknownSync(DetectResponse)(
+      new DetectResponse({ ok: true, kind: report.kind, report })
     )
   )
 
@@ -119,6 +128,20 @@ const ownedFromRequest = Effect.gen(function* () {
   return { path, forceText: body.options?.forceText ?? false }
 })
 
+const parseDetectQuery = HttpServerRequest.schemaSearchParams(DetectQuery).pipe(
+  Effect.mapError(() => new DecodeError({ path: "<request>", reason: "invalid query" }))
+)
+
+const ownedFromDetectQuery = Effect.gen(function* () {
+  const query = yield* parseDetectQuery
+  const decoded = decodeRequestFile(query.file)
+  if (Either.isLeft(decoded)) {
+    return yield* Effect.fail(decoded.left)
+  }
+  const path = yield* writeUpload(query.name, decoded.right)
+  return { path, forceText: query.forceText === "true" }
+})
+
 const health = HttpServerResponse.unsafeJson({ ok: true, version: serviceVersion })
 
 const openapi = HttpServerResponse.unsafeJson(openApiDocument)
@@ -173,6 +196,29 @@ const inspect = catchHttpFail(
   })
 )
 
+const detectOwned = (owned: { readonly path: string; readonly forceText: boolean }) =>
+  Effect.gen(function* () {
+    const report = yield* Inspector.inspect(owned.path, {
+      forceText: owned.forceText,
+      json: true
+    })
+    return encodeDetect(report)
+  })
+
+const detectPost = catchHttpFail(
+  Effect.gen(function* () {
+    const owned = yield* ownedFromRequest
+    return yield* detectOwned(owned)
+  })
+)
+
+const detectGet = catchHttpFail(
+  Effect.gen(function* () {
+    const owned = yield* ownedFromDetectQuery
+    return yield* detectOwned(owned)
+  })
+)
+
 const clean = catchHttpFail(
   Effect.gen(function* () {
     const owned = yield* ownedFromRequest
@@ -202,13 +248,15 @@ const authorize = <A, E, R>(httpApp: Effect.Effect<A, E, R>) =>
 
 const onError = (): HttpServerResponse.HttpServerResponse => json400("bad_request")
 
-/** Routes for inspect/clean. No /humanize. */
+/** Routes for inspect/clean/detect. No /humanize. */
 export const router = HttpRouter.empty.pipe(
   HttpRouter.get("/health", health),
   HttpRouter.get("/capabilities", capabilities),
   HttpRouter.get("/openapi.json", openapi),
   HttpRouter.post("/inspect", inspect),
   HttpRouter.post("/clean", clean),
+  HttpRouter.get("/detect", detectGet),
+  HttpRouter.post("/detect", detectPost),
   HttpRouter.use(authorize),
   HttpRouter.catchAll(onError)
 )

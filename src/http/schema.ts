@@ -40,11 +40,18 @@ export class FileOptions extends Schema.Class<FileOptions>("FileOptions")({
   forceText: Schema.optionalWith(Schema.Boolean, { exact: true })
 }) {}
 
-/** JSON body for POST /inspect and POST /clean. */
+/** JSON body for POST /inspect, POST /clean, and POST /detect. */
 export class FileRequest extends Schema.Class<FileRequest>("FileRequest")({
   file: Schema.String,
   name: Schema.String,
   options: Schema.optionalWith(FileOptions, { exact: true })
+}) {}
+
+/** Query string for GET /detect. Same owned-file contract as FileRequest. */
+export class DetectQuery extends Schema.Class<DetectQuery>("DetectQuery")({
+  file: Schema.String,
+  name: Schema.String,
+  forceText: Schema.optionalWith(Schema.String, { exact: true })
 }) {}
 
 /** GET /health. */
@@ -99,4 +106,11 @@ export class CleanResponse extends Schema.Class<CleanResponse>("CleanResponse")(
   kind: Kind,
   report: Report,
   cleaned: Schema.Uint8ArrayFromBase64
+}) {}
+
+/** GET or POST /detect success body. Channel-separated findings only. Not a clean certificate. */
+export class DetectResponse extends Schema.Class<DetectResponse>("DetectResponse")({
+  ok: Schema.Boolean,
+  kind: Kind,
+  report: Report
 }) {}

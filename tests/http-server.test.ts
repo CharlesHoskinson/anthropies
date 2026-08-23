@@ -3,7 +3,7 @@ import { NodeHttpServer } from "@effect/platform-node"
 import { describe, expect, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Encoding, Layer, Schema } from "effect"
 import { fileURLToPath } from "node:url"
-import { decodeRequestFile, InspectResponse } from "../src/http/schema.js"
+import { decodeRequestFile, DetectResponse, InspectResponse } from "../src/http/schema.js"
 import { HttpApp } from "../src/http/server.js"
 
 const trailerPath = fileURLToPath(new URL("../fixtures/layer-a/trailer-claude.txt", import.meta.url))
@@ -77,7 +77,11 @@ describe("http_inspect_clean", () => {
       expect(doc.paths).toHaveProperty("/capabilities")
       expect(doc.paths).toHaveProperty("/inspect")
       expect(doc.paths).toHaveProperty("/clean")
+      expect(doc.paths).toHaveProperty("/detect")
       expect(doc.paths).not.toHaveProperty("/humanize")
+      const detect = doc.paths["/detect"] as { get?: unknown; post?: unknown }
+      expect(detect.get).toBeDefined()
+      expect(detect.post).toBeDefined()
     }).pipe(Effect.provide(TestLive))
   )
 
@@ -179,4 +183,89 @@ describe("http_inspect_clean", () => {
       expect(result.left._tag).toBe("InputTooLarge")
     }
   })
+
+  it.scoped("POST detect returns four channels", () =>
+    Effect.gen(function* () {
+      const file = yield* trailerFile
+      const res = yield* HttpClient.execute(
+        HttpClientRequest.post("/detect").pipe(
+          HttpClientRequest.bodyUnsafeJson({ file, name: "trailer-claude.txt" })
+        )
+      )
+      expect(res.status).toBe(200)
+      const body = yield* res.json
+      const parsed = Schema.decodeUnknownSync(DetectResponse)(body)
+      expect(parsed.ok).toBe(true)
+      const channels = parsed.report.findings.map((f) => f.channel).sort()
+      expect(channels).toEqual(["c2pa", "deterministic", "official", "statistical"])
+      expect(JSON.stringify(parsed)).not.toMatch(/watermarkScore/)
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it.scoped("GET detect matches POST contract", () =>
+    Effect.gen(function* () {
+      const file = yield* trailerFile
+      const postRes = yield* HttpClient.execute(
+        HttpClientRequest.post("/detect").pipe(
+          HttpClientRequest.bodyUnsafeJson({ file, name: "trailer-claude.txt" })
+        )
+      )
+      expect(postRes.status).toBe(200)
+      const postBody = Schema.decodeUnknownSync(DetectResponse)(yield* postRes.json)
+      const getRes = yield* HttpClient.get(
+        `/detect?file=${encodeURIComponent(file)}&name=${encodeURIComponent("trailer-claude.txt")}`
+      )
+      expect(getRes.status).toBe(200)
+      const getBody = Schema.decodeUnknownSync(DetectResponse)(yield* getRes.json)
+      const statusOf = (report: DetectResponse["report"], channel: string) =>
+        report.findings.find((f) => f.channel === channel)?.status
+      for (const channel of ["deterministic", "c2pa", "official", "statistical"] as const) {
+        expect(statusOf(getBody.report, channel)).toBe(statusOf(postBody.report, channel))
+      }
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it.scoped("detect does not certify clean", () =>
+    Effect.gen(function* () {
+      const file = yield* trailerFile
+      const res = yield* HttpClient.execute(
+        HttpClientRequest.post("/detect").pipe(
+          HttpClientRequest.bodyUnsafeJson({ file, name: "trailer-claude.txt" })
+        )
+      )
+      expect(res.status).toBe(200)
+      const parsed = Schema.decodeUnknownSync(DetectResponse)(yield* res.json)
+      const official = parsed.report.findings.find((f) => f.channel === "official")
+      const statistical = parsed.report.findings.find((f) => f.channel === "statistical")
+      expect(official?.status).toBe("unavailable")
+      expect(["unavailable", "best-effort", "absent", "present", "degraded"]).toContain(
+        statistical?.status
+      )
+      expect(parsed.report.honesty.join("\n")).toMatch(
+        /does not prove the official Claude text detector will fail/
+      )
+      expect(JSON.stringify(parsed)).not.toMatch(/certified\s+clean|cleanCertificate|isCleanCertificate/i)
+      expect(JSON.stringify(parsed)).not.toMatch(/"clean"\s*:\s*true/)
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it.scoped("absent statistical signal is not human", () =>
+    Effect.gen(function* () {
+      const plain = Encoding.encodeBase64(new TextEncoder().encode("The compiler rejected the patch.\n"))
+      const res = yield* HttpClient.execute(
+        HttpClientRequest.post("/detect").pipe(
+          HttpClientRequest.bodyUnsafeJson({ file: plain, name: "plain.txt" })
+        )
+      )
+      expect(res.status).toBe(200)
+      const parsed = Schema.decodeUnknownSync(DetectResponse)(yield* res.json)
+      const statistical = parsed.report.findings.find((f) => f.channel === "statistical")
+      expect(statistical?.status === "absent" || statistical?.status === "unavailable").toBe(true)
+      const honesty = parsed.report.honesty.join("\n")
+      expect(honesty).toMatch(/does not prove the text is human-written/)
+      expect(JSON.stringify(parsed)).not.toMatch(/"verdict"\s*:\s*"human"/i)
+      expect(JSON.stringify(parsed)).not.toMatch(/"humanWritten"\s*:\s*true/)
+      expect(JSON.stringify(parsed)).not.toMatch(/proves human-written/i)
+    }).pipe(Effect.provide(TestLive))
+  )
 })
