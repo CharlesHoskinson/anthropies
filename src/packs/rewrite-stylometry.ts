@@ -8,11 +8,18 @@ import {
 import { Availability, type Artifact } from "../core/domain.js"
 import type { RewriteMetric } from "../report.js"
 import { lexicalSurvival } from "../rewrite-backend.js"
-import { computeRewriteMetric } from "../rewrite-metric.js"
+import {
+  observeRewrite,
+  type StylometryObservation
+} from "../rewrite-metric.js"
 import { originBlocked } from "../services/humanizer.js"
 
 const PACK_ID = "anthropies.rewrite-stylometry"
 const PACK_VERSION = "0.4.0"
+
+/** Affirmative official-removal claims only. Honest denials must not match. */
+const OFFICIAL_REMOVAL_CLAIM =
+  /\bofficial-?kill\b|\bcertified\s+destamp\b|\bdestamp\s+success\b|\bcertified\s+absence\b|\bwatermark\s+removed\b/i
 
 /** Re-export for pack consumers. Origin stamper tokens stay refused. */
 export { originBlocked }
@@ -32,6 +39,7 @@ export interface CandidateObservation {
   readonly id: string
   readonly text: string
   readonly metric: RewriteMetric
+  readonly stylometry: StylometryObservation
 }
 
 export interface SelectRewriteCandidateInput {
@@ -50,6 +58,10 @@ export interface SelectRewriteCandidateResult {
   readonly note: string
 }
 
+/** True when text claims official removal, official-kill, or certified destamp. */
+export const rejectsOfficialRemovalClaim = (text: string): boolean =>
+  OFFICIAL_REMOVAL_CLAIM.test(text)
+
 /**
  * Multi-candidate lexical / five-gram selection.
  * Detector hints are accepted and discarded. Selection is never a clean certificate.
@@ -61,11 +73,20 @@ export const selectRewriteCandidate = (
     throw new Error("multi-candidate rewrite requires at least two candidates")
   }
   void input.detectorHints
-  const observations: Array<CandidateObservation> = input.candidates.map((candidate) => ({
-    id: candidate.id,
-    text: candidate.text,
-    metric: computeRewriteMetric(input.source, candidate.text, input.domain)
-  }))
+  const observations: Array<CandidateObservation> = input.candidates.map((candidate) => {
+    const observed = observeRewrite({
+      executed: true,
+      before: input.source,
+      after: candidate.text,
+      domain: input.domain
+    })
+    return {
+      id: candidate.id,
+      text: candidate.text,
+      metric: observed.metric,
+      stylometry: observed.stylometry
+    }
+  })
   let winner = observations[0]!
   let bestSurvival = lexicalSurvival(input.source, winner.text)
   for (const obs of observations.slice(1)) {
