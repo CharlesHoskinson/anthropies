@@ -183,6 +183,8 @@ describe("packs_heavy_ml", () => {
       expect(markllmPack.manifest.distribution).toBe("optional")
       expect(markDiffusionPack.manifest.distribution).toBe("optional")
       expect(ctrlRegenPack.manifest.distribution).toBe("optional")
+      expect(ctrlRegenPack.manifest.runtime).toBe("loopback-sidecar")
+      expect(ctrlRegenPack.manifest.network).toBe("loopback")
     }).pipe(Effect.provide(HealthLive))
   )
 
