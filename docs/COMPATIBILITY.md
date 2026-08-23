@@ -28,6 +28,7 @@ The matrix lists sidecar protocol version `1.0.0` as current. Unsupported kernel
     { "id": "anthropies.markdiffusion", "kernelApiMin": "1.0.0", "kernelApiMax": "1.0.0", "outcome": "supported" },
     { "id": "anthropies.ctrlregen", "kernelApiMin": "1.0.0", "kernelApiMax": "1.0.0", "outcome": "supported" },
     { "id": "anthropies.audit-directory", "kernelApiMin": "1.0.0", "kernelApiMax": "1.0.0", "outcome": "supported" },
+    { "id": "anthropies.audit-website", "kernelApiMin": "1.0.0", "kernelApiMax": "1.0.0", "outcome": "supported" },
     { "id": "anthropies.rewrite-stylometry", "kernelApiMin": "1.0.0", "kernelApiMax": "1.0.0", "outcome": "supported" },
     { "id": "anthropies.gemini-synthid", "kernelApiMin": "1.0.0", "kernelApiMax": "1.0.0", "outcome": "supported" },
     { "id": "anthropies.official", "kernelApiMin": "1.0.0", "kernelApiMax": "1.0.0", "outcome": "supported" },
