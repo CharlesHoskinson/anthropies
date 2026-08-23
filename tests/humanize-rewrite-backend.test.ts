@@ -4,6 +4,11 @@ import { FileSystem } from "@effect/platform"
 import { NodeContext } from "@effect/platform-node"
 import { describe, expect, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Either, Layer } from "effect"
+import {
+  assertRewriteUrlAllowed,
+  openaiChatUrl,
+  ollamaGenerateUrl
+} from "../src/rewrite-backend.js"
 import { Humanizer } from "../src/services/humanizer.js"
 import { unicodeWords } from "../src/rewrite-metric.js"
 
@@ -181,6 +186,133 @@ describe("humanize_rewrite_backends", () => {
         expect(recorded).toHaveLength(1)
         expect(recorded[0]?.href).toBe("http://example.com:8080/v1/chat/completions")
         expect(result.metric.status).toBe("computed")
+        expect(result.text).toBe(REWRITTEN)
+      })
+    )
+  })
+
+  it.scoped("ollama uses generate path", () => {
+    const recorded: Array<RecordedPost> = []
+    expect(ollamaGenerateUrl("http://127.0.0.1:11434")).toBe(
+      "http://127.0.0.1:11434/api/generate"
+    )
+    return runHumanize(
+      [
+        ["ANTHROPIES_REWRITE_BACKEND", "ollama"],
+        ["ANTHROPIES_REWRITE_MODEL", "llama3.2"],
+        ["ANTHROPIES_REWRITE_BASE_URL", "http://127.0.0.1:11434"]
+      ],
+      fakeClient(recorded, { response: REWRITTEN }),
+      Effect.gen(function* () {
+        yield* Humanizer.humanize(SOURCE, { kind: "prose" })
+        expect(recorded).toHaveLength(1)
+        expect(recorded[0]?.method).toBe("POST")
+        expect(recorded[0]?.href).toBe("http://127.0.0.1:11434/api/generate")
+      })
+    )
+  })
+
+  it.scoped("ollama is not used on print-prompt", () => {
+    const recorded: Array<RecordedPost> = []
+    return runHumanize(
+      [["ANTHROPIES_REWRITE_BACKEND", "print-prompt"]],
+      fakeClient(recorded, { response: REWRITTEN }),
+      Effect.gen(function* () {
+        const result = yield* Humanizer.humanize(SOURCE, { kind: "prose" })
+        expect(recorded).toHaveLength(0)
+        expect(result.text).toMatch(/Rewrite the text below/)
+        expect(result.note).toMatch(/print-prompt/)
+      })
+    )
+  })
+
+  it.scoped("openai-compatible uses chat completions path", () => {
+    const recorded: Array<RecordedPost> = []
+    expect(openaiChatUrl("http://127.0.0.1:8080")).toBe(
+      "http://127.0.0.1:8080/v1/chat/completions"
+    )
+    return runHumanize(
+      [
+        ["ANTHROPIES_REWRITE_BACKEND", "openai-compatible"],
+        ["ANTHROPIES_REWRITE_MODEL", "llama3.2"],
+        ["ANTHROPIES_REWRITE_BASE_URL", "http://127.0.0.1:8080"]
+      ],
+      fakeClient(recorded, { choices: [{ message: { content: REWRITTEN } }] }),
+      Effect.gen(function* () {
+        yield* Humanizer.humanize(SOURCE, { kind: "prose" })
+        expect(recorded).toHaveLength(1)
+        expect(recorded[0]?.method).toBe("POST")
+        expect(recorded[0]?.href).toBe("http://127.0.0.1:8080/v1/chat/completions")
+      })
+    )
+  })
+
+  it("trailing v1 is not doubled", () => {
+    expect(openaiChatUrl("http://127.0.0.1:8080/v1")).toBe(
+      "http://127.0.0.1:8080/v1/chat/completions"
+    )
+    expect(openaiChatUrl("http://127.0.0.1:8080/v1/")).toBe(
+      "http://127.0.0.1:8080/v1/chat/completions"
+    )
+  })
+
+  it.scoped("non-loopback without enablement is denied", () => {
+    const recorded: Array<RecordedPost> = []
+    return runHumanize(
+      [
+        ["ANTHROPIES_REWRITE_BACKEND", "ollama"],
+        ["ANTHROPIES_REWRITE_MODEL", "llama3.2"],
+        ["ANTHROPIES_REWRITE_BASE_URL", "https://example.com"]
+      ],
+      fakeClient(recorded, { response: REWRITTEN }),
+      Effect.gen(function* () {
+        const result = yield* Humanizer.humanize(SOURCE, { kind: "prose" }).pipe(Effect.either)
+        expect(Either.isLeft(result)).toBe(true)
+        if (Either.isLeft(result)) {
+          expect(result.left._tag).toBe("RewriteRemoteDenied")
+        }
+        expect(recorded).toHaveLength(0)
+      })
+    )
+  })
+
+  it.effect("loopback is allowed without remote enablement", () =>
+    Effect.gen(function* () {
+      const allowed = yield* assertRewriteUrlAllowed(
+        "http://127.0.0.1:11434",
+        "0",
+        ""
+      ).pipe(Effect.either)
+      expect(Either.isRight(allowed)).toBe(true)
+      const localhost = yield* assertRewriteUrlAllowed(
+        "http://localhost:11434",
+        "0",
+        ""
+      ).pipe(Effect.either)
+      expect(Either.isRight(localhost)).toBe(true)
+    })
+  )
+
+  it.scoped("remote enablement permits non-loopback", () => {
+    const recorded: Array<RecordedPost> = []
+    return runHumanize(
+      [
+        ["ANTHROPIES_REWRITE_BACKEND", "openai-compatible"],
+        ["ANTHROPIES_REWRITE_MODEL", "llama3.2"],
+        ["ANTHROPIES_REWRITE_BASE_URL", "https://example.com"],
+        ["ANTHROPIES_REWRITE_ALLOW_REMOTE", "1"]
+      ],
+      fakeClient(recorded, { choices: [{ message: { content: REWRITTEN } }] }),
+      Effect.gen(function* () {
+        const policy = yield* assertRewriteUrlAllowed(
+          "https://example.com",
+          "1",
+          ""
+        ).pipe(Effect.either)
+        expect(Either.isRight(policy)).toBe(true)
+        const result = yield* Humanizer.humanize(SOURCE, { kind: "prose" })
+        expect(recorded).toHaveLength(1)
+        expect(recorded[0]?.href).toBe("https://example.com/v1/chat/completions")
         expect(result.text).toBe(REWRITTEN)
       })
     )
