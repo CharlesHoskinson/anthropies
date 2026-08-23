@@ -16,6 +16,8 @@ import { markDiffusionPack } from "../packs/markdiffusion.js"
 import { ctrlRegenPack } from "../packs/ctrlregen.js"
 import { auditDirectoryPack } from "../packs/audit-directory.js"
 import { rewriteStylometryPack } from "../packs/rewrite-stylometry.js"
+import { geminiSynthidPack } from "../packs/gemini-synthid.js"
+import { anthropicOfficialPack } from "../packs/anthropic-official.js"
 import { createRegistry, type PackRegistry } from "./registry.js"
 
 /** Register the core packs for Inspector and Cleaner. */
@@ -39,5 +41,7 @@ export const builtinRegistry = (): PackRegistry => {
   registry.register(ctrlRegenPack)
   registry.register(auditDirectoryPack)
   registry.register(rewriteStylometryPack)
+  registry.register(geminiSynthidPack)
+  registry.register(anthropicOfficialPack)
   return registry
 }
