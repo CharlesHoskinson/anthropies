@@ -1,5 +1,5 @@
 import { Effect, Schema } from "effect"
-import { readdirSync, readFileSync, realpathSync, statSync } from "node:fs"
+import { lstatSync, readdirSync, readFileSync, realpathSync, statSync } from "node:fs"
 import { isAbsolute, join, relative, resolve, sep } from "node:path"
 import {
   CapabilityManifest,
@@ -128,7 +128,15 @@ const listCandidates = (
       const childRelative = dirRelative.length === 0 ? name : `${dirRelative}/${name}`
       const resolved = resolveUnderRoot(rootReal, childRelative)
       if (!resolved.ok) {
-        refusals.push({ relativePath: childRelative, reason: "path-escape" })
+        let reason: "path-escape" | "symlink-escape" = "path-escape"
+        try {
+          if (lstatSync(childAbsolute).isSymbolicLink()) {
+            reason = "symlink-escape"
+          }
+        } catch {
+          // Keep path-escape when the candidate cannot be stated.
+        }
+        refusals.push({ relativePath: childRelative, reason })
         continue
       }
       let info: ReturnType<typeof statSync>
