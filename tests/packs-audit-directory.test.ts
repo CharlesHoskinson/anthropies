@@ -1,6 +1,12 @@
 import { describe, expect, it } from "@effect/vitest"
 import { Effect, Schema } from "effect"
-import { mkdirSync, mkdtempSync, readFileSync, writeFileSync } from "node:fs"
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  symlinkSync,
+  writeFileSync
+} from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import {
@@ -169,5 +175,88 @@ describe("packs_audit_directory", () => {
     }
     expect(selected.selected.map((file) => file.relativePath)).toEqual(["safe/ok.txt"])
     expect(new TextDecoder().decode(selected.selected[0]!.bytes)).toBe("ok")
+  })
+
+  it("size bound refuses oversized file", () => {
+    const root = mkdtempSync(join(tmpdir(), "audit-size-"))
+    writeFileSync(join(root, "small.txt"), "ok", "utf8")
+    writeFileSync(join(root, "big.txt"), "x".repeat(64), "utf8")
+
+    const registry = createRegistry()
+    expect(registry.register(mockTextPack("text-pack"))).toEqual({ ok: true })
+
+    const selected = selectDirectoryAudit(
+      root,
+      { ...defaultBounds, maxFileBytes: 8 },
+      registry,
+      inspectCtx
+    )
+    expect(selected.ok).toBe(true)
+    if (!selected.ok) {
+      return
+    }
+    expect(selected.selected.map((file) => file.relativePath)).toEqual(["small.txt"])
+    expect(selected.refusals).toContainEqual({ relativePath: "big.txt", reason: "size" })
+  })
+
+  it("fully filtered root fails", () => {
+    const root = mkdtempSync(join(tmpdir(), "audit-filtered-"))
+    writeFileSync(join(root, "only-big.txt"), "x".repeat(64), "utf8")
+
+    const registry = createRegistry()
+    expect(registry.register(mockTextPack("text-pack"))).toEqual({ ok: true })
+
+    const selected = selectDirectoryAudit(
+      root,
+      { ...defaultBounds, maxFileBytes: 8 },
+      registry,
+      inspectCtx
+    )
+    expect(selected.ok).toBe(false)
+    if (selected.ok) {
+      return
+    }
+    expect(selected.code).toBe("empty-selection")
+  })
+
+  it("missing root fails", () => {
+    const root = join(mkdtempSync(join(tmpdir(), "audit-missing-")), "does-not-exist")
+    const registry = createRegistry()
+    expect(registry.register(mockTextPack("text-pack"))).toEqual({ ok: true })
+
+    const selected = selectDirectoryAudit(root, defaultBounds, registry, inspectCtx)
+    expect(selected.ok).toBe(false)
+    if (selected.ok) {
+      return
+    }
+    expect(selected.code).toBe("missing-root")
+  })
+
+  it("symlink escape is refused", () => {
+    const base = mkdtempSync(join(tmpdir(), "audit-symlink-"))
+    const root = join(base, "root")
+    mkdirSync(root)
+    writeFileSync(join(root, "safe.txt"), "safe", "utf8")
+    const outside = join(base, "outside-secret.txt")
+    writeFileSync(outside, "secret-bytes", "utf8")
+    symlinkSync(outside, join(root, "escape.txt"))
+
+    const registry = createRegistry()
+    expect(registry.register(mockTextPack("text-pack"))).toEqual({ ok: true })
+
+    const selected = selectDirectoryAudit(root, defaultBounds, registry, inspectCtx)
+    expect(selected.ok).toBe(true)
+    if (!selected.ok) {
+      return
+    }
+    expect(selected.selected.map((file) => file.relativePath)).toEqual(["safe.txt"])
+    expect(new TextDecoder().decode(selected.selected[0]!.bytes)).toBe("safe")
+    expect(selected.refusals).toContainEqual({
+      relativePath: "escape.txt",
+      reason: "symlink-escape"
+    })
+    expect(
+      selected.selected.some((file) => new TextDecoder().decode(file.bytes).includes("secret"))
+    ).toBe(false)
   })
 })
