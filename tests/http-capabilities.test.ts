@@ -1,14 +1,35 @@
 import { HttpClient } from "@effect/platform"
-import { NodeHttpServer } from "@effect/platform-node"
+import { NodeContext, NodeHttpServer } from "@effect/platform-node"
 import { describe, expect, it } from "@effect/vitest"
 import { ConfigProvider, Effect, Layer } from "effect"
-import { readFileSync } from "node:fs"
+import { mkdtempSync, readFileSync } from "node:fs"
+import { tmpdir } from "node:os"
+import { join } from "node:path"
+import { makeArtifact } from "../src/core/domain.js"
+import { inspectArtifact } from "../src/core/pipeline.js"
+import { createRegistry } from "../src/core/registry.js"
 import { HttpApp } from "../src/http/server.js"
+import { layerAPack } from "../src/packs/layer-a.js"
+import { markllmPack } from "../src/packs/markllm.js"
 import { selectRewriteCandidate } from "../src/packs/rewrite-stylometry.js"
 
 const TestLive = HttpApp.pipe(
   Layer.provideMerge(NodeHttpServer.layerTest),
   Layer.provide(Layer.setConfigProvider(ConfigProvider.fromMap(new Map())))
+)
+
+const MarkllmEnabledLive = HttpApp.pipe(
+  Layer.provideMerge(NodeHttpServer.layerTest),
+  Layer.provide(
+    Layer.setConfigProvider(
+      ConfigProvider.fromMap(
+        new Map([
+          ["MARKLLM_DIR", mkdtempSync(join(tmpdir(), "markllm-caps-"))],
+          ["MARKLLM_RUNNER", process.execPath]
+        ])
+      )
+    )
+  )
 )
 
 describe("http_capabilities_inventory", () => {
@@ -108,6 +129,58 @@ describe("http_capabilities_inventory", () => {
       expect(res.status).toBe(200)
       const body = (yield* res.json) as { version: string }
       expect(body.version).toBe("0.3.0")
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it.scoped("installed optional pack appears when enabled", () =>
+    Effect.gen(function* () {
+      const res = yield* HttpClient.get("/capabilities")
+      expect(res.status).toBe(200)
+      const body = (yield* res.json) as {
+        packs: ReadonlyArray<{
+          id: string
+          availability: { status: string }
+        }>
+      }
+      const markllm = body.packs.find((pack) => pack.id === "anthropies.markllm")
+      expect(markllm).toBeDefined()
+      expect(markllm?.availability.status).toBe("available")
+      const raw = JSON.stringify(body)
+      expect(raw).not.toMatch(/watermarkScore/)
+      expect(raw).not.toMatch(/"score"\s*:/)
+    }).pipe(Effect.provide(MarkllmEnabledLive))
+  )
+
+  it.scoped("absent optional pack is discoverable as unavailable", () =>
+    Effect.gen(function* () {
+      const res = yield* HttpClient.get("/capabilities")
+      expect(res.status).toBe(200)
+      const body = (yield* res.json) as {
+        packs: ReadonlyArray<{
+          id: string
+          availability: { status: string; reason?: string }
+        }>
+      }
+      const markllm = body.packs.find((pack) => pack.id === "anthropies.markllm")
+      expect(markllm).toBeDefined()
+      expect(markllm?.availability.status).toBe("unavailable")
+
+      const registry = createRegistry()
+      expect(registry.register(layerAPack)).toEqual({ ok: true })
+      expect(registry.register(markllmPack)).toEqual({ ok: true })
+      const findings = yield* inspectArtifact(
+        registry,
+        makeArtifact(new TextEncoder().encode("hello-capabilities"), "text"),
+        {
+          operation: "inspect",
+          forceText: false,
+          json: true,
+          requireCapability: [],
+          kernelApiVersion: "1.0.0"
+        }
+      ).pipe(Effect.provide(NodeContext.layer))
+      expect(findings.some((f) => f.packId === "anthropies.layer-a")).toBe(true)
+      expect(findings.some((f) => f.packId === "anthropies.markllm")).toBe(false)
     }).pipe(Effect.provide(TestLive))
   )
 

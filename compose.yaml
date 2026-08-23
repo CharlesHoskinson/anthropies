@@ -2,6 +2,17 @@
 # Host mapping is 127.0.0.1:8765 — not a LAN bind.
 # No heavy backends (qpdf / exiftool / c2patool). Official stays unavailable
 # unless ANTHROPIC_DETECT_URL is set. There is no HTTP /humanize.
+#
+# Default profile: TypeScript core only (service anthropies). Optional/licensed
+# packs stay off until an operator selects an explicit Compose profile.
+#
+# Explicit download / enable is required for optional model weights.
+# That step is distinct from default install and default compose up:
+#   1. Operator runs an explicit checkout or download into MARKLLM_DIR,
+#      MARKDIFFUSION_DIR, CTRLREGEN_WEIGHTS, or the image-scoring volume.
+#   2. Then: docker compose --profile markllm up
+#      (or --profile markdiffusion|ctrlregen|image-scoring)
+# Default `docker compose up` does not fetch models.
 services:
   anthropies:
     build: .
@@ -16,3 +27,62 @@ services:
       # ANTHROPIES_SERVER_API_KEY:  # optional; if set, Bearer is required
       # ANTHROPIC_DETECT_URL:       # unset → official unavailable
     init: true
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:8765/health').then((r) => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+        ]
+      interval: 10s
+      timeout: 3s
+      start_period: 5s
+      retries: 3
+
+  # Optional MarkLLM pack. Apache-2.0 upstream; operator supplies checkout.
+  # No automatic model download on start.
+  markllm:
+    profiles: ["markllm"]
+    image: anthropies-markllm:optional
+    read_only: true
+    volumes:
+      - ${MARKLLM_DIR:-/var/empty}:/pack:ro
+    environment:
+      MARKLLM_DIR: /pack
+    command: ["true"]
+
+  # Optional MarkDiffusion pack. Apache-2.0 upstream; operator supplies checkout.
+  markdiffusion:
+    profiles: ["markdiffusion"]
+    image: anthropies-markdiffusion:optional
+    read_only: true
+    volumes:
+      - ${MARKDIFFUSION_DIR:-/var/empty}:/pack:ro
+    environment:
+      MARKDIFFUSION_DIR: /pack
+    command: ["true"]
+
+  # Optional CtrlRegen-method weights mount. Original Anthropies code in core;
+  # weights stay operator-supplied and out of the default image.
+  ctrlregen:
+    profiles: ["ctrlregen"]
+    image: anthropies-ctrlregen:optional
+    read_only: true
+    volumes:
+      - ${CTRLREGEN_WEIGHTS:-/var/empty}:/weights:ro
+    environment:
+      CTRLREGEN_WEIGHTS: /weights
+    command: ["true"]
+
+  # Optional noncommercial image-scoring sidecar. Not built from the core
+  # Dockerfile and not redistributed inside anthropies:0.3.0.
+  image-scoring:
+    profiles: ["image-scoring"]
+    image: anthropies-image-scoring:optional
+    read_only: true
+    ports:
+      - "127.0.0.1:18765:18765"
+    environment:
+      IMAGE_SCORING_BASE_URL: http://127.0.0.1:18765
+    command: ["true"]
