@@ -94,7 +94,12 @@ describe("http_capabilities_inventory", () => {
         "anthropies.docx",
         "anthropies.odt",
         "anthropies.raster-strip",
-        "anthropies.pdf-tools"
+        "anthropies.pdf-tools",
+        "anthropies.xlsx",
+        "anthropies.pptx",
+        "anthropies.epub",
+        "anthropies.audit-directory",
+        "anthropies.audit-website"
       ]) {
         expect(ids).toContain(id)
       }
@@ -107,6 +112,75 @@ describe("http_capabilities_inventory", () => {
       expect(JSON.stringify(body)).not.toMatch(/"score"\s*:/)
     }).pipe(Effect.provide(TestLive))
   )
+
+  it.scoped("capabilities includes xlsx pack id", () =>
+    Effect.gen(function* () {
+      const res = yield* HttpClient.get("/capabilities")
+      expect(res.status).toBe(200)
+      const body = (yield* res.json) as {
+        packs: ReadonlyArray<{ id: string }>
+      }
+      expect(body.packs.map((pack) => pack.id)).toContain("anthropies.xlsx")
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it.scoped("capabilities includes pptx and epub pack ids", () =>
+    Effect.gen(function* () {
+      const res = yield* HttpClient.get("/capabilities")
+      expect(res.status).toBe(200)
+      const body = (yield* res.json) as {
+        packs: ReadonlyArray<{ id: string }>
+      }
+      const ids = body.packs.map((pack) => pack.id)
+      expect(ids).toContain("anthropies.pptx")
+      expect(ids).toContain("anthropies.epub")
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it.scoped("capabilities includes directory audit id", () =>
+    Effect.gen(function* () {
+      const res = yield* HttpClient.get("/capabilities")
+      expect(res.status).toBe(200)
+      const body = (yield* res.json) as {
+        packs: ReadonlyArray<{ id: string }>
+      }
+      expect(body.packs.map((pack) => pack.id)).toContain("anthropies.audit-directory")
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it.scoped("capabilities includes website audit id", () =>
+    Effect.gen(function* () {
+      const res = yield* HttpClient.get("/capabilities")
+      expect(res.status).toBe(200)
+      const body = (yield* res.json) as {
+        packs: ReadonlyArray<{ id: string }>
+      }
+      expect(body.packs.map((pack) => pack.id)).toContain("anthropies.audit-website")
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it.scoped("health stays 0.3.0", () =>
+    Effect.gen(function* () {
+      const res = yield* HttpClient.get("/health")
+      expect(res.status).toBe(200)
+      expect(yield* res.json).toEqual({ ok: true, version: "0.3.0" })
+    }).pipe(Effect.provide(TestLive))
+  )
+
+  it("layer-a excludes Phase B zip kinds", () => {
+    expect(layerAPack.manifest.artifactKinds).toEqual(["text", "svg", "html", "md"])
+  })
+
+  it("Phase B pack tests reject score", () => {
+    for (const file of ["xlsx.ts", "pptx.ts", "epub.ts"]) {
+      const packSrc = readFileSync(new URL(`../src/packs/${file}`, import.meta.url), "utf8")
+      expect(packSrc).not.toMatch(/score|watermarkScore/)
+    }
+    for (const file of ["ooxml.ts", "xlsx.ts", "pptx.ts", "epub.ts"]) {
+      const formatSrc = readFileSync(new URL(`../src/formats/${file}`, import.meta.url), "utf8")
+      expect(formatSrc).not.toMatch(/score|watermarkScore/)
+    }
+  })
 
   it.scoped("capabilities lists detector packs", () =>
     Effect.gen(function* () {
