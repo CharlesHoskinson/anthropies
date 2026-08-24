@@ -7,10 +7,22 @@ import {
   type CapabilityPack,
   type RunContext
 } from "../core/capability.js"
-import { Availability, makeArtifact, type Artifact } from "../core/domain.js"
+import {
+  Availability,
+  makeArtifact,
+  type Artifact,
+  type AvailabilityReasonCode,
+  type CapabilityFailure,
+  type KernelFinding,
+  type KernelFindingStatus,
+  type MarkClass,
+  type Remediation
+} from "../core/domain.js"
 import { plan } from "../core/planner.js"
+import { shouldPreserveOriginal } from "../core/policy.js"
 import type { PackRegistry } from "../core/registry.js"
 import { classify, type Kind } from "../kind.js"
+import type { Channel } from "../report.js"
 
 const PACK_ID = "anthropies.audit-directory"
 const PACK_VERSION = "0.4.0"
@@ -243,6 +255,173 @@ export const selectDirectoryAudit = (
     refusals
   }
 }
+
+export type DirectoryConcurrencyItem<A, E = never, R = never> = {
+  readonly relativePath: string
+  readonly effect: Effect.Effect<A, E, R>
+}
+
+export type DirectoryConcurrencyRow<A> = {
+  readonly relativePath: string
+  readonly value: A
+}
+
+/**
+ * Run directory-audit work under a concurrency bound.
+ * Result order follows stable relativePath sort, not completion order.
+ */
+export const mapWithDirectoryConcurrency = <A, E = never, R = never>(
+  items: ReadonlyArray<DirectoryConcurrencyItem<A, E, R>>,
+  concurrency: number
+): Effect.Effect<ReadonlyArray<DirectoryConcurrencyRow<A>>, E, R> => {
+  const bound = Number.isFinite(concurrency) ? Math.max(1, Math.floor(concurrency)) : 1
+  return Effect.forEach(
+    items,
+    (item) =>
+      item.effect.pipe(
+        Effect.map((value): DirectoryConcurrencyRow<A> => ({
+          relativePath: item.relativePath,
+          value
+        }))
+      ),
+    { concurrency: bound }
+  ).pipe(
+    Effect.map((rows) =>
+      [...rows].sort((left, right) => left.relativePath.localeCompare(right.relativePath))
+    )
+  )
+}
+
+export type DirectoryAuditTargetSuccess = {
+  readonly findings: ReadonlyArray<KernelFinding>
+  readonly artifact: Artifact
+  readonly remediation: Remediation
+}
+
+export type DirectoryAuditTargetSpec<E = CapabilityFailure, R = never> = {
+  readonly relativePath: string
+  readonly original: Artifact
+  /** Required targets keep the batch from reporting full success on failure. Default true. */
+  readonly required?: boolean
+  readonly effect: Effect.Effect<DirectoryAuditTargetSuccess, E, R>
+}
+
+export type DirectoryAuditPathFinding = {
+  readonly relativePath: string
+  readonly channel: Channel
+  readonly markClass: MarkClass
+  readonly status: KernelFindingStatus
+  readonly packId: string
+  readonly packImplementationVersion: string
+}
+
+export type DirectoryAuditTargetFailure = {
+  readonly relativePath: string
+  readonly code: CapabilityFailure["code"]
+  readonly reason: AvailabilityReasonCode
+}
+
+export type DirectoryAuditTargetResult = {
+  readonly relativePath: string
+  readonly status: "success" | "failure"
+  readonly artifact: Artifact
+  readonly remediation: Remediation
+  readonly preservedOriginal: boolean
+}
+
+export type DirectoryAuditBatchResult = {
+  readonly outcome: "success" | "partial"
+  readonly findings: ReadonlyArray<DirectoryAuditPathFinding>
+  readonly failures: ReadonlyArray<DirectoryAuditTargetFailure>
+  readonly targets: ReadonlyArray<DirectoryAuditTargetResult>
+}
+
+type TargetSettle =
+  | { readonly _tag: "ok"; readonly value: DirectoryAuditTargetSuccess }
+  | { readonly _tag: "fail"; readonly failure: CapabilityFailure }
+
+/**
+ * Aggregate per-target audit work. Keep successful sibling findings when one
+ * target fails. Uncertainty reasons preserve only that target's original.
+ */
+export const runDirectoryAuditBatch = <R = never>(
+  targets: ReadonlyArray<DirectoryAuditTargetSpec<CapabilityFailure, R>>
+): Effect.Effect<DirectoryAuditBatchResult, never, R> =>
+  Effect.gen(function* () {
+    const findings: Array<DirectoryAuditPathFinding> = []
+    const failures: Array<DirectoryAuditTargetFailure> = []
+    const targetResults: Array<DirectoryAuditTargetResult> = []
+    let requiredFailed = false
+
+    for (const target of targets) {
+      const required = target.required !== false
+      const settled: TargetSettle = yield* target.effect.pipe(
+        Effect.map((value): TargetSettle => ({ _tag: "ok", value })),
+        Effect.catchAll((failure): Effect.Effect<TargetSettle> =>
+          Effect.succeed({ _tag: "fail", failure })
+        )
+      )
+
+      if (settled._tag === "ok") {
+        for (const finding of settled.value.findings) {
+          findings.push({
+            relativePath: target.relativePath,
+            channel: finding.channel,
+            markClass: finding.markClass,
+            status: finding.status,
+            packId: finding.packId,
+            packImplementationVersion: finding.packImplementationVersion
+          })
+        }
+        targetResults.push({
+          relativePath: target.relativePath,
+          status: "success",
+          artifact: settled.value.artifact,
+          remediation: settled.value.remediation,
+          preservedOriginal: false
+        })
+        continue
+      }
+
+      if (required) {
+        requiredFailed = true
+      }
+      failures.push({
+        relativePath: target.relativePath,
+        code: settled.failure.code,
+        reason: settled.failure.reason
+      })
+      const preserve = shouldPreserveOriginal(settled.failure.reason)
+      targetResults.push({
+        relativePath: target.relativePath,
+        status: "failure",
+        artifact: target.original,
+        remediation: "unchanged",
+        preservedOriginal: preserve
+      })
+    }
+
+    findings.sort((left, right) => {
+      const byPath = left.relativePath.localeCompare(right.relativePath)
+      if (byPath !== 0) {
+        return byPath
+      }
+      const byChannel = left.channel.localeCompare(right.channel)
+      if (byChannel !== 0) {
+        return byChannel
+      }
+      return left.markClass.localeCompare(right.markClass)
+    })
+    targetResults.sort((left, right) => left.relativePath.localeCompare(right.relativePath))
+    failures.sort((left, right) => left.relativePath.localeCompare(right.relativePath))
+
+    return {
+      outcome: requiredFailed ? "partial" : "success",
+      findings,
+      failures,
+      targets: targetResults
+    }
+  })
 
 export const auditDirectoryPack: CapabilityPack = {
   manifest: Schema.decodeUnknownSync(CapabilityManifest)({
