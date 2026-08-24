@@ -244,4 +244,48 @@ describe("packs_heavy_ml", () => {
     )
     expect(findings[0]?.evidence.versionFingerprint).toBe("kgw:config=test")
   })
+
+  it("live MarkLLM pin file mismatch is unavailable", async () => {
+    const dir = mkdtempSync(join(tmpdir(), "markllm-pin-"))
+    writeFileSync(join(dir, ".anthropies-pin"), "not-the-pinned-sha\n", "utf8")
+    const availability = await Effect.runPromise(
+      markllmPack.probe(inspectCtx).pipe(
+        Effect.provide(NodeContext.layer),
+        Effect.withConfigProvider(
+          ConfigProvider.fromMap(
+            new Map([
+              ["MARKLLM_DIR", dir],
+              ["MARKLLM_RUNNER", process.execPath]
+            ])
+          )
+        )
+      )
+    )
+    expect(availability.status).toBe("unavailable")
+    expect(availability.reason).toBe("probe-failed")
+  })
+
+  it("live MarkDiffusion inspect uses base64 not utf8", () => {
+    const src = readFileSync(new URL("../src/packs/markdiffusion.ts", import.meta.url), "utf8")
+    expect(src).toMatch(/Encoding\.encodeBase64\(artifact\.bytes\)/)
+    expect(src).not.toMatch(/TextDecoder/)
+    expect(src).not.toMatch(/decode\(artifact\.bytes\)/)
+  })
+
+  it("python3 default runner is in source", () => {
+    const markllm = readFileSync(new URL("../src/packs/markllm.ts", import.meta.url), "utf8")
+    const markdiffusion = readFileSync(
+      new URL("../src/packs/markdiffusion.ts", import.meta.url),
+      "utf8"
+    )
+    const config = readFileSync(new URL("../src/config.ts", import.meta.url), "utf8")
+    expect(config).toMatch(/MARKLLM_RUNNER.*withDefault\("python3"\)/s)
+    expect(config).toMatch(/MARKDIFFUSION_RUNNER[\s\S]*withDefault\("python3"\)/)
+    expect(markllm).toMatch(/runner === "python3" \? "watermark_detect\.py"/)
+    expect(markdiffusion).toMatch(/runner === "python3" \? "watermark_detect\.py"/)
+    expect(markllm).toMatch(/ProcCommand\.make\(runner, script, "--pin", MARKLLM_PIN\)/)
+    expect(markdiffusion).toMatch(
+      /ProcCommand\.make\(runner, script, "--pin", MARKDIFFUSION_PIN\)/
+    )
+  })
 })
