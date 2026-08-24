@@ -1,4 +1,5 @@
 import { Command as ProcCommand } from "@effect/platform"
+import { FileSystem } from "@effect/platform/FileSystem"
 import { Effect, Option, Schema } from "effect"
 import { join } from "node:path"
 import { markllmDir, markllmRunner } from "../config.js"
@@ -24,6 +25,7 @@ export const APACHE_NOTICE =
 
 const PACK_ID = "anthropies.markllm"
 const PACK_VERSION = "0.1.0"
+const PIN_FILE = ".anthropies-pin"
 
 const DetectStdout = Schema.Struct({
   algorithm: Schema.String,
@@ -33,6 +35,24 @@ const DetectStdout = Schema.Struct({
 
 const entryScript = (dir: string, runner: string): string =>
   join(dir, runner === "python3" ? "watermark_detect.py" : "watermark_detect.mjs")
+
+const runnerPresent = (runner: string) =>
+  ProcCommand.exitCode(ProcCommand.make(runner, "--version")).pipe(
+    Effect.map((code) => Number(code) === 0),
+    Effect.catchAll(() => Effect.succeed(false))
+  )
+
+const pinMismatch = (dir: string, expected: string) =>
+  Effect.gen(function* () {
+    const fs = yield* FileSystem
+    const path = join(dir, PIN_FILE)
+    const exists = yield* fs.exists(path).pipe(Effect.catchAll(() => Effect.succeed(false)))
+    if (!exists) {
+      return false
+    }
+    const raw = yield* fs.readFileString(path).pipe(Effect.catchAll(() => Effect.succeed("")))
+    return raw.trim() !== expected
+  })
 
 const decodeStatus = (status: string): KernelFindingStatus => {
   if (status === "present" || status === "absent" || status === "indeterminate") {
@@ -85,6 +105,24 @@ export const markllmPack: CapabilityPack = {
           status: "unavailable",
           reason: "env-unset",
           detail: "MARKLLM_DIR"
+        })
+      }
+      const runner = yield* markllmRunner
+      if (runner === "python3") {
+        const present = yield* runnerPresent(runner)
+        if (!present) {
+          return new Availability({
+            status: "unavailable",
+            reason: "tool-missing",
+            detail: "python3"
+          })
+        }
+      }
+      if (yield* pinMismatch(dirOpt.value, MARKLLM_PIN)) {
+        return new Availability({
+          status: "unavailable",
+          reason: "probe-failed",
+          detail: PIN_FILE
         })
       }
       return new Availability({ status: "available", reason: "ready" })
