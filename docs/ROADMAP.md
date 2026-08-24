@@ -1,6 +1,6 @@
 # Anthropies Capability-Pack Roadmap
 
-**Status:** Approved design; implementation has not started
+**Status:** Shipped in 1.0.0 DarioCyclovir. This file is the design-time roadmap. Current pack and protocol pins are in [`COMPATIBILITY.md`](COMPATIBILITY.md).
 
 **Approved:** 2026-08-17
 

@@ -177,7 +177,7 @@ export const cli = CliCommand.make("anthropies").pipe(
   CliCommand.withSubcommands([inspect, clean, humanize, capture, demo, serve])
 )
 
-const run = CliCommand.run(cli, { name: "anthropies", version: "0.4.0" })
+const run = CliCommand.run(cli, { name: "anthropies", version: "1.0.0" })
 
 const services = Layer.mergeAll(
   Inspector.Default,

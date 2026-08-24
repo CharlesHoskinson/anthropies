@@ -10,10 +10,13 @@
 
 <p align="center">
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-Apache%202.0-blue.svg" alt="Apache 2.0"></a>
+  <a href="https://github.com/CharlesHoskinson/anthropies/releases/tag/v1.0.0"><img src="https://img.shields.io/badge/release-1.0.0%20DarioCyclovir-black.svg" alt="1.0.0 DarioCyclovir"></a>
   <a href="skills/purge-anthropies/SKILL.md"><img src="https://img.shields.io/badge/skill-purge--anthropies-d97757.svg" alt="purge-anthropies"></a>
 </p>
 
 Apache-2.0. Usable from any LLM coding agent. Not affiliated with Anthropic PBC.
+
+Current release: **1.0.0 DarioCyclovir**.
 
 ---
 
@@ -36,6 +39,39 @@ This tool certifies Layer A (Unicode, trailers, banners) and hard-bound C2PA/met
 
 ---
 
+## Release 1.0.0 DarioCyclovir
+
+This is the first production release. Package, CLI, and plugin version is `1.0.0`.
+
+HTTP `GET /health` and `GET /capabilities` keep JSON `version` `"0.3.0"`. That field is the locked HTTP API version, not the package version. Kernel API is `1.0.0`. Sidecar protocol is `1.0.0`. The default Compose image tag remains `anthropies:0.3.0` to match that HTTP contract.
+
+Pack `implementationVersion` values stay `0.4.0` unless a later pack ships its own bump.
+
+| Surface | Value |
+|---|---|
+| Package / CLI / plugin | `1.0.0` |
+| `GET /health` `version` | `0.3.0` |
+| `GET /capabilities` `version` | `0.3.0` |
+| `kernelApiVersion` | `1.0.0` |
+| Sidecar protocol | `1.0.0` |
+| Default Compose image | `anthropies:0.3.0` |
+
+What this release includes:
+
+- TypeScript kernel with capability packs for inspect, clean, detect, audit, and rewrite observation
+- CLI: `inspect`, `clean`, `humanize`, `capture`, `demo`, `serve`
+- HTTP: `/health`, `/capabilities`, `/inspect`, `/clean`, `/detect`, `/openapi.json`
+- Optional Compose profiles for MarkLLM, MarkDiffusion, CtrlRegen, and image-scoring
+- Compatibility matrix in [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md)
+
+What this release does not do:
+
+- It does not bump the HTTP `version` field off `0.3.0`
+- It does not add HTTP `/humanize`
+- It does not claim official-detector failure or that text is human-written
+
+---
+
 ## How to run
 
 ```bash
@@ -46,7 +82,7 @@ pnpm build
 pnpm install -g .
 ```
 
-Or one-shot: `npx anthropies --help`. From this repo after `pnpm build`: `node dist/cli.js --help`. Version is `0.4.0`.
+Or one-shot: `npx anthropies --help`. From this repo after `pnpm build`: `node dist/cli.js --help`. Version is `1.0.0`.
 
 ```bash
 npx anthropies inspect COMMIT_EDITMSG
@@ -57,9 +93,49 @@ npx anthropies demo
 npx anthropies serve
 ```
 
-`serve` binds loopback `127.0.0.1:8765` by default (`GET /health`, `POST /inspect`, `POST /clean`). Remote bind requires an explicit `--host`. The skill prefers `ANTHROPIES_SERVICE_URL` (same default) and health-checks first. There is no HTTP `/humanize`. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set.
+`serve` binds loopback `127.0.0.1:8765` by default. Remote bind requires an explicit `--host`. The skill prefers `ANTHROPIES_SERVICE_URL` (same default) and health-checks first. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set.
 
-Docker (`Dockerfile` + `compose.yaml`) is the same service. `docker compose up --build` publishes `127.0.0.1:8765:8765`. The process inside binds `0.0.0.0:8765`; the host mapping stays loopback. The image does not install qpdf, exiftool, or c2patool. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set. GitHub Actions runs `pnpm test` and `pnpm build` on Ubuntu and Windows.
+| Method | Path | Role |
+|---|---|---|
+| `GET` | `/health` | `{ "ok": true, "version": "0.3.0" }` |
+| `GET` | `/capabilities` | Pack inventory, tools, scorers. JSON `version` is `0.3.0`. |
+| `POST` | `/inspect` | Inspect an owned file |
+| `POST` | `/clean` | Strip Layer A and hard-bound metadata |
+| `GET`, `POST` | `/detect` | Run detector packs. Not a clean certificate |
+| `GET` | `/openapi.json` | OpenAPI 3.0.3 |
+
+There is no HTTP `/humanize`. Detection is not a clean certificate. Official stays unavailable unless `ANTHROPIC_DETECT_URL` is set.
+
+Docker (`Dockerfile` + `compose.yaml`) is the same service. `docker compose up --build` publishes `127.0.0.1:8765:8765`. The process inside binds `0.0.0.0:8765`. The host mapping stays loopback. The image does not install qpdf, exiftool, or c2patool. GitHub Actions runs `pnpm test` and `pnpm build` on Ubuntu and Windows.
+
+### Shipped packs
+
+`GET /capabilities` lists these ids. Optional packs fail soft when their sidecar or weights are absent.
+
+| Pack id | Channel | Role |
+|---|---|---|
+| `anthropies.layer-a` | deterministic | Invisible Unicode, agent trailers, generated banners |
+| `anthropies.c2pa` | c2pa | Hard-bound C2PA / metadata on raster and SVG |
+| `anthropies.pdf` | c2pa | PDF metadata |
+| `anthropies.pdf-tools` | c2pa | PDF structure inspect |
+| `anthropies.html` | c2pa | HTML metadata |
+| `anthropies.md` | c2pa | Markdown metadata |
+| `anthropies.svg-strip` | c2pa | SVG metadata strip |
+| `anthropies.docx` | c2pa | Word OOXML metadata |
+| `anthropies.odt` | c2pa | OpenDocument metadata |
+| `anthropies.xlsx` | c2pa | Excel OOXML metadata |
+| `anthropies.pptx` | c2pa | PowerPoint OOXML metadata |
+| `anthropies.epub` | c2pa | EPUB OPF metadata |
+| `anthropies.raster-strip` | c2pa | Raster provenance metadata. Does not drop AVIF/HEIC pixels |
+| `anthropies.audit-directory` | deterministic | Bounded directory audit |
+| `anthropies.audit-website` | deterministic | Website audit with SSRF defenses |
+| `anthropies.rewrite-stylometry` | statistical | Rewrite observation. Not an official-kill |
+| `anthropies.gemini-synthid` | statistical | Gemini detector adapter. Fail-soft |
+| `anthropies.official` | official | Official detector when `ANTHROPIC_DETECT_URL` is set |
+| `anthropies.markllm` | statistical | Optional Apache-2.0 wrap. Operator checkout |
+| `anthropies.markdiffusion` | statistical | Optional Apache-2.0 wrap. Operator checkout |
+| `anthropies.ctrlregen` | statistical | Original method code. Operator-supplied weights |
+| `anthropies.image-scoring` | statistical | Optional noncommercial sidecar. Not in the core image |
 
 ### Operator profiles and compatibility
 

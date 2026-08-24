@@ -2,7 +2,7 @@ schema: spec-driven
 
 context: |
   Product: Anthropies. Restore clean title in Outputs the user already owns.
-  Stack: TypeScript, Effect 3, vitest, pnpm. Version 0.4.0. HTTP /health stays 0.3.0 until a dedicated change.
+  Stack: TypeScript, Effect 3, vitest, pnpm. Package version 1.0.0 DarioCyclovir. HTTP /health stays 0.3.0 until a dedicated change.
   Delivery: Foreman. Grok implements. Codex GPT-5.6 Sol audits (QA, code, docs). Claude advises at commitment boundaries.
   Requirements: Easy Approach to Requirements Syntax (EARS). Clause order is While, When, the system SHALL. One response verb SHALL per requirement sentence.
   EARS patterns: ubiquitous (The kernel SHALL); state-driven (WHILE); event-driven (WHEN); optional (WHERE); unwanted (IF ... THEN); complex (WHILE ... WHEN ...).
