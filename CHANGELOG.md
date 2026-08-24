@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- `init-rewrite` wizard and `~/.anthropies/config.json` fallback for humanize rewrite settings (PR #8). Env vars still win. Default remains `print-prompt`.
+
 ## 1.0.0 DarioCyclovir — 2026-08-23
 
 First production release.

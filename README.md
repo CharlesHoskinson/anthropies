@@ -59,7 +59,7 @@ Pack `implementationVersion` values stay `0.4.0` unless a later pack ships its o
 What this release includes:
 
 - TypeScript kernel with capability packs for inspect, clean, detect, audit, and rewrite observation
-- CLI: `inspect`, `clean`, `humanize`, `capture`, `demo`, `serve`
+- CLI: `inspect`, `clean`, `humanize`, `init-rewrite`, `capture`, `demo`, `serve`
 - HTTP: `/health`, `/capabilities`, `/inspect`, `/clean`, `/detect`, `/openapi.json`
 - Optional Compose profiles for MarkLLM, MarkDiffusion, CtrlRegen, and image-scoring
 - Compatibility matrix in [`docs/COMPATIBILITY.md`](docs/COMPATIBILITY.md)
@@ -88,6 +88,7 @@ Or one-shot: `npx anthropies --help`. From this repo after `pnpm build`: `node d
 npx anthropies inspect COMMIT_EDITMSG
 npx anthropies clean notes.md --in-place
 npx anthropies humanize essay.md
+npx anthropies init-rewrite
 npx anthropies capture --model <allowlisted-id> --prompt "..."
 npx anthropies demo
 npx anthropies serve
@@ -164,7 +165,27 @@ ln -sfn "$(pwd)/skills/purge-anthropies" ~/.claude/skills/purge-anthropies
 
 In an agent session: `/purge-anthropies`. Skill: [`skills/purge-anthropies/SKILL.md`](skills/purge-anthropies/SKILL.md). Slash: [`commands/purge-anthropies.md`](commands/purge-anthropies.md). Plugin: [`.claude-plugin/plugin.json`](.claude-plugin/plugin.json).
 
-`capture` and `demo` need `ANTHROPIC_API_KEY` only when the committed allowlist has a model ID. An empty allowlist is valid; then those commands skip live fetch. Live captures land in `fixtures/live/` and are gitignored. They are pipeline smoke, not a “this is watermarked” proof.
+`capture` and `demo` need `ANTHROPIC_API_KEY` only when the committed allowlist has a model ID. An empty allowlist is valid; then those commands skip live fetch. Live captures land in `fixtures/live/` and are gitignored. They are pipeline smoke, not a "this is watermarked" proof.
+
+### Configuring the rewrite backend
+
+`humanize` defaults to `print-prompt` (no HTTP call). To point it at a local or remote rewrite model, run the interactive setup:
+
+```bash
+anthropies init-rewrite
+```
+
+This walks you through backend, model, base URL, API key, and remote-allow, then writes `~/.anthropies/config.json`. POSIX mode is `0600`. Windows uses the profile directory ACLs.
+
+| Setting | Config file key | Env var override | Default |
+|---|---|---|---|
+| Backend | `rewrite.backend` | `ANTHROPIES_REWRITE_BACKEND` | `print-prompt` |
+| Model | `rewrite.model` | `ANTHROPIES_REWRITE_MODEL` | *(unset)* |
+| Base URL | `rewrite.baseUrl` | `ANTHROPIES_REWRITE_BASE_URL` | `http://127.0.0.1:11434` |
+| API key | `rewrite.apiKey` | `ANTHROPIES_REWRITE_API_KEY` | *(unset)* |
+| Allow remote | `rewrite.allowRemote` | `ANTHROPIES_REWRITE_ALLOW_REMOTE` | `false` |
+
+Precedence: **env var > config file > built-in default.** Env vars win for CI/CD and Docker; the config file is for day-to-day interactive use. Non-loopback base URLs require `allowRemote: true` (or `ANTHROPIES_REWRITE_ALLOW_REMOTE=1`) — this is a fail-closed guard because the rewrite request sends your full text to the remote server.
 
 ---
 
@@ -175,6 +196,7 @@ In an agent session: `/purge-anthropies`. Skill: [`skills/purge-anthropies/SKILL
 | `inspect` | report present/absent | report present/absent | unavailable unless URL set | unavailable / not-run |
 | `clean` | strip Layer A | strip hard-bound metadata | unavailable unless URL set | not-run |
 | `humanize` | Layer A first | n/a on text | unavailable unless URL set | best-effort `rewrite_metric` |
+| `init-rewrite` | n/a | n/a | n/a | writes rewrite config only |
 | `capture` | does not detect | n/a | does not detect | n/a |
 | `demo` | run inspect/clean | skipped or certified | unavailable unless URL set | skipped if print-prompt |
 

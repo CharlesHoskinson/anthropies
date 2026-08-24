@@ -86,8 +86,25 @@ export default tseslint.config(
     }
   },
   {
+    files: ["src/config-file.ts"],
+    rules: {
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          paths: forbiddenModules.filter((m) => !m.name.startsWith("node:fs") && m.name !== "fs" && m.name !== "fs/promises")
+        }
+      ]
+    }
+  },
+  {
     files: ["tests/**/*.ts"],
     rules: {
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          paths: forbiddenModules.filter((m) => !m.name.startsWith("node:fs") && m.name !== "fs" && m.name !== "fs/promises")
+        }
+      ],
       "no-restricted-properties": [
         "error",
         {

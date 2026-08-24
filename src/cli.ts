@@ -1,12 +1,22 @@
 import * as Args from "@effect/cli/Args"
 import * as CliCommand from "@effect/cli/Command"
 import * as Options from "@effect/cli/Options"
+import * as Prompt from "@effect/cli/Prompt"
 import { NodeContext, NodeHttpClient, NodeHttpServer, NodeRuntime } from "@effect/platform-node"
-import { Cause, Console, Effect, Exit, Layer, Option, Schema } from "effect"
+import { Cause, Console, Effect, Exit, Layer, Option, Redacted, Schema } from "effect"
 import { createServer } from "node:http"
+import {
+  applyRewriteSetup,
+  loadConfigFile,
+  saveConfigFile,
+  validateRewriteSetup
+} from "./config-file.js"
+import { rewriteConfigPath } from "./config.js"
+import { RewriteFailed } from "./fail.js"
 import { defaultServeHost, defaultServePort } from "./http/openapi.js"
 import { HttpApp } from "./http/server.js"
 import { residualDrivesExit } from "./report.js"
+import { assertRewriteUrlAllowed } from "./rewrite-backend.js"
 import { Capturer, runDemo } from "./services/capturer.js"
 import { Cleaner } from "./services/cleaner.js"
 import { Humanizer } from "./services/humanizer.js"
@@ -172,9 +182,53 @@ const serve = CliCommand.make("serve", { host: hostOpt, port: portOpt }, ({ host
   )
 )
 
+const initPrompt = Prompt.all({
+  backend: Prompt.select({
+    message: "Rewrite backend?",
+    choices: [
+      { title: "print-prompt (default)", value: "print-prompt", description: "Print the prompt, no HTTP call" },
+      { title: "ollama", value: "ollama", description: "Local Ollama instance" },
+      { title: "openai-compatible", value: "openai-compatible", description: "Any OpenAI-compatible API" }
+    ]
+  }),
+  model: Prompt.text({
+    message: "Model name (e.g. llama3.2, gpt-4o)?",
+    default: ""
+  }),
+  baseUrl: Prompt.text({
+    message: "Base URL (e.g. http://127.0.0.1:11434)?",
+    default: "http://127.0.0.1:11434"
+  }),
+  apiKey: Prompt.password({
+    message: "API key (leave empty if not required)?"
+  }),
+  allowRemote: Prompt.confirm({
+    message: "Allow non-loopback URLs (required for remote endpoints)?"
+  })
+})
+
+const initRewrite = CliCommand.prompt("init-rewrite", initPrompt, ({ backend, model, baseUrl, apiKey, allowRemote }) =>
+  Effect.gen(function* () {
+    const path = yield* rewriteConfigPath.pipe(Effect.orDie)
+    const key = Redacted.value(apiKey)
+    const setup = { backend, model, baseUrl, apiKey: key, allowRemote }
+    const setupError = validateRewriteSetup(setup)
+    if (setupError !== undefined) {
+      return yield* new RewriteFailed({ path, reason: setupError })
+    }
+    if (backend !== "print-prompt") {
+      yield* assertRewriteUrlAllowed(baseUrl.trim(), allowRemote ? "1" : "0", path)
+    }
+    const config = applyRewriteSetup(loadConfigFile(path), setup)
+    saveConfigFile(config, path)
+    yield* Console.error(`wrote ${path}`)
+    yield* Console.error("POSIX mode 0600 (owner read/write). Windows uses profile ACLs.")
+  })
+).pipe(CliCommand.withDescription("Interactive setup for the rewrite backend: write ~/.anthropies/config.json"))
+
 export const cli = CliCommand.make("anthropies").pipe(
   CliCommand.withDescription("Restore clean title in Outputs the user already owns."),
-  CliCommand.withSubcommands([inspect, clean, humanize, capture, demo, serve])
+  CliCommand.withSubcommands([inspect, clean, humanize, capture, demo, serve, initRewrite])
 )
 
 const run = CliCommand.run(cli, { name: "anthropies", version: "1.0.0" })
